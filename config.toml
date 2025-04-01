@@ -6,11 +6,9 @@ theme = "PaperMod"
 [pagination]
   pagerSize = 5
 
-[params]
-  homeInfoParams = { 
-    Title = "Income for Everyone", 
-    Content = "We are entering a future where AI and automation may replace a vast portion of human labor. This blog documents that transition - highlighting news about job displacement, policy responses, and the urgent need for Universal Basic Income (UBI). Our mission is to advocate for proactive governance and fair wealth redistribution so that all humans can live with dignity in the post-labor economy."
-  }
+[params.homeInfoParams]
+  Title = "Income for Everyone"
+  Content = "We are entering a future where AI and automation may replace a vast portion of human labor. This blog documents that transition - highlighting news about job displacement, policy responses, and the urgent need for Universal Basic Income (UBI). Our mission is to advocate for proactive governance and fair wealth redistribution so that all humans can live with dignity in the post-labor economy."
 
 [[menu.main]]
   identifier = "posts"
