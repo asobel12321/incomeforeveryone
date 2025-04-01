@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Income for Everyone</title>
+</head>
+<body>
+  <h1>Blog coming soon...</h1>
+  <p>Daily AI summaries on UBI, automation, and labor changes.</p>
+</body>
+</html>

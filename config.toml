@@ -1,0 +1,14 @@
+baseURL = "https://incomeforeveryone.org/"
+languageCode = "en-us"
+title = "Income For Everyone"
+theme = "PaperMod"
+pagerSize = 5
+
+[params]
+  homeInfoParams = { Title = "Income for Everyone", Content = "Tracking AI’s impact on work and welfare." }
+
+[[menu.main]]
+  identifier = "posts"
+  name = "Posts"
+  url = "/posts/"
+  weight = 1
