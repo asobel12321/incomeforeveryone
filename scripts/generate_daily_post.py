@@ -141,7 +141,7 @@ Short synthesis paragraph.
 
 
 def call_openai(prompt: str, model: str) -> str:
-    api_key = (os.environ.get("OPENAI_API_KEY") or "").strip()
+    api_key = re.sub(r"\s+", "", os.environ.get("OPENAI_API_KEY") or "")
     if not api_key:
         raise RuntimeError("OPENAI_API_KEY is required.")
 
