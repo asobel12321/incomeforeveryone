@@ -1,0 +1,6 @@
+access_token
+.hugo_build.lock
+resources/
+public/
+__pycache__/
+*.py[cod]

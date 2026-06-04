@@ -1,0 +1,67 @@
+name: Daily AI Labor Watch
+
+on:
+  schedule:
+    # 8:30 AM New York during daylight saving time. GitHub cron is UTC.
+    - cron: "30 12 * * *"
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "Post date as YYYY-MM-DD. Defaults to today in New York."
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-ai-labor-watch
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: "0.145.0"
+          extended: true
+
+      - name: Generate daily post
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5.4-mini' }}
+        run: |
+          if [ -n "${{ inputs.date }}" ]; then
+            python scripts/generate_daily_post.py --date "${{ inputs.date }}"
+          else
+            python scripts/generate_daily_post.py
+          fi
+
+      - name: Build site
+        run: hugo
+
+      - name: Commit and push post
+        run: |
+          if git diff --quiet -- content/posts; then
+            echo "No new post to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add content/posts
+          git commit -m "Add daily AI labor watch"
+          git push
