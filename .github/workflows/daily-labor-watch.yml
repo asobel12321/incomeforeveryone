@@ -2,8 +2,8 @@ name: Daily AI Labor Watch
 
 on:
   schedule:
-    # 8:30 AM New York during daylight saving time. GitHub cron is UTC.
-    - cron: "30 12 * * *"
+    # 9:30 AM New York during daylight saving time. GitHub cron is UTC.
+    - cron: "30 13 * * *"
   workflow_dispatch:
     inputs:
       date:
