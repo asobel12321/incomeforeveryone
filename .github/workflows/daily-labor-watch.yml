@@ -55,7 +55,7 @@ jobs:
 
       - name: Commit and push post
         run: |
-          if git diff --quiet -- content/posts; then
+          if [ -z "$(git status --porcelain -- content/posts)" ]; then
             echo "No new post to commit."
             exit 0
           fi
