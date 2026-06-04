@@ -6,9 +6,20 @@ theme = "PaperMod"
 [pagination]
   pagerSize = 5
 
+[params]
+  env = "production"
+  defaultTheme = "light"
+  disableThemeToggle = true
+  ShowReadingTime = true
+  ShowPostNavLinks = true
+  ShowBreadCrumbs = true
+  ShowCodeCopyButtons = true
+  DateFormat = "January 2, 2006"
+  description = "Daily evidence on AI, automation, job displacement, labor policy, and Universal Basic Income."
+
 [params.homeInfoParams]
   Title = "Income for Everyone"
-  Content = "We are entering a future where AI and automation may replace a vast portion of human labor. This blog documents that transition - highlighting news about job displacement, policy responses, and the urgent need for Universal Basic Income (UBI). Our mission is to advocate for proactive governance and fair wealth redistribution so that all humans can live with dignity in the post-labor economy."
+  Content = "A daily record of how AI and automation are reshaping work - and why Universal Basic Income belongs at the center of the policy response."
 
 [[menu.main]]
   identifier = "posts"
