@@ -49,7 +49,7 @@ function Get-DefaultTitle {
     param([string]$PostDate)
 
     $parsed = [DateTime]::ParseExact($PostDate, "yyyy-MM-dd", $null)
-    return "AI & Labor Watch: $($parsed.ToString('MMMM d, yyyy')) - Automation and Labor Signals"
+    return "Automation and Labor Signals - $($parsed.ToString('MMMM d, yyyy'))"
 }
 
 $body = Clean-PostMarkdown $raw

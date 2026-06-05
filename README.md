@@ -1,6 +1,6 @@
 # Income For Everyone
 
-Hugo/PaperMod site for publishing daily `AI & Labor Watch` posts.
+Hugo/PaperMod site for publishing daily AI labor and automation posts.
 
 ## Current Workflow
 
@@ -27,7 +27,7 @@ The script reads the clipboard, removes ChatGPT citation artifacts like `:conten
 To backdate or override the title:
 
 ```powershell
-.\scripts\new-daily-post.ps1 -Date 2026-06-03 -Title "AI & Labor Watch: June 3, 2026 - Automation and Layoff Signals"
+.\scripts\new-daily-post.ps1 -Date 2026-06-03 -Title "Automation Layoffs Put White-Collar Work on Alert"
 ```
 
 Then publish:
@@ -64,5 +64,6 @@ You can also run it manually from GitHub Actions with an optional `YYYY-MM-DD` d
 - Prefer primary reporting and official data: Reuters, AP, Bloomberg, BLS, company filings, government agencies, major newspapers, and credible research.
 - Do not publish placeholder links like `[Link here]` or `[Read more]` without a descriptive title.
 - Do not publish ChatGPT citation artifacts, `oaicite`, or invisible zero-width references.
+- Lead post titles with the concrete news angle, not a repeated series label like `AI & Labor Watch`.
 - Keep each post to three strong stories, with one short synthesis section.
 - Verify URLs before publishing when a claim sounds specific or surprising.

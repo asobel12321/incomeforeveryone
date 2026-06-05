@@ -65,6 +65,10 @@ def validate_post(markdown: str, post_date: str) -> None:
         if not re.search(pattern, markdown, flags=re.M):
             raise RuntimeError(f"Generated post failed validation pattern: {pattern}")
 
+    title_match = re.search(r'^title:\s*"([^"]+)"\s*$', markdown, flags=re.M)
+    if title_match and title_match.group(1).lower().startswith("ai & labor watch"):
+        raise RuntimeError("Generated post title must lead with the news, not 'AI & Labor Watch'.")
+
     forbidden = [
         ":contentReference",
         "oaicite",
@@ -96,6 +100,7 @@ Topic: AI, automation, labor displacement, layoffs, workforce restructuring, job
 Requirements:
 - Use only current, verifiable news, official data, company announcements, or credible research.
 - Prefer primary reporting and official sources such as Reuters, AP, Bloomberg, BLS, company filings, government agencies, major newspapers, and peer-reviewed or institutional research.
+- The title must lead with the most important concrete news angle. Do not start the title with "AI & Labor Watch" or any recurring series label.
 - Include exactly 3 key stories.
 - Each story must include a bold headline, 1-2 sentences of labor/automation/UBI relevance, and one Markdown link with the real article title and URL.
 - Include a short "What This Tells Us" synthesis section.
@@ -105,7 +110,7 @@ Requirements:
 Use this exact structure:
 
 ---
-title: "AI & Labor Watch: {display_date} - Short Specific Title"
+title: "Specific News-Led Title"
 date: {post_date}
 draft: false
 ---

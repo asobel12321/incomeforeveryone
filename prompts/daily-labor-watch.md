@@ -6,6 +6,7 @@ Requirements:
 
 - Use only current, verifiable news or official/research sources.
 - Include exactly 3 key stories.
+- The title must lead with the most important concrete news angle. Do not start with "AI & Labor Watch" or any recurring series label.
 - Each story must include:
   - a bold headline
   - 1-2 sentences explaining the labor/automation/UBI relevance
@@ -17,7 +18,7 @@ Requirements:
 
 ```markdown
 ---
-title: "AI & Labor Watch: Month D, YYYY - Short Specific Title"
+title: "Specific News-Led Title"
 date: YYYY-MM-DD
 draft: false
 ---
