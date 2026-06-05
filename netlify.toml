@@ -6,7 +6,7 @@
   HUGO_VERSION = "0.145.0"
 
 [functions."trigger-daily-labor-watch"]
-  schedule = "55 18 * * *"
+  schedule = "30 13 * * *"
 
 [functions."trigger-daily-labor-watch-backup"]
-  schedule = "0 19 * * *"
+  schedule = "0 14 * * *"
