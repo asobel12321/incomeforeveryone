@@ -4,3 +4,9 @@
 
 [context.production.environment]
   HUGO_VERSION = "0.145.0"
+
+[functions."trigger-daily-labor-watch"]
+  schedule = "30 13 * * *"
+
+[functions."trigger-daily-labor-watch-backup"]
+  schedule = "0 14 * * *"

@@ -41,8 +41,9 @@ git push
 ## Fully Automatic Workflow
 
 This repo includes a GitHub Actions workflow at `.github/workflows/daily-labor-watch.yml`.
+Netlify scheduled functions trigger that workflow because GitHub scheduled Actions proved unreliable for this repo.
 
-It runs every day at `12:30 UTC`, which is `8:30 AM America/New_York` during daylight saving time. The workflow:
+It runs every day at `13:30 UTC`, which is `9:30 AM America/New_York` during daylight saving time, with a `14:00 UTC` backup trigger. The workflow:
 
 1. Calls the OpenAI Responses API with web search.
 2. Creates `content/posts/YYYY-MM-DD.md`.
@@ -56,6 +57,8 @@ Required GitHub setup:
 2. Add repository secret `OPENAI_API_KEY`.
 3. Optional: add repository variable `OPENAI_MODEL`. The default is `gpt-5.4-mini`.
 4. Confirm `Settings` -> `Actions` -> `General` -> `Workflow permissions` allows `Read and write permissions`.
+5. Create a fine-grained GitHub personal access token for this repository with Actions write access.
+6. In Netlify, add environment variable `GITHUB_WORKFLOW_TOKEN` with that token.
 
 You can also run it manually from GitHub Actions with an optional `YYYY-MM-DD` date.
 
