@@ -4,6 +4,9 @@ on:
   schedule:
     # Temporary test: 12:25 PM New York during daylight saving time. GitHub cron is UTC.
     - cron: "25 16 * * *"
+    # Backup test runs. The generator skips if today's post already exists.
+    - cron: "30 16 * * *"
+    - cron: "35 16 * * *"
   workflow_dispatch:
     inputs:
       date:
