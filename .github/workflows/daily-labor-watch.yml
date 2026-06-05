@@ -2,10 +2,8 @@ name: Daily AI Labor Watch
 
 on:
   schedule:
-    # 9:30 AM New York during daylight saving time. GitHub cron is UTC.
-    - cron: "30 13 * * *"
-    # Backup run at 10:00 AM New York. The generator skips if today's post exists.
-    - cron: "0 14 * * *"
+    # Temporary: 11:57 AM New York during daylight saving time. GitHub cron is UTC.
+    - cron: "57 15 * * *"
   workflow_dispatch:
     inputs:
       date:
