@@ -4,7 +4,7 @@ title = "Income For Everyone"
 theme = "PaperMod"
 
 [pagination]
-  pagerSize = 5
+  pagerSize = 8
 
 [params]
   env = "production"
@@ -14,15 +14,29 @@ theme = "PaperMod"
   ShowPostNavLinks = true
   ShowBreadCrumbs = true
   ShowCodeCopyButtons = true
+  ShowPageNums = true
   DateFormat = "January 2, 2006"
-  description = "Daily evidence on AI, automation, job displacement, labor policy, and Universal Basic Income."
+  description = "News-led daily briefs on AI, automation, job disruption, labor policy, and Universal Basic Income."
+  mainSections = ["posts"]
 
 [params.homeInfoParams]
-  Title = "Income for Everyone"
-  Content = "A daily record of how AI and automation are reshaping work - and why Universal Basic Income belongs at the center of the policy response."
+  Title = "Tracking the labor shock behind the AI boom"
+  Content = "Income For Everyone is a daily record of how AI and automation are changing work, weakening job security, and moving Universal Basic Income from theory toward practical policy."
 
 [[menu.main]]
   identifier = "posts"
-  name = "Posts"
+  name = "Briefs"
   url = "/posts/"
   weight = 1
+
+[[menu.main]]
+  identifier = "archives"
+  name = "Archive"
+  url = "/archives/"
+  weight = 2
+
+[[menu.main]]
+  identifier = "about"
+  name = "About"
+  url = "/about/"
+  weight = 3

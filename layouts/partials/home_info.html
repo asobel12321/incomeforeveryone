@@ -1,0 +1,23 @@
+{{- with site.Params.homeInfoParams }}
+<article class="first-entry home-info publication-hero">
+    <div class="hero-kicker">Daily labor signals for the automation age</div>
+    <header class="entry-header">
+        <h1>{{ .Title | markdownify }}</h1>
+    </header>
+    <div class="entry-content">
+        {{ .Content | markdownify }}
+    </div>
+    <div class="hero-actions" aria-label="Primary links">
+        <a class="hero-button hero-button-primary" href="/posts/">Read the latest briefs</a>
+        <a class="hero-button" href="/archives/">Browse the archive</a>
+    </div>
+    <div class="hero-pillars" aria-label="Publication focus">
+        <span>AI layoffs</span>
+        <span>Automation policy</span>
+        <span>UBI evidence</span>
+    </div>
+    <footer class="entry-footer hero-note">
+        News-led daily briefs connecting labor-market disruption to the case for durable income security.
+    </footer>
+</article>
+{{- end -}}
