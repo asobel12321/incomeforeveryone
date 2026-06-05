@@ -1,12 +1,12 @@
 name: Daily AI Labor Watch
 
 on:
-  schedule:
-    # Temporary test: 12:25 PM New York during daylight saving time. GitHub cron is UTC.
-    - cron: "25 16 * * *"
-    # Backup test runs. The generator skips if today's post already exists.
-    - cron: "30 16 * * *"
-    - cron: "35 16 * * *"
+  workflow_call:
+    inputs:
+      date:
+        description: "Post date as YYYY-MM-DD. Defaults to today in New York."
+        required: false
+        type: string
   workflow_dispatch:
     inputs:
       date:
@@ -47,7 +47,7 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5.4-mini' }}
         run: |
-          if [ -n "${{ inputs.date }}" ]; then
+          if [ -n "${{ inputs.date || '' }}" ]; then
             python scripts/generate_daily_post.py --date "${{ inputs.date }}"
           else
             python scripts/generate_daily_post.py
