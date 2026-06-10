@@ -1,0 +1,56 @@
+name: Daily X headline post
+
+on:
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "Post date as YYYY-MM-DD. Defaults to today in New York."
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-x-post
+  cancel-in-progress: false
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Post daily headline to X
+        env:
+          X_USER_BEARER_TOKEN: ${{ secrets.X_USER_BEARER_TOKEN }}
+          X_POST_CTA: ${{ vars.X_POST_CTA || 'Follow @AILayoffAlerts for the daily signal.' }}
+          X_POST_HASHTAGS: ${{ vars.X_POST_HASHTAGS || 'AILayoffs FutureOfWork' }}
+        run: |
+          if [ -n "${{ inputs.date || '' }}" ]; then
+            python scripts/post_daily_x_headline.py --date "${{ inputs.date }}"
+          else
+            python scripts/post_daily_x_headline.py
+          fi
+
+      - name: Commit posted marker
+        run: |
+          if [ -z "$(git status --porcelain -- data/x-posted)" ]; then
+            echo "No X post marker to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/x-posted
+          git commit -m "Record daily X post"
+          git push
