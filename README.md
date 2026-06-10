@@ -77,9 +77,12 @@ Netlify triggers it every day at `14:30 UTC`, which is 30 minutes after the `14:
 Required GitHub setup:
 
 1. Go to `Settings` -> `Secrets and variables` -> `Actions`.
-2. Add repository secret `X_USER_BEARER_TOKEN` from the `AILayoffAlerts` X developer app.
-3. Optional: add repository variable `X_POST_CTA`.
-4. Optional: add repository variable `X_POST_HASHTAGS`. Keep it to one or two tags, such as `AILayoffs FutureOfWork`.
+2. Add repository secret `X_CLIENT_ID` from the `AILayoffAlerts` X developer app.
+3. Add repository secret `X_CLIENT_SECRET` from the `AILayoffAlerts` X developer app.
+4. Add repository secret `X_REFRESH_TOKEN` from the OAuth 2.0 token generator.
+5. Optional fallback: add repository secret `X_USER_BEARER_TOKEN` if you want to test with a short-lived OAuth 2.0 access token.
+6. Optional: add repository variable `X_POST_CTA`.
+7. Optional: add repository variable `X_POST_HASHTAGS`. Keep it to one or two tags, such as `AILayoffs FutureOfWork`.
 
 You can test without posting from a local checkout:
 

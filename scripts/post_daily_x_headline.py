@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import datetime as dt
 import hashlib
 import json
@@ -12,6 +13,7 @@ import re
 import sys
 import textwrap
 import urllib.error
+import urllib.parse
 import urllib.request
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -23,6 +25,7 @@ POSTED_DIR = REPO_ROOT / "data" / "x-posted"
 BASE_URL = "https://incomeforeveryone.org"
 TIMEZONE = "America/New_York"
 POST_URL = "https://api.x.com/2/tweets"
+TOKEN_URL = "https://api.x.com/2/oauth2/token"
 MAX_POST_LENGTH = 280
 DEFAULT_CTA = "Follow @AILayoffAlerts for the daily signal."
 DEFAULT_HASHTAGS = "#AILayoffs #FutureOfWork"
@@ -37,7 +40,11 @@ TEMPLATES = [
 
 
 def default_post_date() -> str:
-    return dt.datetime.now(ZoneInfo(TIMEZONE)).strftime("%Y-%m-%d")
+    try:
+        now = dt.datetime.now(ZoneInfo(TIMEZONE))
+    except Exception:
+        now = dt.datetime.now()
+    return now.strftime("%Y-%m-%d")
 
 
 def read_post_title(post_path: Path) -> str:
@@ -137,6 +144,60 @@ def post_to_x(text: str, token: str) -> dict:
         raise RuntimeError(f"X API returned HTTP {exc.code}: {detail}") from exc
 
 
+def refresh_access_token() -> tuple[str, str | None]:
+    client_id = os.environ.get("X_CLIENT_ID", "").strip()
+    client_secret = os.environ.get("X_CLIENT_SECRET", "").strip()
+    refresh_token = os.environ.get("X_REFRESH_TOKEN", "").strip()
+
+    if not refresh_token:
+        token = os.environ.get("X_USER_BEARER_TOKEN", "").strip()
+        if token:
+            return token, None
+        raise RuntimeError("Missing X_REFRESH_TOKEN or X_USER_BEARER_TOKEN GitHub Actions secret.")
+
+    if not client_id:
+        raise RuntimeError("Missing X_CLIENT_ID GitHub Actions secret.")
+
+    form = {
+        "grant_type": "refresh_token",
+        "refresh_token": refresh_token,
+        "client_id": client_id,
+    }
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "User-Agent": "ai-layoff-alerts-daily-post/1.0",
+    }
+
+    if client_secret:
+        credentials = f"{client_id}:{client_secret}".encode("utf-8")
+        headers["Authorization"] = f"Basic {base64.b64encode(credentials).decode('ascii')}"
+
+    request = urllib.request.Request(
+        TOKEN_URL,
+        data=urllib.parse.urlencode(form).encode("utf-8"),
+        headers=headers,
+        method="POST",
+    )
+
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"X token refresh returned HTTP {exc.code}: {detail}") from exc
+
+    access_token = payload.get("access_token", "").strip()
+    if not access_token:
+        raise RuntimeError(f"X token refresh did not return an access token: {json.dumps(payload)[:1000]}")
+
+    new_refresh_token = payload.get("refresh_token")
+    if new_refresh_token and new_refresh_token != refresh_token:
+        print("X returned a rotated refresh token. Update the X_REFRESH_TOKEN GitHub secret with the new value.")
+        print(f"ROTATED_X_REFRESH_TOKEN={new_refresh_token}")
+
+    return access_token, new_refresh_token
+
+
 def write_marker(post_date: str, title: str, result: dict) -> None:
     POSTED_DIR.mkdir(parents=True, exist_ok=True)
     marker = POSTED_DIR / f"{post_date}.json"
@@ -181,10 +242,7 @@ def main() -> int:
         print(f"\nCharacter count: {len(text)}")
         return 0
 
-    token = os.environ.get("X_USER_BEARER_TOKEN", "").strip()
-    if not token:
-        raise RuntimeError("Missing X_USER_BEARER_TOKEN GitHub Actions secret.")
-
+    token, _ = refresh_access_token()
     result = post_to_x(text, token)
     write_marker(args.date, title, result)
     print(json.dumps(result, indent=2))
