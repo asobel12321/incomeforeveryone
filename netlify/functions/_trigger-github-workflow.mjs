@@ -1,6 +1,7 @@
 const owner = "asobel12321";
 const repo = "incomeforeveryone";
-const workflow = "daily-labor-watch.yml";
+const dailyLaborWorkflow = "daily-labor-watch.yml";
+const dailyXWorkflow = "daily-x-post.yml";
 
 function todayInNewYork() {
   const parts = new Intl.DateTimeFormat("en-US", {
@@ -14,7 +15,7 @@ function todayInNewYork() {
   return `${values.year}-${values.month}-${values.day}`;
 }
 
-export async function dispatchDailyLaborWatch(label) {
+async function dispatchWorkflow(workflow, label) {
   const token = process.env.GITHUB_WORKFLOW_TOKEN;
 
   if (!token) {
@@ -47,7 +48,15 @@ export async function dispatchDailyLaborWatch(label) {
 
   console.log(`${label} dispatched ${workflow} for ${date}`);
 
-  return new Response(JSON.stringify({ ok: true, date, label }), {
+  return new Response(JSON.stringify({ ok: true, date, label, workflow }), {
     headers: { "Content-Type": "application/json" },
   });
+}
+
+export async function dispatchDailyLaborWatch(label) {
+  return dispatchWorkflow(dailyLaborWorkflow, label);
+}
+
+export async function dispatchDailyXPost(label) {
+  return dispatchWorkflow(dailyXWorkflow, label);
 }
