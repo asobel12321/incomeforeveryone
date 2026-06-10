@@ -62,6 +62,33 @@ Required GitHub setup:
 
 You can also run it manually from GitHub Actions with an optional `YYYY-MM-DD` date.
 
+## Daily X Post
+
+The repo also includes `.github/workflows/daily-x-post.yml` for the `AILayoffAlerts` X account.
+
+Netlify triggers it every day at `14:30 UTC`, which is 30 minutes after the `14:00 UTC` article backup trigger. The workflow:
+
+1. Reads `content/posts/YYYY-MM-DD.md`.
+2. Extracts the Hugo front matter title.
+3. Builds an engagement-oriented X post with the article URL.
+4. Posts to X.
+5. Writes `data/x-posted/YYYY-MM-DD.json` and commits it so reruns skip duplicate posts.
+
+Required GitHub setup:
+
+1. Go to `Settings` -> `Secrets and variables` -> `Actions`.
+2. Add repository secret `X_USER_BEARER_TOKEN` from the `AILayoffAlerts` X developer app.
+3. Optional: add repository variable `X_POST_CTA`.
+4. Optional: add repository variable `X_POST_HASHTAGS`. Keep it to one or two tags, such as `AILayoffs FutureOfWork`.
+
+You can test without posting from a local checkout:
+
+```powershell
+python scripts/post_daily_x_headline.py --date YYYY-MM-DD --dry-run
+```
+
+You can run a real post manually from GitHub Actions by opening `Daily X headline post` and entering a date.
+
 ## Quality Rules
 
 - Prefer primary reporting and official data: Reuters, AP, Bloomberg, BLS, company filings, government agencies, major newspapers, and credible research.
