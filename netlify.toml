@@ -10,3 +10,6 @@
 
 [functions."trigger-daily-labor-watch-backup"]
   schedule = "0 14 * * *"
+
+[functions."trigger-daily-x-post"]
+  schedule = "30 14 * * *"
