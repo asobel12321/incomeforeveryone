@@ -192,8 +192,7 @@ def refresh_access_token() -> tuple[str, str | None]:
 
     new_refresh_token = payload.get("refresh_token")
     if new_refresh_token and new_refresh_token != refresh_token:
-        print("X returned a rotated refresh token. Update the X_REFRESH_TOKEN GitHub secret with the new value.")
-        print(f"ROTATED_X_REFRESH_TOKEN={new_refresh_token}")
+        print("X returned a rotated refresh token. Regenerate or update X_REFRESH_TOKEN in GitHub secrets if future runs fail.")
 
     return access_token, new_refresh_token
 
