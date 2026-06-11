@@ -23,12 +23,43 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
+          ref: main
           submodules: recursive
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
+      - name: Resolve post date
+        id: post-date
+        run: |
+          if [ -n "${{ inputs.date || '' }}" ]; then
+            echo "date=${{ inputs.date }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "date=$(TZ=America/New_York date +%F)" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Wait for generated article
+        run: |
+          post_path="content/posts/${{ steps.post-date.outputs.date }}.md"
+
+          for attempt in $(seq 1 31); do
+            git pull --ff-only origin main
+
+            if [ -f "$post_path" ]; then
+              echo "Found $post_path"
+              exit 0
+            fi
+
+            if [ "$attempt" -eq 31 ]; then
+              echo "::error::Timed out waiting for $post_path"
+              exit 1
+            fi
+
+            echo "Waiting for $post_path; attempt $attempt/31"
+            sleep 60
+          done
 
       - name: Post daily headline to X
         env:
@@ -39,11 +70,7 @@ jobs:
           X_POST_CTA: ${{ vars.X_POST_CTA || 'Follow @AILayoffAlerts for the daily signal.' }}
           X_POST_HASHTAGS: ${{ vars.X_POST_HASHTAGS || 'AILayoffs FutureOfWork' }}
         run: |
-          if [ -n "${{ inputs.date || '' }}" ]; then
-            python scripts/post_daily_x_headline.py --date "${{ inputs.date }}"
-          else
-            python scripts/post_daily_x_headline.py
-          fi
+          python scripts/post_daily_x_headline.py --date "${{ steps.post-date.outputs.date }}"
 
       - name: Commit posted marker
         run: |
