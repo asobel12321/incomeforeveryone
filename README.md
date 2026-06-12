@@ -77,12 +77,11 @@ Netlify triggers it every day at `15:30 UTC`, which gives the daily article work
 Required GitHub setup:
 
 1. Go to `Settings` -> `Secrets and variables` -> `Actions`.
-2. Add repository secret `X_CLIENT_ID` from the `AILayoffAlerts` X developer app.
-3. Add repository secret `X_CLIENT_SECRET` from the `AILayoffAlerts` X developer app.
-4. Add repository secret `X_REFRESH_TOKEN` from the OAuth 2.0 token generator.
-5. Optional fallback: add repository secret `X_USER_BEARER_TOKEN` if you want to test with a short-lived OAuth 2.0 access token.
-6. Optional: add repository variable `X_POST_CTA`.
-7. Optional: add repository variable `X_POST_HASHTAGS`. Keep it to one or two tags, such as `AILayoffs FutureOfWork`.
+2. Recommended: add OAuth 1.0a repository secrets `X_API_KEY`, `X_API_SECRET`, `X_ACCESS_TOKEN`, and `X_ACCESS_TOKEN_SECRET` from the `AILayoffAlerts` X developer app. These do not rotate daily.
+3. Optional fallback: add OAuth 2.0 repository secrets `X_CLIENT_ID`, `X_CLIENT_SECRET`, and `X_REFRESH_TOKEN`. X can rotate refresh tokens after use, so update `X_REFRESH_TOKEN` whenever X returns a replacement.
+4. Optional fallback: add repository secret `X_USER_BEARER_TOKEN` if you want to test with a short-lived OAuth 2.0 access token.
+5. Optional: add repository variable `X_POST_CTA`.
+6. Optional: add repository variable `X_POST_HASHTAGS`. Keep it to one or two tags, such as `AILayoffs FutureOfWork`.
 
 You can test without posting from a local checkout:
 

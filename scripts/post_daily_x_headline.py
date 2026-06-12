@@ -7,9 +7,11 @@ import argparse
 import base64
 import datetime as dt
 import hashlib
+import hmac
 import json
 import os
 import re
+import secrets
 import sys
 import textwrap
 import urllib.error
@@ -123,13 +125,74 @@ def build_post(title: str, post_date: str) -> str:
     return fit_post(template, title, flavor, cta, hashtags, url)
 
 
-def post_to_x(text: str, token: str) -> dict:
+def post_to_x_bearer(text: str, token: str) -> dict:
     payload = json.dumps({"text": text}).encode("utf-8")
     request = urllib.request.Request(
         POST_URL,
         data=payload,
         headers={
             "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
+            "User-Agent": "ai-layoff-alerts-daily-post/1.0",
+        },
+        method="POST",
+    )
+
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            return json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"X API returned HTTP {exc.code}: {detail}") from exc
+
+
+def oauth1_credentials() -> tuple[str, str, str, str] | None:
+    api_key = os.environ.get("X_API_KEY", "").strip()
+    api_secret = os.environ.get("X_API_SECRET", "").strip()
+    access_token = os.environ.get("X_ACCESS_TOKEN", "").strip()
+    access_secret = os.environ.get("X_ACCESS_TOKEN_SECRET", "").strip()
+
+    if api_key and api_secret and access_token and access_secret:
+        return api_key, api_secret, access_token, access_secret
+    return None
+
+
+def oauth_quote(value: str) -> str:
+    return urllib.parse.quote(value, safe="~")
+
+
+def post_to_x_oauth1(text: str, credentials: tuple[str, str, str, str]) -> dict:
+    api_key, api_secret, access_token, access_secret = credentials
+    oauth_params = {
+        "oauth_consumer_key": api_key,
+        "oauth_nonce": secrets.token_hex(16),
+        "oauth_signature_method": "HMAC-SHA1",
+        "oauth_timestamp": str(int(dt.datetime.now(dt.UTC).timestamp())),
+        "oauth_token": access_token,
+        "oauth_version": "1.0",
+    }
+
+    param_string = "&".join(
+        f"{oauth_quote(key)}={oauth_quote(value)}"
+        for key, value in sorted(oauth_params.items())
+    )
+    base_string = "&".join(["POST", oauth_quote(POST_URL), oauth_quote(param_string)])
+    signing_key = f"{oauth_quote(api_secret)}&{oauth_quote(access_secret)}"
+    signature = base64.b64encode(
+        hmac.new(signing_key.encode("utf-8"), base_string.encode("utf-8"), hashlib.sha1).digest()
+    ).decode("ascii")
+
+    auth_header = "OAuth " + ", ".join(
+        f'{oauth_quote(key)}="{oauth_quote(value)}"'
+        for key, value in sorted({**oauth_params, "oauth_signature": signature}.items())
+    )
+
+    payload = json.dumps({"text": text}).encode("utf-8")
+    request = urllib.request.Request(
+        POST_URL,
+        data=payload,
+        headers={
+            "Authorization": auth_header,
             "Content-Type": "application/json",
             "User-Agent": "ai-layoff-alerts-daily-post/1.0",
         },
@@ -241,8 +304,13 @@ def main() -> int:
         print(f"\nCharacter count: {len(text)}")
         return 0
 
-    token, _ = refresh_access_token()
-    result = post_to_x(text, token)
+    oauth1 = oauth1_credentials()
+    if oauth1:
+        result = post_to_x_oauth1(text, oauth1)
+    else:
+        token, _ = refresh_access_token()
+        result = post_to_x_bearer(text, token)
+
     write_marker(args.date, title, result)
     print(json.dumps(result, indent=2))
     return 0
