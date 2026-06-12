@@ -66,7 +66,7 @@ You can also run it manually from GitHub Actions with an optional `YYYY-MM-DD` d
 
 The repo also includes `.github/workflows/daily-x-post.yml` for the `AILayoffAlerts` X account.
 
-Netlify triggers it every day at `14:30 UTC`, which is 30 minutes after the `14:00 UTC` article backup trigger. The workflow:
+Netlify triggers it every day at `15:30 UTC`, which gives the daily article workflow and Netlify deploy more time to finish after the `14:00 UTC` article backup trigger. The workflow:
 
 1. Reads `content/posts/YYYY-MM-DD.md`.
 2. Extracts the Hugo front matter title.

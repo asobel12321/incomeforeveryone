@@ -12,4 +12,4 @@
   schedule = "0 14 * * *"
 
 [functions."trigger-daily-x-post"]
-  schedule = "30 14 * * *"
+  schedule = "30 15 * * *"
