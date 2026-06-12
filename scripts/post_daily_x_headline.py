@@ -148,7 +148,10 @@ def post_to_x_bearer(text: str, token: str) -> dict:
 
 def oauth1_credentials() -> tuple[str, str, str, str] | None:
     api_key = os.environ.get("X_API_KEY", "").strip()
-    api_secret = os.environ.get("X_API_SECRET", "").strip()
+    api_secret = (
+        os.environ.get("X_API_SECRET", "").strip()
+        or os.environ.get("X_API_KEY_SECRET", "").strip()
+    )
     access_token = os.environ.get("X_ACCESS_TOKEN", "").strip()
     access_secret = os.environ.get("X_ACCESS_TOKEN_SECRET", "").strip()
 
