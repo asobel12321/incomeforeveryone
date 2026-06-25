@@ -223,6 +223,203 @@ a:hover {
   margin-bottom: 26px;
 }
 
+.labor-stats-page {
+  max-width: var(--main-width);
+}
+
+.labor-stats-hero {
+  margin-bottom: 20px;
+}
+
+.labor-stats-intro {
+  max-width: 760px;
+  margin-top: 16px;
+  color: var(--secondary);
+  font-size: 1.02rem;
+  line-height: 1.65;
+}
+
+.labor-stats-meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.labor-stats-meta > div,
+.labor-data-contract,
+.labor-source-list {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.76);
+  box-shadow: 0 12px 30px rgba(31, 49, 43, 0.055);
+}
+
+.labor-stats-meta > div {
+  padding: 14px 16px;
+}
+
+.labor-stats-meta span,
+.labor-indicator-topline p,
+.labor-indicator-source dt,
+.labor-data-contract dt {
+  margin: 0;
+  color: var(--accent-strong);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.labor-stats-meta strong {
+  display: block;
+  margin-top: 5px;
+  color: var(--primary);
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.labor-indicator-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.labor-indicator-card {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-top: 5px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--entry);
+  box-shadow: 0 14px 34px rgba(31, 49, 43, 0.065);
+}
+
+.labor-status-down {
+  border-top-color: var(--link);
+}
+
+.labor-status-steady {
+  border-top-color: var(--accent-warm);
+}
+
+.labor-indicator-topline {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.labor-indicator-topline span {
+  flex: 0 0 auto;
+  color: var(--secondary);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.labor-indicator-value {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.labor-indicator-value strong {
+  color: var(--primary);
+  font-size: 2.05rem;
+  line-height: 1;
+}
+
+.labor-indicator-value span,
+.labor-indicator-note,
+.labor-source-list p {
+  color: var(--secondary);
+}
+
+.labor-indicator-note {
+  margin: 0;
+  font-size: 0.96rem;
+  line-height: 1.55;
+}
+
+.labor-indicator-source,
+.labor-data-contract dl {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.labor-indicator-source > div,
+.labor-data-contract dl > div {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 12px;
+  align-items: baseline;
+}
+
+.labor-indicator-source dd,
+.labor-data-contract dd {
+  margin: 0;
+  color: var(--content);
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+.labor-data-contract {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.8fr);
+  gap: 22px;
+  margin-top: 18px;
+  padding: 22px;
+}
+
+.labor-data-contract h2,
+.labor-source-list h2 {
+  margin: 0;
+  color: var(--primary);
+  font-size: 1.42rem;
+  line-height: 1.2;
+}
+
+.labor-data-contract p {
+  margin: 12px 0 0;
+  color: var(--secondary);
+  font-size: 0.98rem;
+  line-height: 1.58;
+}
+
+.labor-source-list {
+  margin-top: 18px;
+  padding: 20px 22px;
+}
+
+.labor-source-list p {
+  margin: 10px 0 0;
+  font-size: 0.94rem;
+  line-height: 1.55;
+}
+
+.labor-source-list ul {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.labor-source-list li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.labor-source-list span {
+  color: var(--secondary);
+  font-size: 0.88rem;
+}
+
 .post-entry {
   border: 1px solid var(--border);
   border-left: 5px solid var(--accent);
@@ -476,6 +673,33 @@ a:hover {
   .dispatch-heading span {
     display: block;
     margin-top: 6px;
+  }
+
+  .labor-stats-meta,
+  .labor-indicator-grid,
+  .labor-data-contract {
+    grid-template-columns: 1fr;
+  }
+
+  .labor-indicator-card,
+  .labor-data-contract,
+  .labor-source-list {
+    padding: 18px;
+  }
+
+  .labor-indicator-topline {
+    display: grid;
+    gap: 6px;
+  }
+
+  .labor-indicator-value strong {
+    font-size: 1.82rem;
+  }
+
+  .labor-indicator-source > div,
+  .labor-data-contract dl > div {
+    grid-template-columns: 1fr;
+    gap: 3px;
   }
 
   .post-entry {

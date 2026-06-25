@@ -1,0 +1,20 @@
+{{- $stats := site.Data.labor_stats -}}
+{{- $futureApi := $stats.future_api -}}
+{{- $payload := dict
+  "schema_version" "2026-06-25"
+  "endpoint" $futureApi.candidate_endpoint
+  "snapshot_as_of" $stats.as_of
+  "access" (dict
+    "tier" "public"
+    "payment_required" false
+    "payment_protocol" $futureApi.payment_protocol
+    "marketplace_candidate" $futureApi.candidate_marketplace
+    "premium_gating_status" "planned"
+  )
+  "contract" (dict
+    "stable_indicator_fields" (slice "id" "label" "value" "unit" "period" "frequency" "seasonality" "series_id" "source_name" "source_url" "release_url" "updated" "status" "interpretation")
+    "contract_note" $futureApi.contract_note
+  )
+  "data" $stats
+-}}
+{{- $payload | jsonify -}}

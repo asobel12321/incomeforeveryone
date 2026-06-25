@@ -2,7 +2,7 @@
   publish = "public"
   command = "hugo"
 
-[context.production.environment]
+[build.environment]
   HUGO_VERSION = "0.145.0"
 
 [functions."trigger-daily-labor-watch"]

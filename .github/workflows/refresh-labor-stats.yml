@@ -1,0 +1,54 @@
+name: Refresh labor stats
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "20 14 * * 1-5"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-labor-stats
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: "0.145.0"
+          extended: true
+
+      - name: Refresh labor stats
+        run: python scripts/refresh_labor_stats.py
+
+      - name: Build site
+        run: hugo
+
+      - name: Commit and push data
+        run: |
+          if [ -z "$(git status --porcelain -- data/labor_stats.json)" ]; then
+            echo "No labor stats changes to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/labor_stats.json
+          git commit -m "Refresh labor stats"
+          git push
