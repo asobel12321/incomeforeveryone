@@ -22,6 +22,7 @@ This branch starts the paid-access prep phase:
 - Merit/x402scan OpenAPI metadata source is kept under `docs/` and published as `/openapi.json` for deploy-preview discovery after x402 challenge behavior was confirmed.
 - Daily article and X posting workflows were intentionally left unchanged.
 - PR #3 is open, draft, mergeable, and has no review feedback as of the 2026-07-21 handoff reload.
+- PR #3 has since been merged into `main` and production is live.
 
 ## Files Changed
 
@@ -75,6 +76,7 @@ This branch starts the paid-access prep phase:
 - Confirmed deploy-preview discovery: origin discovery finds both routes with no warnings and the paid route check passes cleanly.
 - Cleaned up discovery warnings by adding a root `favicon.svg`, adding a no-trailing-slash `/api/labor-stats` OpenAPI path, and removing the trailing-slash duplicate after AgentCash normalized both forms to the same route.
 - Configured production-context Netlify x402 env values outside the repo: enabled flag, pay-to wallet, and PayAI facilitator URL. Verified only those three targeted variables.
+- Merged PR #3 into `main`; Netlify production published the merge commit and production discovery now passes.
 
 ## Things Learned
 
@@ -154,8 +156,15 @@ This branch starts the paid-access prep phase:
   - Final `npx.cmd -y @agentcash/discovery@latest check "https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/history"` passed cleanly.
   - Targeted Netlify env verification confirmed `X402_LABOR_STATS_ENABLED`, `X402_PAY_TO`, and `X402_FACILITATOR_URL` each have both deploy-preview and production context values.
   - PR #3 was marked ready for review. Current deploy preview for `c319b71` reported ready, and final AgentCash discovery/check commands passed cleanly on that latest preview.
+  - PR #3 merged with merge commit `f49580d52e9315db48f35e9ca3a1f6b2474372a4`.
+  - Netlify production deploy `6a5fbbea4caeff0009da166d` for `f49580d` reported ready and published.
+  - `curl.exe -i https://incomeforeveryone.org/openapi.json` returned `200 OK` with `application/json`.
+  - `curl.exe -i https://incomeforeveryone.org/api/labor-stats/` returned `200 OK` with the public labor stats JSON.
+  - `curl.exe -i https://incomeforeveryone.org/api/labor-stats/history` returned `402 Payment Required` with `PAYMENT-REQUIRED` and `WWW-Authenticate: x402`.
+  - `npx.cmd -y @agentcash/discovery@latest discover "https://incomeforeveryone.org"` passed with no warnings and found `/api/labor-stats` as `unprotected` plus `/api/labor-stats/history` as `paid 0.010000 USD [x402]`.
+  - `npx.cmd -y @agentcash/discovery@latest check "https://incomeforeveryone.org/api/labor-stats/history"` passed cleanly.
 
 ## Next Steps
 
-1. Mark PR #3 ready for review.
-2. After merge, probe production `/openapi.json`, `/api/labor-stats`, and `/api/labor-stats/history` before registering on x402scan/Merit.
+1. Register/list the production origin on x402scan/Merit.
+2. Optionally perform a real paid request with an x402-capable client/wallet to verify settlement end to end.

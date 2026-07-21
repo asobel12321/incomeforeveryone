@@ -255,3 +255,11 @@
   - Marked PR #3 ready for review.
   - Current Netlify deploy preview for `c319b71` reported ready.
   - Final AgentCash discovery and paid-route check commands passed cleanly on the latest preview.
+- Production launch:
+  - Merged PR #3 into `main` with merge commit `f49580d`.
+  - Netlify production deploy `6a5fbbea4caeff0009da166d` for `f49580d` reported ready and published.
+  - `curl.exe -i https://incomeforeveryone.org/openapi.json` returned `200 OK` with `application/json`.
+  - `curl.exe -i https://incomeforeveryone.org/api/labor-stats/` returned `200 OK` with the public labor stats JSON.
+  - `curl.exe -i https://incomeforeveryone.org/api/labor-stats/history` returned `402 Payment Required` with `PAYMENT-REQUIRED` and `WWW-Authenticate: x402`.
+  - `npx.cmd -y @agentcash/discovery@latest discover "https://incomeforeveryone.org"` passed with no warnings, listed `/api/labor-stats` as `unprotected`, and listed `/api/labor-stats/history` as `paid 0.010000 USD [x402]`.
+  - `npx.cmd -y @agentcash/discovery@latest check "https://incomeforeveryone.org/api/labor-stats/history"` passed cleanly.
