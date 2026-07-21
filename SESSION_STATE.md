@@ -65,6 +65,7 @@ This branch starts the paid-access prep phase:
 - Checked current Merit/x402scan discovery guidance on 2026-07-21 and ran baseline discovery tools against the preview. Current expected failures: `OPENAPI_NOT_FOUND` for origin discovery because `/openapi.json` is intentionally unpublished, and `L3_NOT_FOUND` for endpoint fallback because the paid route is disabled instead of emitting a production `402`.
 - Tightened `docs/labor-stats-x402-openapi-draft.json` with concrete nested component schemas for snapshot data, indicators, history windows, observations, deltas, sources, access metadata, release context, and direction status values.
 - Resolved Merit/x402scan runtime-header ambiguity by keeping the SDK-standard `PAYMENT-REQUIRED` header and adding `WWW-Authenticate: x402` to unpaid x402 `402` challenge responses.
+- Added optional facilitator auth-header env support: `X402_FACILITATOR_AUTH_HEADER_NAME` and `X402_FACILITATOR_AUTH_HEADER_VALUE` are passed through the x402 SDK `createAuthHeaders` hook for production facilitators that require API-key or bearer-token auth.
 
 ## Things Learned
 
@@ -123,6 +124,9 @@ This branch starts the paid-access prep phase:
   - `npm.cmd run check:functions` passed.
   - `npm.cmd run check:x402` passed without network-backed challenge enabled.
   - `CHECK_X402_TESTNET_CHALLENGE=true npm.cmd run check:x402` passed after network approval and verified both `PAYMENT-REQUIRED` and `WWW-Authenticate: x402` on configured challenge responses.
+  - After optional facilitator auth support, `npm.cmd run check:functions` passed.
+  - After optional facilitator auth support, `npm.cmd run check:x402` passed without network-backed challenge enabled.
+  - After optional facilitator auth support, `CHECK_X402_TESTNET_CHALLENGE=true npm.cmd run check:x402` passed after network approval with optional auth header env values set in the test path.
 
 ## Next Steps
 
@@ -131,5 +135,6 @@ This branch starts the paid-access prep phase:
    - `X402_PAY_TO`
    - `X402_FACILITATOR_URL`
    - optional overrides: `X402_NETWORK`, `X402_ASSET`, `X402_AMOUNT_ATOMIC`, `X402_ASSET_NAME`, `X402_ASSET_VERSION`
+   - optional facilitator auth if required: `X402_FACILITATOR_AUTH_HEADER_NAME`, `X402_FACILITATOR_AUTH_HEADER_VALUE`
 2. Run a production-facilitator 402 challenge test in a deploy preview.
 3. Publish final `/openapi.json` and run x402scan discovery checks only after runtime enforcement is confirmed.

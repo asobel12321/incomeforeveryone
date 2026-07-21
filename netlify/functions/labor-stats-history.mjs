@@ -27,6 +27,8 @@ function jsonResponse(status, body, headers = {}) {
 function x402Config() {
   const network = process.env.X402_NETWORK || BASE_MAINNET;
   const asset = process.env.X402_ASSET || (network === BASE_MAINNET ? BASE_USDC : "");
+  const facilitatorAuthHeaderName = process.env.X402_FACILITATOR_AUTH_HEADER_NAME;
+  const facilitatorAuthHeaderValue = process.env.X402_FACILITATOR_AUTH_HEADER_VALUE;
 
   return {
     enabled: process.env.X402_LABOR_STATS_ENABLED === "true",
@@ -35,13 +37,48 @@ function x402Config() {
     asset,
     amountAtomic: process.env.X402_AMOUNT_ATOMIC || DEFAULT_AMOUNT_ATOMIC,
     facilitatorUrl: process.env.X402_FACILITATOR_URL,
+    facilitatorAuthHeaderName,
+    facilitatorAuthHeaderValue,
   };
 }
 
 function missingConfig(config) {
   return Object.entries(config)
-    .filter(([key, value]) => key !== "enabled" && key !== "amountAtomic" && !value)
+    .filter(
+      ([key, value]) =>
+        ![
+          "enabled",
+          "amountAtomic",
+          "facilitatorAuthHeaderName",
+          "facilitatorAuthHeaderValue",
+        ].includes(key) && !value,
+    )
     .map(([key]) => key);
+}
+
+function facilitatorAuthConfigured(config) {
+  return Boolean(config.facilitatorAuthHeaderName && config.facilitatorAuthHeaderValue);
+}
+
+async function facilitatorAuthHeaders(config) {
+  if (!facilitatorAuthConfigured(config)) {
+    return {
+      verify: {},
+      settle: {},
+      supported: {},
+    };
+  }
+
+  const headers = {
+    [config.facilitatorAuthHeaderName]: config.facilitatorAuthHeaderValue,
+  };
+
+  return {
+    verify: headers,
+    settle: headers,
+    supported: headers,
+    bazaar: headers,
+  };
 }
 
 function devBypassEnabled() {
@@ -149,6 +186,7 @@ async function getPaymentServer(config) {
   cachedServerPromise = (async () => {
     const facilitatorClient = new HTTPFacilitatorClient({
       url: config.facilitatorUrl,
+      createAuthHeaders: () => facilitatorAuthHeaders(config),
     });
     const resourceServer = new x402ResourceServer(facilitatorClient).register(
       config.network,

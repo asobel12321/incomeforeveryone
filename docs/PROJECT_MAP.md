@@ -46,6 +46,7 @@ This is a Hugo site with Netlify deployment configuration.
 - The labor stats page and public `/api/labor-stats/` JSON route are static Hugo output today. The API response includes access metadata for a future x402-gated premium layer.
 - The candidate premium route `/api/labor-stats/history` is routed to a Netlify Function because x402 requires request-time `402 Payment Required` behavior and payment verification before fulfillment.
 - The premium route can return `data/labor_stats_history.json` only after x402 verification/settlement succeeds, or in explicit local/dev bypass mode. Production remains disabled until Netlify x402 environment configuration is set.
+- The premium route supports one optional facilitator auth header via Netlify env vars for production facilitators that require API-key or bearer-token auth.
 - Do not publish `docs/labor-stats-x402-openapi-draft.json` as `/openapi.json` or register it with x402scan/Merit until the runtime paid route performs real x402 verification/settlement.
 - `.github/workflows/refresh-labor-stats.yml` runs the labor stats refresh and commits the data file only when values change.
 - Do not commit credentials, access tokens, or local environment files.

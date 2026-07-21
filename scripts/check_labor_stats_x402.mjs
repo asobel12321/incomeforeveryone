@@ -49,6 +49,8 @@ async function checkDisabledPath() {
       X402_LABOR_STATS_ENABLED: undefined,
       X402_PAY_TO: undefined,
       X402_FACILITATOR_URL: undefined,
+      X402_FACILITATOR_AUTH_HEADER_NAME: undefined,
+      X402_FACILITATOR_AUTH_HEADER_VALUE: undefined,
     },
     async () => {
       const response = await handler(new Request(route));
@@ -113,6 +115,8 @@ async function checkConfiguredChallenge() {
       X402_FACILITATOR_URL: "https://x402.org/facilitator",
       X402_NETWORK: "eip155:84532",
       X402_ASSET: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+      X402_FACILITATOR_AUTH_HEADER_NAME: "X-Test-Facilitator-Auth",
+      X402_FACILITATOR_AUTH_HEADER_VALUE: "test-value",
       NETLIFY_DEV: undefined,
       X402_LABOR_STATS_DEV_BYPASS: undefined,
     },

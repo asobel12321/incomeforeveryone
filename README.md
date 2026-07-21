@@ -120,6 +120,7 @@ Agent-readable access:
 - `netlify/functions/labor-stats-history.mjs` uses the x402 SDK for request-time payment challenge, verification, and settlement. It stays disabled until Netlify x402 configuration is explicitly set.
 - Local/dev bypass: set `NETLIFY_DEV=true` or `X402_LABOR_STATS_DEV_BYPASS=true` outside production to return `data/labor_stats_history.json` without payment while testing the payload shape.
 - Production defaults target Base mainnet USDC: `X402_NETWORK=eip155:8453`, `X402_ASSET=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`, and `X402_AMOUNT_ATOMIC=10000` (`$0.01` USDC). Set `X402_PAY_TO`, `X402_FACILITATOR_URL`, and `X402_LABOR_STATS_ENABLED=true` in Netlify before launch.
+- If the chosen production facilitator requires an API key or bearer token, set `X402_FACILITATOR_AUTH_HEADER_NAME` and `X402_FACILITATOR_AUTH_HEADER_VALUE` in Netlify. Do not commit facilitator credentials to the repository.
 
 Paid-route checks:
 

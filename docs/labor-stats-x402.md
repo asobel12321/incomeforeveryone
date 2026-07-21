@@ -23,6 +23,7 @@ Optional production overrides:
 - `X402_AMOUNT_ATOMIC` defaults to `10000`, equal to `$0.01` for 6-decimal USDC.
 - `X402_ASSET_NAME` defaults to `USD Coin`.
 - `X402_ASSET_VERSION` defaults to `2`.
+- `X402_FACILITATOR_AUTH_HEADER_NAME` and `X402_FACILITATOR_AUTH_HEADER_VALUE` add one optional auth header to facilitator `supported`, `verify`, `settle`, and Bazaar requests. Use these only in Netlify environment settings if the chosen production facilitator requires API-key or bearer-token auth.
 
 Before production launch, confirm the facilitator supports the selected network and asset. Do not treat the public test facilitator as the production default.
 
@@ -67,6 +68,7 @@ Keep this route disabled until the receiving wallet and facilitator are intentio
    - `X402_PAY_TO`
    - `X402_FACILITATOR_URL`
    - Optional overrides: `X402_NETWORK`, `X402_ASSET`, `X402_AMOUNT_ATOMIC`, `X402_ASSET_NAME`, `X402_ASSET_VERSION`
+   - Optional facilitator auth: `X402_FACILITATOR_AUTH_HEADER_NAME`, `X402_FACILITATOR_AUTH_HEADER_VALUE`
 3. Trigger a fresh PR #3 deploy preview after the variables are present.
 4. Probe the preview route without payment credentials:
 

@@ -171,6 +171,7 @@
 - [x] Check current Merit/x402scan discovery guidance and run baseline discovery tools against the preview.
 - [ ] Choose `X402_PAY_TO`.
 - [ ] Choose `X402_FACILITATOR_URL` from Coinbase CDP x402, PayAI, or self-hosted facilitator.
+- [x] Add optional facilitator auth-header env support for production facilitator compatibility.
 - [ ] Configure Netlify deploy-preview env vars outside the repo.
 - [ ] Trigger a fresh deploy preview with production-like x402 config.
 - [ ] Confirm `/api/labor-stats/history` returns a real `402` challenge in preview.
@@ -204,3 +205,10 @@
   - `npm.cmd run check:functions` passed.
   - `npm.cmd run check:x402` passed without network-backed challenge enabled.
   - `CHECK_X402_TESTNET_CHALLENGE=true npm.cmd run check:x402` passed after network approval and verified both challenge headers.
+- Production facilitator compatibility:
+  - Added optional `X402_FACILITATOR_AUTH_HEADER_NAME` and `X402_FACILITATOR_AUTH_HEADER_VALUE` support.
+  - When set, the function passes the header to facilitator `supported`, `verify`, `settle`, and Bazaar calls through the x402 SDK `createAuthHeaders` hook.
+  - These values must live in Netlify environment variables, not repository files.
+  - `npm.cmd run check:functions` passed.
+  - `npm.cmd run check:x402` passed without network-backed challenge enabled.
+  - `CHECK_X402_TESTNET_CHALLENGE=true npm.cmd run check:x402` passed after network approval with optional auth header env values set in the test path.
