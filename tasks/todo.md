@@ -175,7 +175,7 @@
 - [ ] Trigger a fresh deploy preview with production-like x402 config.
 - [ ] Confirm `/api/labor-stats/history` returns a real `402` challenge in preview.
 - [x] Tighten draft OpenAPI request/response schemas before publishing `/openapi.json`.
-- [ ] Resolve the `WWW-Authenticate` versus `PAYMENT-REQUIRED` runtime-header expectation before registration.
+- [x] Resolve the `WWW-Authenticate` versus `PAYMENT-REQUIRED` runtime-header expectation before registration.
 
 ## Production Preview Readiness Results
 
@@ -198,3 +198,9 @@
   - Replaced loose nested `object` schemas with concrete schemas for snapshot data, indicators, history windows, observations, deltas, sources, access, release context, and status values.
   - `docs/labor-stats-x402-openapi-draft.json` parsed with `ConvertFrom-Json` and returned OpenAPI `3.1.0`.
   - Node schema presence check found 14 component schemas, including `LaborStatsSnapshot`, `LaborStatsHistory`, `HistoryIndicator`, `HistoryObservation`, and `LaborStatsDelta`.
+- Runtime challenge header compatibility:
+  - Unpaid x402 `402` challenge responses now preserve the SDK-standard `PAYMENT-REQUIRED` header and also include `WWW-Authenticate: x402`.
+  - `scripts/check_labor_stats_x402.mjs` now verifies both headers in configured challenge mode.
+  - `npm.cmd run check:functions` passed.
+  - `npm.cmd run check:x402` passed without network-backed challenge enabled.
+  - `CHECK_X402_TESTNET_CHALLENGE=true npm.cmd run check:x402` passed after network approval and verified both challenge headers.

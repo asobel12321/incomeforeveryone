@@ -64,6 +64,7 @@ This branch starts the paid-access prep phase:
 - Checked current x402 docs on 2026-07-21 and recorded production facilitator candidates: Coinbase CDP x402 (`https://api.cdp.coinbase.com/platform/v2/x402`), PayAI (`https://facilitator.payai.network`), or self-hosted. The default x402.org facilitator remains documented as testnet/development only.
 - Checked current Merit/x402scan discovery guidance on 2026-07-21 and ran baseline discovery tools against the preview. Current expected failures: `OPENAPI_NOT_FOUND` for origin discovery because `/openapi.json` is intentionally unpublished, and `L3_NOT_FOUND` for endpoint fallback because the paid route is disabled instead of emitting a production `402`.
 - Tightened `docs/labor-stats-x402-openapi-draft.json` with concrete nested component schemas for snapshot data, indicators, history windows, observations, deltas, sources, access metadata, release context, and direction status values.
+- Resolved Merit/x402scan runtime-header ambiguity by keeping the SDK-standard `PAYMENT-REQUIRED` header and adding `WWW-Authenticate: x402` to unpaid x402 `402` challenge responses.
 
 ## Things Learned
 
@@ -119,6 +120,9 @@ This branch starts the paid-access prep phase:
   - `npx.cmd -y @agentcash/discovery@latest check "https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/history"` returned `L3_NOT_FOUND`.
   - `docs/labor-stats-x402-openapi-draft.json` parsed with `ConvertFrom-Json` and returned OpenAPI `3.1.0`.
   - Node schema presence check found 14 component schemas, including `LaborStatsSnapshot`, `LaborStatsHistory`, `HistoryIndicator`, `HistoryObservation`, and `LaborStatsDelta`.
+  - `npm.cmd run check:functions` passed.
+  - `npm.cmd run check:x402` passed without network-backed challenge enabled.
+  - `CHECK_X402_TESTNET_CHALLENGE=true npm.cmd run check:x402` passed after network approval and verified both `PAYMENT-REQUIRED` and `WWW-Authenticate: x402` on configured challenge responses.
 
 ## Next Steps
 

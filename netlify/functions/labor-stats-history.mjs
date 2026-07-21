@@ -106,10 +106,15 @@ function responseFromInstructions(instructions) {
       : instructions.isHtml
         ? String(instructions.body)
         : JSON.stringify(instructions.body);
+  const headers = new Headers(instructions.headers);
+
+  if (instructions.status === 402 && headers.has("PAYMENT-REQUIRED") && !headers.has("WWW-Authenticate")) {
+    headers.set("WWW-Authenticate", "x402");
+  }
 
   return new Response(body, {
     status: instructions.status,
-    headers: instructions.headers,
+    headers,
   });
 }
 

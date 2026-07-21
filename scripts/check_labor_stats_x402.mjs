@@ -125,9 +125,13 @@ async function checkConfiguredChallenge() {
         }),
       );
       const paymentRequired = response.headers.get("PAYMENT-REQUIRED");
+      const wwwAuthenticate = response.headers.get("WWW-Authenticate");
 
       if (response.status !== 402) fail(`Configured x402 check returned ${response.status}, expected 402.`);
       if (!paymentRequired) fail("Configured x402 check did not return PAYMENT-REQUIRED.");
+      if (wwwAuthenticate !== "x402") {
+        fail(`Configured x402 check returned WWW-Authenticate ${wwwAuthenticate}, expected x402.`);
+      }
 
       const decoded = JSON.parse(Buffer.from(paymentRequired, "base64").toString("utf8"));
       const accept = decoded.accepts?.[0];

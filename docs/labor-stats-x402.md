@@ -111,7 +111,7 @@ Registration readiness checklist:
 - Tighten request/response schemas enough for agent invocation. Merit's current discovery tooling warns that endpoints without useful input/output schemas may be skipped or treated as non-invocable.
 - Ensure the paid operation declares `x-payment-info`, `responses.402`, and a JSON response schema.
 - Ensure probing `/api/labor-stats/history` reaches a real x402 `402` challenge before any body/query validation failure.
-- Re-check whether Merit/x402scan expects `WWW-Authenticate`, `PAYMENT-REQUIRED`, or both for the runtime challenge. Current x402 SDK checks pass with `PAYMENT-REQUIRED`; Merit's current quickstart mentions `WWW-Authenticate`.
+- Runtime challenge compatibility: unpaid x402 challenges keep the SDK-standard `PAYMENT-REQUIRED` header and also send `WWW-Authenticate: x402` for Merit/x402scan discovery compatibility.
 - Run discovery checks before registration:
   - `npx -y @agentcash/discovery@latest discover "https://incomeforeveryone.org"`
   - `npx -y @agentcash/discovery@latest check "https://incomeforeveryone.org/api/labor-stats/history"`
@@ -128,3 +128,4 @@ Current discovery-tool baseline against PR #3 deploy preview, before publishing 
 - x402 docs: the default x402.org facilitator is recommended for testing/development and supports Base Sepolia; production Base mainnet needs a production facilitator such as Coinbase CDP x402 or PayAI.
 - x402scan discovery docs: OpenAPI is the canonical discovery contract, paid operations need `x-payment-info`, and runtime 402 behavior is authoritative.
 - x402scan discovery docs: current tooling checks `/openapi.json`, requires `info.x-guidance`, recommends `info.contact.email`, expects paid operations to declare `x-payment-info` and `402`, and can skip endpoints without useful schemas.
+- x402scan quickstart: current guidance says unpaid runtime probes should expose a valid `WWW-Authenticate` challenge; the function adds `WWW-Authenticate: x402` alongside the x402 v2 `PAYMENT-REQUIRED` header.
