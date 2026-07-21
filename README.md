@@ -91,6 +91,30 @@ python scripts/post_daily_x_headline.py --date YYYY-MM-DD --dry-run
 
 You can run a real post manually from GitHub Actions by opening `Daily X headline post` and entering a date.
 
+## Labor Stats Section
+
+The `/labor-stats/` page displays a curated snapshot of public U.S. labor-market indicators. The page is backed by `data/labor_stats.json`, which keeps stable indicator IDs, units, periods, source URLs, and release metadata so the same structure can later support an agent-readable API endpoint.
+
+Current source policy:
+
+- Prefer BLS/FRED public series and official release pages.
+- Include release dates, series IDs, units, and source URLs for every indicator.
+- Treat the displayed values as revisable public data, not a permanent historical record.
+
+Refresh locally:
+
+```powershell
+python scripts/refresh_labor_stats.py
+hugo
+```
+
+The `.github/workflows/refresh-labor-stats.yml` workflow refreshes public FRED-backed series on weekday mornings and commits `data/labor_stats.json` only when values actually change. It does not require secrets.
+
+Agent-readable access:
+
+- `/api/labor-stats/` renders the same public data as JSON for agents and lightweight integrations.
+- The endpoint is public and ungated today. Its response includes access metadata reserved for a future x402-paid tier and Merit Systems listing.
+
 ## Quality Rules
 
 - Prefer primary reporting and official data: Reuters, AP, Bloomberg, BLS, company filings, government agencies, major newspapers, and credible research.

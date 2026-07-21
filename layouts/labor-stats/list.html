@@ -1,0 +1,103 @@
+{{- define "main" }}
+
+{{- $stats := site.Data.labor_stats -}}
+
+<section class="labor-stats-page" aria-labelledby="labor-stats-title">
+  <header class="page-header section-header labor-stats-hero">
+    {{- partial "breadcrumbs.html" . }}
+    <p class="section-kicker">Public data</p>
+    <h1 id="labor-stats-title">{{ .Title }}</h1>
+    {{- if .Description }}
+    <div class="post-description">
+      {{ .Description | markdownify }}
+    </div>
+    {{- end }}
+    {{- if .Content }}
+    <div class="labor-stats-intro">
+      {{ .Content }}
+    </div>
+    {{- end }}
+  </header>
+
+  <div class="labor-stats-meta" aria-label="Dataset status">
+    <div>
+      <span>Coverage</span>
+      <strong>{{ $stats.coverage }}</strong>
+    </div>
+    <div>
+      <span>Snapshot date</span>
+      <strong>{{ time.Format "January 2, 2006" $stats.as_of }}</strong>
+    </div>
+    <div>
+      <span>Next employment release</span>
+      <strong>{{ time.Format "January 2, 2006" $stats.release_context.next_employment_release }}</strong>
+    </div>
+  </div>
+
+  <section class="labor-indicator-grid" aria-label="Labor market indicators">
+    {{- range $stats.indicators }}
+    <article class="labor-indicator-card labor-status-{{ .status }}">
+      <div class="labor-indicator-topline">
+        <p>{{ .label }}</p>
+        <span>{{ .period }}</span>
+      </div>
+      <div class="labor-indicator-value">
+        <strong>{{ .value }}</strong>
+        <span>{{ .unit }}</span>
+      </div>
+      <p class="labor-indicator-note">{{ .interpretation }}</p>
+      <dl class="labor-indicator-source">
+        <div>
+          <dt>Series</dt>
+          <dd>{{ .series_id }}</dd>
+        </div>
+        <div>
+          <dt>Source</dt>
+          <dd><a href="{{ .source_url }}">{{ .source_name }}</a></dd>
+        </div>
+      </dl>
+    </article>
+    {{- end }}
+  </section>
+
+  <section class="labor-data-contract" aria-labelledby="labor-data-contract-title">
+    <div>
+      <p class="section-kicker">Agent-ready path</p>
+      <h2 id="labor-data-contract-title">Structured for a future paid endpoint</h2>
+      <p>
+        The public page is backed by stable IDs, units, periods, source URLs, and release metadata.
+        That same shape can become <code>{{ $stats.future_api.candidate_endpoint }}</code> before an x402-gated listing on {{ $stats.future_api.candidate_marketplace }}.
+      </p>
+    </div>
+    <dl>
+      <div>
+        <dt>Candidate endpoint</dt>
+        <dd><code>{{ $stats.future_api.candidate_endpoint }}</code></dd>
+      </div>
+      <div>
+        <dt>Payment protocol</dt>
+        <dd>{{ $stats.future_api.payment_protocol }}</dd>
+      </div>
+      <div>
+        <dt>Contract priority</dt>
+        <dd>{{ $stats.future_api.contract_note }}</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="labor-source-list" aria-labelledby="labor-sources-title">
+    <h2 id="labor-sources-title">Sources</h2>
+    <p>{{ $stats.release_context.note }}</p>
+    <ul>
+      {{- range $stats.sources }}
+      <li>
+        <a href="{{ .url }}">{{ .name }}</a>
+        {{- with .last_modified }} <span>Last modified {{ . }}</span>{{ end -}}
+        {{- with .last_checked }} <span>Checked {{ . }}</span>{{ end -}}
+      </li>
+      {{- end }}
+    </ul>
+  </section>
+</section>
+
+{{- end }}

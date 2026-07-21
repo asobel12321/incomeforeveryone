@@ -1,0 +1,132 @@
+{
+  "as_of": "2026-07-21",
+  "coverage": "United States",
+  "release_context": {
+    "label": "Latest monthly labor-market releases available as of July 21, 2026",
+    "next_employment_release": "2026-07-02",
+    "next_jolts_release": "2026-06-30",
+    "note": "Values are public, seasonally adjusted headline indicators from BLS series as displayed by FRED. Data may be revised."
+  },
+  "indicators": [
+    {
+      "id": "unemployment-rate",
+      "label": "Unemployment rate",
+      "value": "4.2",
+      "unit": "percent",
+      "period": "June 2026",
+      "frequency": "Monthly",
+      "seasonality": "Seasonally adjusted",
+      "series_id": "UNRATE",
+      "source_name": "U.S. Bureau of Labor Statistics via FRED",
+      "source_url": "https://fred.stlouisfed.org/series/UNRATE",
+      "release_url": "https://www.bls.gov/news.release/empsit.nr0.htm",
+      "updated": "2026-07-21",
+      "status": "down",
+      "interpretation": "Headline unemployment fell to 4.2, keeping the labor market tighter."
+    },
+    {
+      "id": "labor-force-participation",
+      "label": "Labor force participation",
+      "value": "61.5",
+      "unit": "percent",
+      "period": "June 2026",
+      "frequency": "Monthly",
+      "seasonality": "Seasonally adjusted",
+      "series_id": "CIVPART",
+      "source_name": "U.S. Bureau of Labor Statistics via FRED",
+      "source_url": "https://fred.stlouisfed.org/series/CIVPART",
+      "release_url": "https://www.bls.gov/news.release/empsit.nr0.htm",
+      "updated": "2026-07-21",
+      "status": "down",
+      "interpretation": "Participation fell to 61.5, tightening worker availability."
+    },
+    {
+      "id": "payroll-employment",
+      "label": "Total nonfarm payrolls",
+      "value": "158,984",
+      "unit": "thousand jobs",
+      "period": "June 2026",
+      "frequency": "Monthly",
+      "seasonality": "Seasonally adjusted",
+      "series_id": "PAYEMS",
+      "source_name": "U.S. Bureau of Labor Statistics via FRED",
+      "source_url": "https://fred.stlouisfed.org/series/PAYEMS",
+      "release_url": "https://www.bls.gov/news.release/empsit.nr0.htm",
+      "updated": "2026-07-21",
+      "status": "up",
+      "interpretation": "Payroll employment increased by 57 thousand to 158,984, a positive hiring signal."
+    },
+    {
+      "id": "job-openings",
+      "label": "Job openings",
+      "value": "7,594",
+      "unit": "thousand openings",
+      "period": "May 2026",
+      "frequency": "Monthly",
+      "seasonality": "Seasonally adjusted",
+      "series_id": "JTSJOL",
+      "source_name": "U.S. Bureau of Labor Statistics via FRED",
+      "source_url": "https://fred.stlouisfed.org/series/JTSJOL",
+      "release_url": "https://www.bls.gov/news.release/jolts.nr0.htm",
+      "updated": "2026-07-21",
+      "status": "up",
+      "interpretation": "Openings rose by 9 thousand to 7,594, a labor-demand signal to compare with hiring and quits."
+    },
+    {
+      "id": "u6-underemployment",
+      "label": "U-6 labor underutilization",
+      "value": "7.9",
+      "unit": "percent",
+      "period": "June 2026",
+      "frequency": "Monthly",
+      "seasonality": "Seasonally adjusted",
+      "series_id": "U6RATE",
+      "source_name": "U.S. Bureau of Labor Statistics via FRED",
+      "source_url": "https://fred.stlouisfed.org/series/U6RATE",
+      "release_url": "https://www.bls.gov/news.release/empsit.nr0.htm",
+      "updated": "2026-07-21",
+      "status": "down",
+      "interpretation": "Broader labor underutilization eased to 7.9, but still captures marginal attachment and involuntary part-time work."
+    },
+    {
+      "id": "production-wages",
+      "label": "Production and nonsupervisory hourly earnings",
+      "value": "$32.38",
+      "unit": "dollars per hour",
+      "period": "June 2026",
+      "frequency": "Monthly",
+      "seasonality": "Seasonally adjusted",
+      "series_id": "AHETPI",
+      "source_name": "U.S. Bureau of Labor Statistics via FRED",
+      "source_url": "https://fred.stlouisfed.org/series/AHETPI",
+      "release_url": "https://www.bls.gov/news.release/empsit.nr0.htm",
+      "updated": "2026-07-21",
+      "status": "up",
+      "interpretation": "Hourly pay for production and nonsupervisory workers rose to $32.38, a worker-pay gauge to read alongside inflation and hours."
+    }
+  ],
+  "sources": [
+    {
+      "name": "BLS Employment Situation",
+      "url": "https://www.bls.gov/news.release/empsit.nr0.htm",
+      "last_checked": "2026-07-21"
+    },
+    {
+      "name": "BLS Job Openings and Labor Turnover Survey",
+      "url": "https://www.bls.gov/news.release/jolts.nr0.htm",
+      "last_checked": "2026-07-21"
+    },
+    {
+      "name": "FRED labor-market series pages",
+      "url": "https://fred.stlouisfed.org/",
+      "last_checked": "2026-07-21"
+    }
+  ],
+  "future_api": {
+    "public_path": "/labor-stats/",
+    "candidate_endpoint": "/api/labor-stats",
+    "candidate_marketplace": "Merit Systems",
+    "payment_protocol": "x402",
+    "contract_note": "Keep ids, source fields, periods, units, and release metadata stable before exposing paid agent access."
+  }
+}
