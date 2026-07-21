@@ -177,6 +177,8 @@
 - [x] Confirm `/api/labor-stats/history` returns a real `402` challenge in preview.
 - [x] Tighten draft OpenAPI request/response schemas before publishing `/openapi.json`.
 - [x] Resolve the `WWW-Authenticate` versus `PAYMENT-REQUIRED` runtime-header expectation before registration.
+- [x] Publish `/openapi.json` for deploy-preview discovery checks.
+- [ ] Run Merit/x402scan discovery checks against the deploy preview with `/openapi.json` published.
 
 ## Production Preview Readiness Results
 
@@ -223,3 +225,6 @@
   - `curl.exe -i https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/` returned `200 OK`.
   - `curl.exe -i https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/history` returned `402 Payment Required` with `PAYMENT-REQUIRED`, `WWW-Authenticate: x402`, `Content-Type: application/json`, and `Cache-Control: no-cache`.
   - Decoded `PAYMENT-REQUIRED` challenge returned x402 version `2`, resource `https://incomeforeveryone.org/api/labor-stats/history`, network `eip155:8453`, amount `10000`, Base USDC asset `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`, pay-to `0x4664e3632fd9847ECEd3E5f410fB3D301DbdF54A`, and USD Coin version `2`.
+- OpenAPI publishing:
+  - Copied the reviewed draft contract to `static/openapi.json`.
+  - Added Netlify headers so `/openapi.json` is served as JSON with short public caching.

@@ -116,6 +116,7 @@ Agent-readable access:
 - `/api/labor-stats/` renders the same public data as JSON for agents and lightweight integrations.
 - The endpoint is public and ungated today. Its response includes access metadata reserved for a future x402-paid tier and Merit Systems/x402scan listing.
 - Paid-access prep lives in `data/labor_stats_access.json` and `docs/labor-stats-x402.md`.
+- `/openapi.json` publishes the agent discovery contract for the public snapshot and paid history route.
 - Candidate paid route: `/api/labor-stats/history`, intended for historical snapshots, revisions, deltas, and agent-oriented comparison metadata.
 - `netlify/functions/labor-stats-history.mjs` uses the x402 SDK for request-time payment challenge, verification, and settlement. It stays disabled until Netlify x402 configuration is explicitly set.
 - Local/dev bypass: set `NETLIFY_DEV=true` or `X402_LABOR_STATS_DEV_BYPASS=true` outside production to return `data/labor_stats_history.json` without payment while testing the payload shape.

@@ -13,7 +13,7 @@ This is a Hugo site with Netlify deployment configuration.
 - `data/labor_stats_access.json` - Public vs paid labor stats boundary, candidate pricing, x402 metadata, and listing prep fields.
 - `data/labor_stats_history.json` - Compact premium-candidate history payload generated from recent FRED observations.
 - `docs/labor-stats-x402.md` - x402 paid-access plan, runtime notes, pricing, and listing readiness checklist.
-- `docs/labor-stats-x402-openapi-draft.json` - Draft OpenAPI contract for the public snapshot and planned paid history endpoint. Keep it as a draft until runtime x402 enforcement is real.
+- `docs/labor-stats-x402-openapi-draft.json` - Source draft for the public snapshot and paid history OpenAPI contract.
 - `i18n/` - Localization files.
 - `layouts/` - Hugo templates and layout overrides.
 - `layouts/api/labor-stats.html` - Static JSON response template for `/api/labor-stats/`.
@@ -26,7 +26,8 @@ This is a Hugo site with Netlify deployment configuration.
 - `scripts/refresh_labor_stats.py` - Also refreshes `data/labor_stats_history.json` for the candidate paid history route.
 - `scripts/check_labor_stats_x402.mjs` - Verifies the paid labor stats function in disabled, dev-bypass, method rejection, and optional testnet challenge modes.
 - `static/` - Static files copied into the site output.
-- `static/_headers` - Netlify response headers, including JSON content type for the labor stats API route.
+- `static/_headers` - Netlify response headers, including JSON content type for the labor stats API routes and `/openapi.json`.
+- `static/openapi.json` - Published OpenAPI discovery contract copied from the reviewed labor stats x402 draft.
 - `themes/` - Hugo theme dependencies.
 
 ## Important Files
@@ -47,6 +48,6 @@ This is a Hugo site with Netlify deployment configuration.
 - The candidate premium route `/api/labor-stats/history` is routed to a Netlify Function because x402 requires request-time `402 Payment Required` behavior and payment verification before fulfillment.
 - The premium route can return `data/labor_stats_history.json` only after x402 verification/settlement succeeds, or in explicit local/dev bypass mode. Production remains disabled until Netlify x402 environment configuration is set.
 - The premium route supports one optional facilitator auth header via Netlify env vars for production facilitators that require API-key or bearer-token auth.
-- Do not publish `docs/labor-stats-x402-openapi-draft.json` as `/openapi.json` or register it with x402scan/Merit until the runtime paid route performs real x402 verification/settlement.
+- `/openapi.json` is published from the reviewed draft after deploy-preview x402 challenge behavior was confirmed. Do not register with x402scan/Merit or mark PR #3 ready until discovery checks pass and the production env/config plan is settled.
 - `.github/workflows/refresh-labor-stats.yml` runs the labor stats refresh and commits the data file only when values change.
 - Do not commit credentials, access tokens, or local environment files.

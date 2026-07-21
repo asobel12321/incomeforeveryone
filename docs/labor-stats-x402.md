@@ -80,7 +80,7 @@ curl.exe -i "$preview/api/labor-stats/history"
 Expected result: status `402` and a non-empty `PAYMENT-REQUIRED` header. If the route returns `503`, configuration is still missing. If it returns `200` without payment, stop and disable the route before continuing.
 
 5. Decode the `PAYMENT-REQUIRED` header and confirm the resource, network, asset, amount, and pay-to address match the chosen production values.
-6. Only after preview behavior is correct, publish the final OpenAPI contract at `/openapi.json` and run x402scan/Merit discovery checks.
+6. After preview behavior is correct, publish the final OpenAPI contract at `/openapi.json` and run x402scan/Merit discovery checks.
 
 ## History Payload
 
@@ -104,7 +104,7 @@ This price is intentionally low enough for agentic discovery and repeated calls,
 
 ## Listing Prep
 
-x402scan/Merit discovery guidance currently expects OpenAPI as the canonical contract, with `x-payment-info` on payable operations and runtime 402 behavior matching the metadata. Keep the draft OpenAPI in `docs/labor-stats-x402-openapi-draft.json` until the runtime route is fully enforcing payments.
+x402scan/Merit discovery guidance currently expects OpenAPI as the canonical contract, with `x-payment-info` on payable operations and runtime 402 behavior matching the metadata. The reviewed contract source lives in `docs/labor-stats-x402-openapi-draft.json` and is published to `static/openapi.json` for preview discovery after runtime x402 challenge behavior was confirmed.
 
 Registration readiness checklist:
 
@@ -118,10 +118,15 @@ Registration readiness checklist:
   - `npx -y @agentcash/discovery@latest discover "https://incomeforeveryone.org"`
   - `npx -y @agentcash/discovery@latest check "https://incomeforeveryone.org/api/labor-stats/history"`
 
-Current discovery-tool baseline against PR #3 deploy preview, before publishing `/openapi.json` and before setting production x402 env vars:
+Discovery-tool baseline against PR #3 deploy preview before publishing `/openapi.json` and before setting deploy-preview x402 env vars:
 
 - `npx.cmd -y @agentcash/discovery@latest discover "https://deploy-preview-3--incomeforeveryone.netlify.app"` returned `OPENAPI_NOT_FOUND`, as expected.
 - `npx.cmd -y @agentcash/discovery@latest check "https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/history"` returned `L3_NOT_FOUND`, as expected while the paid route is disabled instead of emitting a production `402`.
+
+Current preview state after setting deploy-preview x402 env vars:
+
+- `/api/labor-stats/history` returns a real `402 Payment Required` challenge with `PAYMENT-REQUIRED` and `WWW-Authenticate: x402`.
+- `/openapi.json` is now published for discovery checks on deploy previews.
 
 ## Sources Checked
 
