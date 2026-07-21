@@ -169,12 +169,12 @@
 - [x] Probe latest deploy preview and confirm current disabled-route behavior.
 - [x] Check current x402 docs for production facilitator candidates.
 - [x] Check current Merit/x402scan discovery guidance and run baseline discovery tools against the preview.
-- [ ] Choose `X402_PAY_TO`.
-- [ ] Choose `X402_FACILITATOR_URL` from Coinbase CDP x402, PayAI, or self-hosted facilitator.
+- [x] Choose `X402_PAY_TO`.
+- [x] Choose `X402_FACILITATOR_URL` from Coinbase CDP x402, PayAI, or self-hosted facilitator.
 - [x] Add optional facilitator auth-header env support for production facilitator compatibility.
 - [x] Configure Netlify deploy-preview env vars outside the repo.
-- [ ] Trigger a fresh deploy preview with production-like x402 config.
-- [ ] Confirm `/api/labor-stats/history` returns a real `402` challenge in preview.
+- [x] Trigger a fresh deploy preview with production-like x402 config.
+- [x] Confirm `/api/labor-stats/history` returns a real `402` challenge in preview.
 - [x] Tighten draft OpenAPI request/response schemas before publishing `/openapi.json`.
 - [x] Resolve the `WWW-Authenticate` versus `PAYMENT-REQUIRED` runtime-header expectation before registration.
 
@@ -215,5 +215,11 @@
 - Netlify deploy-preview configuration:
   - Linked the worktree to Netlify site `incomeforeveryone` (`af48d4d1-40e2-4aee-b0ef-f2af90a315b5`).
   - Added `.netlify/` to `.gitignore` so local CLI link state is not committed.
-  - Configured deploy-preview context values for `X402_LABOR_STATS_ENABLED=true`, `X402_PAY_TO`, and `X402_FACILITATOR_URL=https://facilitator.payai.network`.
+  - Configured deploy-preview context values for `X402_LABOR_STATS_ENABLED=true`, `X402_PAY_TO=0x4664e3632fd9847ECEd3E5f410fB3D301DbdF54A`, and `X402_FACILITATOR_URL=https://facilitator.payai.network`.
   - Attempting function-only scope returned `Forbidden` on the Netlify Free plan, so the deploy-preview values were created with default/all scopes. Production context remains unset.
+- Production-like x402 preview verification:
+  - Pushed commit `d23db88` to trigger an initial preview before env persistence was fixed; the route still returned `503 premium_route_not_configured`.
+  - Pushed commit `c4fa5d5` after Netlify deploy-preview env creation succeeded; Netlify reported deploy `6a5fb2d62791d800085e9cff` ready.
+  - `curl.exe -i https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/` returned `200 OK`.
+  - `curl.exe -i https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/history` returned `402 Payment Required` with `PAYMENT-REQUIRED`, `WWW-Authenticate: x402`, `Content-Type: application/json`, and `Cache-Control: no-cache`.
+  - Decoded `PAYMENT-REQUIRED` challenge returned x402 version `2`, resource `https://incomeforeveryone.org/api/labor-stats/history`, network `eip155:8453`, amount `10000`, Base USDC asset `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`, pay-to `0x4664e3632fd9847ECEd3E5f410fB3D301DbdF54A`, and USD Coin version `2`.

@@ -18,7 +18,7 @@ This branch starts the paid-access prep phase:
 
 - Public endpoint remains `/api/labor-stats/`.
 - Candidate paid endpoint is `/api/labor-stats/history`.
-- Current paid route is a disabled-by-default Netlify Function that uses the x402 SDK verification/settlement path and must not return production premium data until production x402 env vars are configured.
+- Current paid route is a disabled-by-default Netlify Function that uses the x402 SDK verification/settlement path and must not return production premium data until production x402 env vars are configured. Deploy-preview context is enabled for verification only.
 - Draft Merit/x402scan OpenAPI metadata is kept under `docs/`, not published as `/openapi.json` yet.
 - Daily article and X posting workflows were intentionally left unchanged.
 - PR #3 is open, draft, mergeable, and has no review feedback as of the 2026-07-21 handoff reload.
@@ -67,6 +67,7 @@ This branch starts the paid-access prep phase:
 - Resolved Merit/x402scan runtime-header ambiguity by keeping the SDK-standard `PAYMENT-REQUIRED` header and adding `WWW-Authenticate: x402` to unpaid x402 `402` challenge responses.
 - Added optional facilitator auth-header env support: `X402_FACILITATOR_AUTH_HEADER_NAME` and `X402_FACILITATOR_AUTH_HEADER_VALUE` are passed through the x402 SDK `createAuthHeaders` hook for production facilitators that require API-key or bearer-token auth.
 - Linked the worktree to Netlify site `incomeforeveryone` (`af48d4d1-40e2-4aee-b0ef-f2af90a315b5`) and configured deploy-preview x402 values outside the repo: enabled flag, provided pay-to wallet, and PayAI facilitator URL. Function-only scope was forbidden on the Netlify Free plan, so values were created for deploy-preview with default/all scopes; production context remains unset.
+- Triggered fresh deploy preview `6a5fb2d62791d800085e9cff` from commit `c4fa5d5` and confirmed production-like x402 runtime behavior: public snapshot stayed `200 OK`, while `/api/labor-stats/history` returned a real `402 Payment Required` challenge for Base mainnet USDC through PayAI.
 
 ## Things Learned
 
@@ -129,14 +130,19 @@ This branch starts the paid-access prep phase:
   - After optional facilitator auth support, `npm.cmd run check:x402` passed without network-backed challenge enabled.
   - After optional facilitator auth support, `CHECK_X402_TESTNET_CHALLENGE=true npm.cmd run check:x402` passed after network approval with optional auth header env values set in the test path.
   - Netlify deploy-preview env API creation returned the three expected x402 variables in deploy-preview context with default/all scopes.
+  - Netlify deploy preview for `c4fa5d5` reported ready at `https://deploy-preview-3--incomeforeveryone.netlify.app`.
+  - `curl.exe -i https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/` returned `200 OK`.
+  - `curl.exe -i https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/history` returned `402 Payment Required` with `PAYMENT-REQUIRED`, `WWW-Authenticate: x402`, `Content-Type: application/json`, and `Cache-Control: no-cache`.
+  - Decoded preview challenge returned x402 version `2`, resource `https://incomeforeveryone.org/api/labor-stats/history`, network `eip155:8453`, amount `10000`, Base USDC asset `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`, pay-to `0x4664e3632fd9847ECEd3E5f410fB3D301DbdF54A`, and USD Coin version `2`.
 
 ## Next Steps
 
-1. Configure production Netlify env vars:
+1. Decide whether to publish the draft OpenAPI contract as `/openapi.json` on this branch now that preview runtime x402 behavior is confirmed.
+2. Configure production Netlify env vars before merging/enabling production:
    - `X402_LABOR_STATS_ENABLED=true`
-   - `X402_PAY_TO`
-   - `X402_FACILITATOR_URL`
+   - `X402_PAY_TO=0x4664e3632fd9847ECEd3E5f410fB3D301DbdF54A`
+   - `X402_FACILITATOR_URL=https://facilitator.payai.network`
    - optional overrides: `X402_NETWORK`, `X402_ASSET`, `X402_AMOUNT_ATOMIC`, `X402_ASSET_NAME`, `X402_ASSET_VERSION`
    - optional facilitator auth if required: `X402_FACILITATOR_AUTH_HEADER_NAME`, `X402_FACILITATOR_AUTH_HEADER_VALUE`
-2. Run a production-facilitator 402 challenge test in a deploy preview.
-3. Publish final `/openapi.json` and run x402scan discovery checks only after runtime enforcement is confirmed.
+3. Run x402scan/Merit discovery checks after `/openapi.json` is published.
+4. Mark PR #3 ready for review only after the production env/config plan is settled.
