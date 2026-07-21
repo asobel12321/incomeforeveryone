@@ -73,6 +73,7 @@ This branch starts the paid-access prep phase:
 - Added Bazaar input/output schema metadata to the x402 challenge so AgentCash/Merit endpoint discovery can extract invocation schemas from `extensions.bazaar`.
 - Added OpenAPI `info.contact.url` and explicit `security: []` on the public snapshot route.
 - Confirmed deploy-preview discovery: origin discovery finds both routes and the paid route check passes cleanly; remaining origin warnings are limited to missing favicon and an info-level L3 note on the free public route.
+- Started discovery warning cleanup by adding a root `favicon.svg` and a no-trailing-slash `/api/labor-stats` OpenAPI alias.
 
 ## Things Learned
 

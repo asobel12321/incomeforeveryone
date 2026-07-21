@@ -27,6 +27,7 @@ This is a Hugo site with Netlify deployment configuration.
 - `scripts/check_labor_stats_x402.mjs` - Verifies the paid labor stats function in disabled, dev-bypass, method rejection, and optional testnet challenge modes.
 - `static/` - Static files copied into the site output.
 - `static/_headers` - Netlify response headers, including JSON content type for the labor stats API routes and `/openapi.json`.
+- `static/favicon.svg` - Root favicon used by discovery tooling and browsers.
 - `static/openapi.json` - Published OpenAPI discovery contract copied from the reviewed labor stats x402 draft.
 - `themes/` - Hugo theme dependencies.
 

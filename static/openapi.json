@@ -15,6 +15,28 @@
     }
   ],
   "paths": {
+    "/api/labor-stats": {
+      "get": {
+        "operationId": "getLaborStatsSnapshotAlias",
+        "summary": "Latest public labor-market snapshot",
+        "tags": [
+          "Labor Stats"
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Latest public labor stats snapshot.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LaborStatsSnapshot"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/labor-stats/": {
       "get": {
         "operationId": "getLaborStatsSnapshot",

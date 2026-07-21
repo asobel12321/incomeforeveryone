@@ -239,3 +239,6 @@
   - `npx.cmd -y @agentcash/discovery@latest discover "https://deploy-preview-3--incomeforeveryone.netlify.app"` found `/openapi.json`, listed two routes, classified `/api/labor-stats` as `unprotected`, and classified `/api/labor-stats/history` as `paid 0.010000 USD [x402]`.
   - Origin discovery still reports non-blocking warnings for missing favicon and an info-level `L3_NOT_FOUND` note on the free public route.
   - `npx.cmd -y @agentcash/discovery@latest check "https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/history"` passed cleanly for the paid route.
+- Discovery warning cleanup:
+  - Added a root `favicon.svg`.
+  - Added `/api/labor-stats` as an OpenAPI alias for discovery tools that normalize away the public route's trailing slash.
