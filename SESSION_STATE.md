@@ -72,8 +72,8 @@ This branch starts the paid-access prep phase:
 - Published the reviewed OpenAPI draft as `static/openapi.json` and added a JSON response header for `/openapi.json`.
 - Added Bazaar input/output schema metadata to the x402 challenge so AgentCash/Merit endpoint discovery can extract invocation schemas from `extensions.bazaar`.
 - Added OpenAPI `info.contact.url` and explicit `security: []` on the public snapshot route.
-- Confirmed deploy-preview discovery: origin discovery finds both routes and the paid route check passes cleanly; remaining origin warnings are limited to missing favicon and an info-level L3 note on the free public route.
-- Started discovery warning cleanup by adding a root `favicon.svg` and a no-trailing-slash `/api/labor-stats` OpenAPI alias.
+- Confirmed deploy-preview discovery: origin discovery finds both routes with no warnings and the paid route check passes cleanly.
+- Cleaned up discovery warnings by adding a root `favicon.svg`, adding a no-trailing-slash `/api/labor-stats` OpenAPI path, and removing the trailing-slash duplicate after AgentCash normalized both forms to the same route.
 
 ## Things Learned
 
@@ -146,16 +146,18 @@ This branch starts the paid-access prep phase:
   - `docs/labor-stats-x402-openapi-draft.json` and `static/openapi.json` parsed with `ConvertFrom-Json` after adding contact/auth metadata.
   - `hugo` passed with 81 pages, 14 paginator pages, 2 static files, and 3 aliases after publishing `/openapi.json`; tracked generated `public/` changes were restored.
   - Netlify deploy preview for `06f3e99` reported ready.
-  - `npx.cmd -y @agentcash/discovery@latest discover "https://deploy-preview-3--incomeforeveryone.netlify.app"` found `/openapi.json`, listed two routes, classified `/api/labor-stats` as `unprotected`, and classified `/api/labor-stats/history` as `paid 0.010000 USD [x402]`; remaining origin warnings were missing favicon and an info-level `L3_NOT_FOUND` note on the free public route.
+  - `npx.cmd -y @agentcash/discovery@latest discover "https://deploy-preview-3--incomeforeveryone.netlify.app"` initially found `/openapi.json`, listed two routes, classified `/api/labor-stats` as `unprotected`, and classified `/api/labor-stats/history` as `paid 0.010000 USD [x402]`; remaining origin warnings were missing favicon and an info-level `L3_NOT_FOUND` note on the free public route.
   - `npx.cmd -y @agentcash/discovery@latest check "https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/history"` passed cleanly for the paid route.
+  - After adding `static/favicon.svg` and normalizing the OpenAPI public route to `/api/labor-stats`, Netlify deploy preview for `6faa9fd` reported ready.
+  - Final `npx.cmd -y @agentcash/discovery@latest discover "https://deploy-preview-3--incomeforeveryone.netlify.app"` passed with no warnings, listed two routes, classified `/api/labor-stats` as `unprotected`, and classified `/api/labor-stats/history` as `paid 0.010000 USD [x402]`.
+  - Final `npx.cmd -y @agentcash/discovery@latest check "https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/history"` passed cleanly.
 
 ## Next Steps
 
-1. Decide whether the remaining origin-level favicon/free-route advisories should be cleaned up before registration, or leave them as non-blocking because the paid route check is clean.
-2. Configure production Netlify env vars before merging/enabling production:
+1. Configure production Netlify env vars before merging/enabling production:
    - `X402_LABOR_STATS_ENABLED=true`
    - `X402_PAY_TO=0x4664e3632fd9847ECEd3E5f410fB3D301DbdF54A`
    - `X402_FACILITATOR_URL=https://facilitator.payai.network`
    - optional overrides: `X402_NETWORK`, `X402_ASSET`, `X402_AMOUNT_ATOMIC`, `X402_ASSET_NAME`, `X402_ASSET_VERSION`
    - optional facilitator auth if required: `X402_FACILITATOR_AUTH_HEADER_NAME`, `X402_FACILITATOR_AUTH_HEADER_VALUE`
-3. Mark PR #3 ready for review only after discovery checks pass and the production env/config plan is settled.
+2. Mark PR #3 ready for review after production env/config is set or intentionally deferred.

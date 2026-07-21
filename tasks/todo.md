@@ -242,3 +242,7 @@
 - Discovery warning cleanup:
   - Added a root `favicon.svg`.
   - Added `/api/labor-stats` as an OpenAPI alias for discovery tools that normalize away the public route's trailing slash.
+  - Removed the trailing-slash duplicate from OpenAPI after discovery normalized both public paths to the same route.
+  - Netlify deploy preview for `6faa9fd` reported ready.
+  - Final `npx.cmd -y @agentcash/discovery@latest discover "https://deploy-preview-3--incomeforeveryone.netlify.app"` passed with no warnings, listed two routes, classified `/api/labor-stats` as `unprotected`, and classified `/api/labor-stats/history` as `paid 0.010000 USD [x402]`.
+  - Final `npx.cmd -y @agentcash/discovery@latest check "https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/history"` passed cleanly.
