@@ -178,7 +178,7 @@
 - [x] Tighten draft OpenAPI request/response schemas before publishing `/openapi.json`.
 - [x] Resolve the `WWW-Authenticate` versus `PAYMENT-REQUIRED` runtime-header expectation before registration.
 - [x] Publish `/openapi.json` for deploy-preview discovery checks.
-- [ ] Run Merit/x402scan discovery checks against the deploy preview with `/openapi.json` published.
+- [x] Run Merit/x402scan discovery checks against the deploy preview with `/openapi.json` published.
 
 ## Production Preview Readiness Results
 
@@ -228,3 +228,14 @@
 - OpenAPI publishing:
   - Copied the reviewed draft contract to `static/openapi.json`.
   - Added Netlify headers so `/openapi.json` is served as JSON with short public caching.
+  - Added `info.contact.url` and explicit `security: []` for the public snapshot operation to reduce discovery warnings.
+- Bazaar runtime schema discovery:
+  - Added `extensions.bazaar.schema.properties.input.properties.queryParams` and `extensions.bazaar.schema.properties.output.properties.example` to the live x402 challenge.
+  - `npm.cmd run check:functions` passed.
+  - `npm.cmd run check:x402` passed without network-backed challenge enabled.
+  - `CHECK_X402_TESTNET_CHALLENGE=true npm.cmd run check:x402` passed after network approval and verified the Bazaar schemas in the decoded challenge.
+- Final deploy-preview discovery:
+  - Netlify deploy preview for `06f3e99` reported ready.
+  - `npx.cmd -y @agentcash/discovery@latest discover "https://deploy-preview-3--incomeforeveryone.netlify.app"` found `/openapi.json`, listed two routes, classified `/api/labor-stats` as `unprotected`, and classified `/api/labor-stats/history` as `paid 0.010000 USD [x402]`.
+  - Origin discovery still reports non-blocking warnings for missing favicon and an info-level `L3_NOT_FOUND` note on the free public route.
+  - `npx.cmd -y @agentcash/discovery@latest check "https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/history"` passed cleanly for the paid route.

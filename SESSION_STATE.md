@@ -70,6 +70,9 @@ This branch starts the paid-access prep phase:
 - Linked the worktree to Netlify site `incomeforeveryone` (`af48d4d1-40e2-4aee-b0ef-f2af90a315b5`) and configured deploy-preview x402 values outside the repo: enabled flag, provided pay-to wallet, and PayAI facilitator URL. Function-only scope was forbidden on the Netlify Free plan, so values were created for deploy-preview with default/all scopes; production context remains unset.
 - Triggered fresh deploy preview `6a5fb2d62791d800085e9cff` from commit `c4fa5d5` and confirmed production-like x402 runtime behavior: public snapshot stayed `200 OK`, while `/api/labor-stats/history` returned a real `402 Payment Required` challenge for Base mainnet USDC through PayAI.
 - Published the reviewed OpenAPI draft as `static/openapi.json` and added a JSON response header for `/openapi.json`.
+- Added Bazaar input/output schema metadata to the x402 challenge so AgentCash/Merit endpoint discovery can extract invocation schemas from `extensions.bazaar`.
+- Added OpenAPI `info.contact.url` and explicit `security: []` on the public snapshot route.
+- Confirmed deploy-preview discovery: origin discovery finds both routes and the paid route check passes cleanly; remaining origin warnings are limited to missing favicon and an info-level L3 note on the free public route.
 
 ## Things Learned
 
@@ -136,10 +139,18 @@ This branch starts the paid-access prep phase:
   - `curl.exe -i https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/` returned `200 OK`.
   - `curl.exe -i https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/history` returned `402 Payment Required` with `PAYMENT-REQUIRED`, `WWW-Authenticate: x402`, `Content-Type: application/json`, and `Cache-Control: no-cache`.
   - Decoded preview challenge returned x402 version `2`, resource `https://incomeforeveryone.org/api/labor-stats/history`, network `eip155:8453`, amount `10000`, Base USDC asset `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`, pay-to `0x4664e3632fd9847ECEd3E5f410fB3D301DbdF54A`, and USD Coin version `2`.
+  - After adding Bazaar schemas, `npm.cmd run check:functions` passed.
+  - After adding Bazaar schemas, `npm.cmd run check:x402` passed without network-backed challenge enabled.
+  - After adding Bazaar schemas, `CHECK_X402_TESTNET_CHALLENGE=true npm.cmd run check:x402` passed after network approval and verified the Bazaar input/output schema fields in the decoded challenge.
+  - `docs/labor-stats-x402-openapi-draft.json` and `static/openapi.json` parsed with `ConvertFrom-Json` after adding contact/auth metadata.
+  - `hugo` passed with 81 pages, 14 paginator pages, 2 static files, and 3 aliases after publishing `/openapi.json`; tracked generated `public/` changes were restored.
+  - Netlify deploy preview for `06f3e99` reported ready.
+  - `npx.cmd -y @agentcash/discovery@latest discover "https://deploy-preview-3--incomeforeveryone.netlify.app"` found `/openapi.json`, listed two routes, classified `/api/labor-stats` as `unprotected`, and classified `/api/labor-stats/history` as `paid 0.010000 USD [x402]`; remaining origin warnings were missing favicon and an info-level `L3_NOT_FOUND` note on the free public route.
+  - `npx.cmd -y @agentcash/discovery@latest check "https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/history"` passed cleanly for the paid route.
 
 ## Next Steps
 
-1. Run Merit/x402scan discovery checks against the deploy preview after Netlify publishes `/openapi.json`.
+1. Decide whether the remaining origin-level favicon/free-route advisories should be cleaned up before registration, or leave them as non-blocking because the paid route check is clean.
 2. Configure production Netlify env vars before merging/enabling production:
    - `X402_LABOR_STATS_ENABLED=true`
    - `X402_PAY_TO=0x4664e3632fd9847ECEd3E5f410fB3D301DbdF54A`

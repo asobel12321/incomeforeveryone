@@ -127,6 +127,9 @@ Current preview state after setting deploy-preview x402 env vars:
 
 - `/api/labor-stats/history` returns a real `402 Payment Required` challenge with `PAYMENT-REQUIRED` and `WWW-Authenticate: x402`.
 - `/openapi.json` is now published for discovery checks on deploy previews.
+- The live x402 challenge includes Bazaar input/output schema metadata at `extensions.bazaar.schema.properties.input.properties.queryParams` and `extensions.bazaar.schema.properties.output.properties.example`.
+- `npx.cmd -y @agentcash/discovery@latest discover "https://deploy-preview-3--incomeforeveryone.netlify.app"` finds both routes and marks `/api/labor-stats/history` as `paid 0.010000 USD [x402]`. Remaining origin warnings are non-blocking: missing favicon and an info-level `L3_NOT_FOUND` note on the free public route.
+- `npx.cmd -y @agentcash/discovery@latest check "https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/history"` passes cleanly for the paid route.
 
 ## Sources Checked
 
