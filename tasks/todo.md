@@ -142,3 +142,21 @@
   - Configured testnet x402 challenge returned `402`, `PAYMENT-REQUIRED`, x402 version `2`, route `/api/labor-stats/history`, network `eip155:84532`, amount `10000`, Sepolia USDC asset, and the configured dummy pay-to address.
   - `hugo` passed with 81 pages, 14 paginator pages, 1 static file, and 3 aliases.
   - Tracked generated `public/` changes were restored after verification.
+
+## Repeatable Verification
+
+- [x] Add `scripts/check_labor_stats_x402.mjs` for repeatable paid-route behavior checks.
+- [x] Wire `npm.cmd run check:x402`.
+- [x] Document local and optional network-backed x402 challenge checks.
+- [x] Run full verification and commit follow-up.
+
+## Repeatable Verification Results
+
+- `npm.cmd run check:functions` passed.
+- `npm.cmd run check:x402` passed without network-backed challenge enabled.
+- `node --check scripts\check_labor_stats_x402.mjs` passed.
+- `CHECK_X402_TESTNET_CHALLENGE=true npm.cmd run check:x402` passed after network approval.
+- `python -m py_compile scripts\refresh_labor_stats.py` passed.
+- `python scripts\refresh_labor_stats.py --check` passed after FRED network approval and reported both labor stats data files are current.
+- `hugo` passed with 81 pages, 14 paginator pages, 1 static file, and 3 aliases.
+- Tracked generated `public/` changes were restored after verification.

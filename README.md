@@ -121,6 +121,19 @@ Agent-readable access:
 - Local/dev bypass: set `NETLIFY_DEV=true` or `X402_LABOR_STATS_DEV_BYPASS=true` outside production to return `data/labor_stats_history.json` without payment while testing the payload shape.
 - Production defaults target Base mainnet USDC: `X402_NETWORK=eip155:8453`, `X402_ASSET=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`, and `X402_AMOUNT_ATOMIC=10000` (`$0.01` USDC). Set `X402_PAY_TO`, `X402_FACILITATOR_URL`, and `X402_LABOR_STATS_ENABLED=true` in Netlify before launch.
 
+Paid-route checks:
+
+```powershell
+npm.cmd run check:functions
+npm.cmd run check:x402
+```
+
+The x402 check covers disabled mode, local/dev bypass, and method rejection without network access. To also verify a real testnet `PAYMENT-REQUIRED` challenge against the public x402 facilitator:
+
+```powershell
+$env:CHECK_X402_TESTNET_CHALLENGE='true'; npm.cmd run check:x402; Remove-Item Env:CHECK_X402_TESTNET_CHALLENGE
+```
+
 ## Quality Rules
 
 - Prefer primary reporting and official data: Reuters, AP, Bloomberg, BLS, company filings, government agencies, major newspapers, and credible research.

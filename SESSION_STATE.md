@@ -40,6 +40,7 @@ This branch starts the paid-access prep phase:
 - `.gitignore` - Ignores local `node_modules/`.
 - `package.json` / `package-lock.json` - Adds x402 SDK dependencies for the Netlify paid route.
 - `scripts/refresh_labor_stats.py` - Generates both the public snapshot and premium-candidate history payload.
+- `scripts/check_labor_stats_x402.mjs` - Repeatable paid-route checks for disabled, dev-bypass, method rejection, and optional testnet challenge paths.
 - `static/_headers` - Added no-store JSON headers for the candidate premium route.
 - `tasks/todo.md` - Added x402 prep checklist and results area.
 
@@ -54,6 +55,7 @@ This branch starts the paid-access prep phase:
 - Added local/dev-only premium function fulfillment from the generated history payload.
 - Replaced the manual paid-route placeholder with x402 SDK-backed challenge, verification, settlement, and `PAYMENT-RESPONSE` handling.
 - Added package metadata and pinned `@x402/core@2.19.0` / `@x402/evm@2.19.0`.
+- Added a repeatable x402 verification script and npm command so paid-route behavior is easy to recheck before future commits.
 
 ## Things Learned
 
@@ -94,6 +96,11 @@ This branch starts the paid-access prep phase:
 - Final `python scripts\refresh_labor_stats.py --check` passed after FRED network approval and reported both labor stats data files are current.
 - Final configured testnet x402 challenge returned `402`, `PAYMENT-REQUIRED`, x402 version `2`, route `/api/labor-stats/history`, network `eip155:84532`, amount `10000`, Sepolia USDC asset, and the configured dummy pay-to address.
 - Final `hugo` passed with 81 pages, 14 paginator pages, 1 static file, and 3 aliases.
+- Added repeatable check script verification:
+  - `npm.cmd run check:functions` passed.
+  - `npm.cmd run check:x402` passed without network-backed challenge enabled.
+  - `node --check scripts\check_labor_stats_x402.mjs` passed.
+  - `CHECK_X402_TESTNET_CHALLENGE=true npm.cmd run check:x402` passed after network approval.
 - Tracked generated `public/` changes were restored after verification.
 
 ## Next Steps

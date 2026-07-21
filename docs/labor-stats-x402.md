@@ -28,6 +28,25 @@ Before production launch, confirm the facilitator supports the selected network 
 
 For local payload testing only, the function returns `data/labor_stats_history.json` when `NETLIFY_DEV=true` or when `X402_LABOR_STATS_DEV_BYPASS=true` outside production. This bypass is intentionally marked in the JSON response and must not be used as production access control.
 
+## Verification
+
+Run the local function checks before changing paid-route behavior:
+
+```powershell
+npm.cmd run check:functions
+npm.cmd run check:x402
+```
+
+`npm.cmd run check:x402` verifies the disabled production-default response, local/dev bypass response, method rejection, and premium payload shape. It does not hit the network by default.
+
+To verify that configured x402 mode emits a real SDK challenge against the public testnet facilitator:
+
+```powershell
+$env:CHECK_X402_TESTNET_CHALLENGE='true'; npm.cmd run check:x402; Remove-Item Env:CHECK_X402_TESTNET_CHALLENGE
+```
+
+That test uses a dummy pay-to address and Base Sepolia USDC metadata. It proves challenge generation, not production settlement.
+
 ## History Payload
 
 `scripts/refresh_labor_stats.py` writes `data/labor_stats_history.json` alongside the public snapshot. The history payload currently includes:

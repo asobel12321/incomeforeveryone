@@ -24,6 +24,7 @@ This is a Hugo site with Netlify deployment configuration.
 - `scripts/` - Utility scripts.
 - `scripts/refresh_labor_stats.py` - Refreshes `data/labor_stats.json` from public FRED CSV feeds without requiring secrets.
 - `scripts/refresh_labor_stats.py` - Also refreshes `data/labor_stats_history.json` for the candidate paid history route.
+- `scripts/check_labor_stats_x402.mjs` - Verifies the paid labor stats function in disabled, dev-bypass, method rejection, and optional testnet challenge modes.
 - `static/` - Static files copied into the site output.
 - `static/_headers` - Netlify response headers, including JSON content type for the labor stats API route.
 - `themes/` - Hugo theme dependencies.
