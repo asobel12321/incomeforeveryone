@@ -153,6 +153,7 @@ This branch starts the paid-access prep phase:
   - Final `npx.cmd -y @agentcash/discovery@latest discover "https://deploy-preview-3--incomeforeveryone.netlify.app"` passed with no warnings, listed two routes, classified `/api/labor-stats` as `unprotected`, and classified `/api/labor-stats/history` as `paid 0.010000 USD [x402]`.
   - Final `npx.cmd -y @agentcash/discovery@latest check "https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/history"` passed cleanly.
   - Targeted Netlify env verification confirmed `X402_LABOR_STATS_ENABLED`, `X402_PAY_TO`, and `X402_FACILITATOR_URL` each have both deploy-preview and production context values.
+  - PR #3 was marked ready for review. Current deploy preview for `c319b71` reported ready, and final AgentCash discovery/check commands passed cleanly on that latest preview.
 
 ## Next Steps
 

@@ -251,3 +251,7 @@
   - Added production-context values for `X402_LABOR_STATS_ENABLED=true`, `X402_PAY_TO=0x4664e3632fd9847ECEd3E5f410fB3D301DbdF54A`, and `X402_FACILITATOR_URL=https://facilitator.payai.network`.
   - Verified those three targeted Netlify variables now have both deploy-preview and production values.
   - No `.env`, secret, credential, or production data files were touched.
+- PR readiness:
+  - Marked PR #3 ready for review.
+  - Current Netlify deploy preview for `c319b71` reported ready.
+  - Final AgentCash discovery and paid-route check commands passed cleanly on the latest preview.
