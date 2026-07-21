@@ -15,8 +15,8 @@
 1. Public section: `/labor-stats/` displays curated labor-market indicators from `data/labor_stats.json`.
 2. Automated refresh: `scripts/refresh_labor_stats.py` refreshes the data file from public FRED CSV feeds, and `.github/workflows/refresh-labor-stats.yml` runs it on weekday mornings/manual dispatch.
 3. Public agent-readable endpoint: `/api/labor-stats/` renders the same stable public snapshot as JSON.
-4. Current planned phase: add x402 paid-access prep for `/api/labor-stats/history`, including schema, pricing, disabled-by-default Netlify Function scaffold, and Merit Systems/x402scan listing metadata.
-5. Later phase: implement real x402 verification/settlement before publishing `/openapi.json` or registering the paid route.
+4. Current planned phase: production x402 configuration and deploy-preview verification for `/api/labor-stats/history`.
+5. Later phase: publish `/openapi.json` and register the paid route only after production-like x402 challenge behavior is confirmed.
 
 ## Testing Expectations
 

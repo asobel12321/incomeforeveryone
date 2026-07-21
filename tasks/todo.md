@@ -160,3 +160,13 @@
 - `python scripts\refresh_labor_stats.py --check` passed after FRED network approval and reported both labor stats data files are current.
 - `hugo` passed with 81 pages, 14 paginator pages, 1 static file, and 3 aliases.
 - Tracked generated `public/` changes were restored after verification.
+
+## Production Preview Readiness
+
+- [x] Re-check PR #3 status and comments after handoff.
+- [x] Add a production-preview runbook for Netlify x402 env setup and route probing.
+- [ ] Choose `X402_PAY_TO`.
+- [ ] Choose `X402_FACILITATOR_URL`.
+- [ ] Configure Netlify deploy-preview env vars outside the repo.
+- [ ] Trigger a fresh deploy preview with production-like x402 config.
+- [ ] Confirm `/api/labor-stats/history` returns a real `402` challenge in preview.

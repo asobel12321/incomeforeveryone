@@ -47,6 +47,34 @@ $env:CHECK_X402_TESTNET_CHALLENGE='true'; npm.cmd run check:x402; Remove-Item En
 
 That test uses a dummy pay-to address and Base Sepolia USDC metadata. It proves challenge generation, not production settlement.
 
+## Production Preview Runbook
+
+Keep this route disabled until the receiving wallet and facilitator are intentionally chosen. Configure values in Netlify, not in repository files.
+
+1. Choose the production payment values:
+   - `X402_PAY_TO`: receiving wallet address.
+   - `X402_FACILITATOR_URL`: production facilitator endpoint or self-facilitator endpoint.
+   - Confirm whether the defaults are acceptable: `X402_NETWORK=eip155:8453`, Base USDC asset `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`, and `X402_AMOUNT_ATOMIC=10000`.
+2. Add Netlify environment variables scoped to a deploy-preview or branch context first:
+   - `X402_LABOR_STATS_ENABLED=true`
+   - `X402_PAY_TO`
+   - `X402_FACILITATOR_URL`
+   - Optional overrides: `X402_NETWORK`, `X402_ASSET`, `X402_AMOUNT_ATOMIC`, `X402_ASSET_NAME`, `X402_ASSET_VERSION`
+3. Trigger a fresh PR #3 deploy preview after the variables are present.
+4. Probe the preview route without payment credentials:
+
+```powershell
+$preview = "https://deploy-preview-3--incomeforeveryone.netlify.app"
+$response = Invoke-WebRequest "$preview/api/labor-stats/history" -SkipHttpErrorCheck
+$response.StatusCode
+$response.Headers["PAYMENT-REQUIRED"]
+```
+
+Expected result: status `402` and a non-empty `PAYMENT-REQUIRED` header. If the route returns `503`, configuration is still missing. If it returns `200` without payment, stop and disable the route before continuing.
+
+5. Decode the `PAYMENT-REQUIRED` header and confirm the resource, network, asset, amount, and pay-to address match the chosen production values.
+6. Only after preview behavior is correct, publish the final OpenAPI contract at `/openapi.json` and run x402scan/Merit discovery checks.
+
 ## History Payload
 
 `scripts/refresh_labor_stats.py` writes `data/labor_stats_history.json` alongside the public snapshot. The history payload currently includes:
