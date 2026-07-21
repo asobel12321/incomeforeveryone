@@ -7,7 +7,7 @@
     "contact": {
       "url": "https://incomeforeveryone.org/about/"
     },
-    "x-guidance": "Use GET /api/labor-stats/ for the latest free public snapshot. Use GET /api/labor-stats/history only after x402 launch when you need historical snapshots, revisions, deltas, and agent-oriented comparison metadata."
+    "x-guidance": "Use GET /api/labor-stats for the latest free public snapshot. Use GET /api/labor-stats/history only after x402 launch when you need historical snapshots, revisions, deltas, and agent-oriented comparison metadata."
   },
   "servers": [
     {
@@ -18,28 +18,6 @@
     "/api/labor-stats": {
       "get": {
         "operationId": "getLaborStatsSnapshotAlias",
-        "summary": "Latest public labor-market snapshot",
-        "tags": [
-          "Labor Stats"
-        ],
-        "security": [],
-        "responses": {
-          "200": {
-            "description": "Latest public labor stats snapshot.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LaborStatsSnapshot"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/labor-stats/": {
-      "get": {
-        "operationId": "getLaborStatsSnapshot",
         "summary": "Latest public labor-market snapshot",
         "tags": [
           "Labor Stats"
