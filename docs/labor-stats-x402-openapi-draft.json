@@ -112,20 +112,21 @@
             "type": "string"
           },
           "endpoint": {
-            "type": "string"
+            "type": "string",
+            "const": "/api/labor-stats/"
           },
           "snapshot_as_of": {
             "type": "string",
             "format": "date"
           },
           "access": {
-            "type": "object"
+            "$ref": "#/components/schemas/LaborStatsAccess"
           },
           "contract": {
-            "type": "object"
+            "$ref": "#/components/schemas/LaborStatsContract"
           },
           "data": {
-            "type": "object"
+            "$ref": "#/components/schemas/LaborStatsSnapshotData"
           }
         }
       },
@@ -153,12 +154,12 @@
             "format": "date"
           },
           "history_window": {
-            "type": "object"
+            "$ref": "#/components/schemas/HistoryWindow"
           },
           "indicators": {
             "type": "array",
             "items": {
-              "type": "object"
+              "$ref": "#/components/schemas/HistoryIndicator"
             }
           },
           "revisions": {
@@ -170,19 +171,395 @@
           "deltas": {
             "type": "array",
             "items": {
-              "type": "object"
+              "$ref": "#/components/schemas/LaborStatsDelta"
             }
           },
           "sources": {
             "type": "array",
             "items": {
-              "type": "object"
+              "$ref": "#/components/schemas/LaborStatsSource"
             }
           },
           "access": {
+            "$ref": "#/components/schemas/HistoryAccess"
+          }
+        }
+      },
+      "LaborStatsSnapshotData": {
+        "type": "object",
+        "required": [
+          "as_of",
+          "coverage",
+          "release_context",
+          "indicators",
+          "sources"
+        ],
+        "properties": {
+          "as_of": {
+            "type": "string",
+            "format": "date"
+          },
+          "coverage": {
+            "type": "string"
+          },
+          "release_context": {
+            "$ref": "#/components/schemas/ReleaseContext"
+          },
+          "indicators": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SnapshotIndicator"
+            }
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LaborStatsSource"
+            }
+          },
+          "future_api": {
             "type": "object"
           }
         }
+      },
+      "SnapshotIndicator": {
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "value",
+          "unit",
+          "period",
+          "frequency",
+          "seasonality",
+          "series_id",
+          "source_name",
+          "source_url",
+          "release_url",
+          "updated",
+          "status",
+          "interpretation"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "period": {
+            "type": "string"
+          },
+          "frequency": {
+            "type": "string"
+          },
+          "seasonality": {
+            "type": "string"
+          },
+          "series_id": {
+            "type": "string"
+          },
+          "source_name": {
+            "type": "string"
+          },
+          "source_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "release_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "updated": {
+            "type": "string",
+            "format": "date"
+          },
+          "status": {
+            "$ref": "#/components/schemas/DirectionStatus"
+          },
+          "interpretation": {
+            "type": "string"
+          }
+        }
+      },
+      "HistoryIndicator": {
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "unit",
+          "frequency",
+          "seasonality",
+          "series_id",
+          "source_name",
+          "source_url",
+          "release_url",
+          "observations"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "frequency": {
+            "type": "string"
+          },
+          "seasonality": {
+            "type": "string"
+          },
+          "series_id": {
+            "type": "string"
+          },
+          "source_name": {
+            "type": "string"
+          },
+          "source_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "release_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "observations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HistoryObservation"
+            }
+          }
+        }
+      },
+      "HistoryObservation": {
+        "type": "object",
+        "required": [
+          "date",
+          "period",
+          "value",
+          "raw_value"
+        ],
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "period": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          },
+          "raw_value": {
+            "type": "string"
+          },
+          "month_over_month_change": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/DirectionStatus"
+          }
+        }
+      },
+      "LaborStatsDelta": {
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "current_period",
+          "previous_period",
+          "change",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "current_period": {
+            "type": "string"
+          },
+          "previous_period": {
+            "type": "string"
+          },
+          "change": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/DirectionStatus"
+          }
+        }
+      },
+      "HistoryWindow": {
+        "type": "object",
+        "required": [
+          "frequency",
+          "observation_count_per_indicator",
+          "start_date",
+          "end_date"
+        ],
+        "properties": {
+          "frequency": {
+            "type": "string"
+          },
+          "observation_count_per_indicator": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "LaborStatsSource": {
+        "type": "object",
+        "required": [
+          "name",
+          "url",
+          "last_checked"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "last_checked": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "ReleaseContext": {
+        "type": "object",
+        "required": [
+          "label",
+          "note"
+        ],
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "next_employment_release": {
+            "type": "string",
+            "format": "date"
+          },
+          "next_jolts_release": {
+            "type": "string",
+            "format": "date"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      },
+      "LaborStatsAccess": {
+        "type": "object",
+        "required": [
+          "tier",
+          "payment_required",
+          "payment_protocol",
+          "premium_candidate_endpoint",
+          "premium_gating_status"
+        ],
+        "properties": {
+          "tier": {
+            "type": "string"
+          },
+          "payment_required": {
+            "type": "boolean"
+          },
+          "payment_protocol": {
+            "type": "string"
+          },
+          "marketplace_candidate": {
+            "type": "string"
+          },
+          "premium_candidate_endpoint": {
+            "type": "string"
+          },
+          "premium_candidate_price": {
+            "type": "string"
+          },
+          "premium_gating_status": {
+            "type": "string"
+          }
+        }
+      },
+      "HistoryAccess": {
+        "type": "object",
+        "required": [
+          "tier",
+          "payment_required",
+          "payment_protocol",
+          "public_fallback"
+        ],
+        "properties": {
+          "tier": {
+            "type": "string",
+            "const": "premium"
+          },
+          "payment_required": {
+            "type": "boolean",
+            "const": true
+          },
+          "payment_protocol": {
+            "type": "string",
+            "const": "x402"
+          },
+          "public_fallback": {
+            "type": "string"
+          },
+          "payment_verified": {
+            "type": "boolean"
+          },
+          "dev_bypass": {
+            "type": "boolean"
+          },
+          "warning": {
+            "type": "string"
+          }
+        }
+      },
+      "LaborStatsContract": {
+        "type": "object",
+        "properties": {
+          "contract_note": {
+            "type": "string"
+          },
+          "stable_indicator_fields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "DirectionStatus": {
+        "type": "string",
+        "enum": [
+          "up",
+          "down",
+          "steady"
+        ]
       }
     }
   }

@@ -174,7 +174,8 @@
 - [ ] Configure Netlify deploy-preview env vars outside the repo.
 - [ ] Trigger a fresh deploy preview with production-like x402 config.
 - [ ] Confirm `/api/labor-stats/history` returns a real `402` challenge in preview.
-- [ ] Before publishing `/openapi.json`, tighten OpenAPI request/response schemas and resolve the `WWW-Authenticate` versus `PAYMENT-REQUIRED` runtime-header expectation.
+- [x] Tighten draft OpenAPI request/response schemas before publishing `/openapi.json`.
+- [ ] Resolve the `WWW-Authenticate` versus `PAYMENT-REQUIRED` runtime-header expectation before registration.
 
 ## Production Preview Readiness Results
 
@@ -193,3 +194,7 @@
   - Current quickstart mentions a valid `WWW-Authenticate` challenge, while the x402 SDK path currently tested here emits `PAYMENT-REQUIRED`; resolve this before registration.
   - `npx.cmd -y @agentcash/discovery@latest discover "https://deploy-preview-3--incomeforeveryone.netlify.app"` returned `OPENAPI_NOT_FOUND`, expected because `/openapi.json` is intentionally unpublished.
   - `npx.cmd -y @agentcash/discovery@latest check "https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/history"` returned `L3_NOT_FOUND`, expected while the paid route is disabled instead of returning production `402`.
+- Draft OpenAPI schema tightening:
+  - Replaced loose nested `object` schemas with concrete schemas for snapshot data, indicators, history windows, observations, deltas, sources, access, release context, and status values.
+  - `docs/labor-stats-x402-openapi-draft.json` parsed with `ConvertFrom-Json` and returned OpenAPI `3.1.0`.
+  - Node schema presence check found 14 component schemas, including `LaborStatsSnapshot`, `LaborStatsHistory`, `HistoryIndicator`, `HistoryObservation`, and `LaborStatsDelta`.

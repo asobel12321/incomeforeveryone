@@ -63,6 +63,7 @@ This branch starts the paid-access prep phase:
 - Probed the latest preview: public `/api/labor-stats/` returned `200 OK`; paid `/api/labor-stats/history` returned `503 premium_route_not_configured` because production x402 env vars are still unset.
 - Checked current x402 docs on 2026-07-21 and recorded production facilitator candidates: Coinbase CDP x402 (`https://api.cdp.coinbase.com/platform/v2/x402`), PayAI (`https://facilitator.payai.network`), or self-hosted. The default x402.org facilitator remains documented as testnet/development only.
 - Checked current Merit/x402scan discovery guidance on 2026-07-21 and ran baseline discovery tools against the preview. Current expected failures: `OPENAPI_NOT_FOUND` for origin discovery because `/openapi.json` is intentionally unpublished, and `L3_NOT_FOUND` for endpoint fallback because the paid route is disabled instead of emitting a production `402`.
+- Tightened `docs/labor-stats-x402-openapi-draft.json` with concrete nested component schemas for snapshot data, indicators, history windows, observations, deltas, sources, access metadata, release context, and direction status values.
 
 ## Things Learned
 
@@ -116,6 +117,8 @@ This branch starts the paid-access prep phase:
   - `curl.exe -i https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/history` returned `503 Service Unavailable`, `premium_route_not_configured`, and `missing_configuration:["enabled"]`.
   - `npx.cmd -y @agentcash/discovery@latest discover "https://deploy-preview-3--incomeforeveryone.netlify.app"` returned `OPENAPI_NOT_FOUND`.
   - `npx.cmd -y @agentcash/discovery@latest check "https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/history"` returned `L3_NOT_FOUND`.
+  - `docs/labor-stats-x402-openapi-draft.json` parsed with `ConvertFrom-Json` and returned OpenAPI `3.1.0`.
+  - Node schema presence check found 14 component schemas, including `LaborStatsSnapshot`, `LaborStatsHistory`, `HistoryIndicator`, `HistoryObservation`, and `LaborStatsDelta`.
 
 ## Next Steps
 
