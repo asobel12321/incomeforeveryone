@@ -263,3 +263,8 @@
   - `curl.exe -i https://incomeforeveryone.org/api/labor-stats/history` returned `402 Payment Required` with `PAYMENT-REQUIRED` and `WWW-Authenticate: x402`.
   - `npx.cmd -y @agentcash/discovery@latest discover "https://incomeforeveryone.org"` passed with no warnings, listed `/api/labor-stats` as `unprotected`, and listed `/api/labor-stats/history` as `paid 0.010000 USD [x402]`.
   - `npx.cmd -y @agentcash/discovery@latest check "https://incomeforeveryone.org/api/labor-stats/history"` passed cleanly.
+- x402scan/Merit registration:
+  - `npx.cmd -y agentcash register "https://incomeforeveryone.org" --yes` succeeded for x402scan.
+  - Registration result: `registered=1`, `failed=0`, `skipped=0`, `deprecated=0`, `total=2`, `source=openapi`.
+  - The same command reported `mppscan.success=false` with `No done message in mppscan response`; this is non-blocking because the service is x402-only.
+  - `npx.cmd -y agentcash discover "https://incomeforeveryone.org" --format json` returned `success=true`, found the origin from OpenAPI, and listed the public unprotected route plus the paid x402 history route.

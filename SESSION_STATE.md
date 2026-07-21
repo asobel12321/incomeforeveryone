@@ -77,6 +77,7 @@ This branch starts the paid-access prep phase:
 - Cleaned up discovery warnings by adding a root `favicon.svg`, adding a no-trailing-slash `/api/labor-stats` OpenAPI path, and removing the trailing-slash duplicate after AgentCash normalized both forms to the same route.
 - Configured production-context Netlify x402 env values outside the repo: enabled flag, pay-to wallet, and PayAI facilitator URL. Verified only those three targeted variables.
 - Merged PR #3 into `main`; Netlify production published the merge commit and production discovery now passes.
+- Registered the production origin on x402scan/Merit through AgentCash; x402scan registered one paid resource with no failures.
 
 ## Things Learned
 
@@ -163,8 +164,9 @@ This branch starts the paid-access prep phase:
   - `curl.exe -i https://incomeforeveryone.org/api/labor-stats/history` returned `402 Payment Required` with `PAYMENT-REQUIRED` and `WWW-Authenticate: x402`.
   - `npx.cmd -y @agentcash/discovery@latest discover "https://incomeforeveryone.org"` passed with no warnings and found `/api/labor-stats` as `unprotected` plus `/api/labor-stats/history` as `paid 0.010000 USD [x402]`.
   - `npx.cmd -y @agentcash/discovery@latest check "https://incomeforeveryone.org/api/labor-stats/history"` passed cleanly.
+  - `npx.cmd -y agentcash register "https://incomeforeveryone.org" --yes` succeeded for x402scan with `registered=1`, `failed=0`, `skipped=0`, `deprecated=0`, `total=2`, and `source=openapi`. The command also attempted MPPScan and reported `No done message in mppscan response`, which is non-blocking for this x402-only service.
+  - `npx.cmd -y agentcash discover "https://incomeforeveryone.org" --format json` returned `success=true`, found the OpenAPI origin, and listed the public unprotected route plus the paid x402 history route.
 
 ## Next Steps
 
-1. Register/list the production origin on x402scan/Merit.
-2. Optionally perform a real paid request with an x402-capable client/wallet to verify settlement end to end.
+1. Optionally perform a real paid request with an x402-capable client/wallet to verify settlement end to end.
