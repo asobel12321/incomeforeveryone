@@ -173,6 +173,7 @@
 - [x] Choose `X402_FACILITATOR_URL` from Coinbase CDP x402, PayAI, or self-hosted facilitator.
 - [x] Add optional facilitator auth-header env support for production facilitator compatibility.
 - [x] Configure Netlify deploy-preview env vars outside the repo.
+- [x] Configure Netlify production x402 env vars outside the repo.
 - [x] Trigger a fresh deploy preview with production-like x402 config.
 - [x] Confirm `/api/labor-stats/history` returns a real `402` challenge in preview.
 - [x] Tighten draft OpenAPI request/response schemas before publishing `/openapi.json`.
@@ -246,3 +247,7 @@
   - Netlify deploy preview for `6faa9fd` reported ready.
   - Final `npx.cmd -y @agentcash/discovery@latest discover "https://deploy-preview-3--incomeforeveryone.netlify.app"` passed with no warnings, listed two routes, classified `/api/labor-stats` as `unprotected`, and classified `/api/labor-stats/history` as `paid 0.010000 USD [x402]`.
   - Final `npx.cmd -y @agentcash/discovery@latest check "https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/history"` passed cleanly.
+- Production Netlify configuration:
+  - Added production-context values for `X402_LABOR_STATS_ENABLED=true`, `X402_PAY_TO=0x4664e3632fd9847ECEd3E5f410fB3D301DbdF54A`, and `X402_FACILITATOR_URL=https://facilitator.payai.network`.
+  - Verified those three targeted Netlify variables now have both deploy-preview and production values.
+  - No `.env`, secret, credential, or production data files were touched.

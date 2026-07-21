@@ -131,6 +131,8 @@ Current preview state after setting deploy-preview x402 env vars:
 - `npx.cmd -y @agentcash/discovery@latest discover "https://deploy-preview-3--incomeforeveryone.netlify.app"` passes with no warnings, finds `/api/labor-stats` as `unprotected`, and marks `/api/labor-stats/history` as `paid 0.010000 USD [x402]`.
 - `npx.cmd -y @agentcash/discovery@latest check "https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/history"` passes cleanly for the paid route.
 
+Production Netlify env values are configured for the same PayAI/Base/USDC setup and were verified by targeted reads of only the three x402 keys. Optional network/asset/amount env vars remain unset, so the function uses the documented Base mainnet USDC defaults.
+
 ## Sources Checked
 
 - x402 docs: server responds with `402 Payment Required`, clients retry with `PAYMENT-SIGNATURE`, and servers verify/settle before returning the resource.

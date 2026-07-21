@@ -74,6 +74,7 @@ This branch starts the paid-access prep phase:
 - Added OpenAPI `info.contact.url` and explicit `security: []` on the public snapshot route.
 - Confirmed deploy-preview discovery: origin discovery finds both routes with no warnings and the paid route check passes cleanly.
 - Cleaned up discovery warnings by adding a root `favicon.svg`, adding a no-trailing-slash `/api/labor-stats` OpenAPI path, and removing the trailing-slash duplicate after AgentCash normalized both forms to the same route.
+- Configured production-context Netlify x402 env values outside the repo: enabled flag, pay-to wallet, and PayAI facilitator URL. Verified only those three targeted variables.
 
 ## Things Learned
 
@@ -151,13 +152,9 @@ This branch starts the paid-access prep phase:
   - After adding `static/favicon.svg` and normalizing the OpenAPI public route to `/api/labor-stats`, Netlify deploy preview for `6faa9fd` reported ready.
   - Final `npx.cmd -y @agentcash/discovery@latest discover "https://deploy-preview-3--incomeforeveryone.netlify.app"` passed with no warnings, listed two routes, classified `/api/labor-stats` as `unprotected`, and classified `/api/labor-stats/history` as `paid 0.010000 USD [x402]`.
   - Final `npx.cmd -y @agentcash/discovery@latest check "https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/history"` passed cleanly.
+  - Targeted Netlify env verification confirmed `X402_LABOR_STATS_ENABLED`, `X402_PAY_TO`, and `X402_FACILITATOR_URL` each have both deploy-preview and production context values.
 
 ## Next Steps
 
-1. Configure production Netlify env vars before merging/enabling production:
-   - `X402_LABOR_STATS_ENABLED=true`
-   - `X402_PAY_TO=0x4664e3632fd9847ECEd3E5f410fB3D301DbdF54A`
-   - `X402_FACILITATOR_URL=https://facilitator.payai.network`
-   - optional overrides: `X402_NETWORK`, `X402_ASSET`, `X402_AMOUNT_ATOMIC`, `X402_ASSET_NAME`, `X402_ASSET_VERSION`
-   - optional facilitator auth if required: `X402_FACILITATOR_AUTH_HEADER_NAME`, `X402_FACILITATOR_AUTH_HEADER_VALUE`
-2. Mark PR #3 ready for review after production env/config is set or intentionally deferred.
+1. Mark PR #3 ready for review.
+2. After merge, probe production `/openapi.json`, `/api/labor-stats`, and `/api/labor-stats/history` before registering on x402scan/Merit.
