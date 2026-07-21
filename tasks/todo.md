@@ -40,6 +40,7 @@
 
 - Added `scripts/refresh_labor_stats.py` to refresh `data/labor_stats.json` from public FRED CSV feeds.
 - Added `.github/workflows/refresh-labor-stats.yml`, which runs on weekday mornings and on manual dispatch, builds Hugo, and commits `data/labor_stats.json` only when it changes.
+- Hardened the workflow push path with `git pull --rebase origin main` after committing data changes, so it can coexist with nearby daily article and X marker pushes.
 - The refresher preserves existing `as_of`, `updated`, and interpretation text when values are unchanged to avoid daily noise commits.
 - The refresher now regenerates the release-context label from `as_of`, so refreshed data cannot keep stale date text.
 - Verification run:
@@ -47,6 +48,7 @@
   - `python scripts\refresh_labor_stats.py` fetched public FRED data and refreshed `data/labor_stats.json`.
   - `python scripts\refresh_labor_stats.py --check` reported the file is current.
   - `hugo` succeeded with 81 pages, 14 paginator pages, 1 static file, and 3 aliases after rebasing onto current `origin/main`.
+  - Manual `Refresh labor stats` GitHub Actions dispatch passed on `main` after merge and reported no labor stats changes to commit.
 - Implementation note: FRED requests timed out when a custom user-agent was used from this environment, so the script uses plain `urllib.request.urlopen` against reduced recent-window CSV URLs.
 
 ## Endpoint Review / Results
