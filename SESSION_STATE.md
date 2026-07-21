@@ -49,6 +49,7 @@ Go to C:\Users\asobe\Projects\Worktrees\incomeforeveryone-labor-stats and contin
 - Added a GitHub Actions workflow that runs on weekday mornings and manual dispatch, builds Hugo, and commits `data/labor_stats.json` only when it changes.
 - Added `/api/labor-stats/` as a public JSON route generated from the same stable data file, with access metadata reserved for later x402 gating.
 - Moved Netlify's `HUGO_VERSION` pin from production-only to the global build environment after the PR deploy preview reported an error.
+- Hardened the labor-stats workflow push path so it rebases its data commit over current `origin/main` before pushing, reducing schedule overlap risk with daily article and X marker commits.
 - Documented the workflow in `README.md`, `docs/PROJECT_MAP.md`, and `tasks/todo.md`.
 
 ## Things Tried
@@ -59,6 +60,7 @@ Go to C:\Users\asobe\Projects\Worktrees\incomeforeveryone-labor-stats and contin
 - Switched the refresher to recent-window CSV URLs with plain `urllib.request.urlopen`, which resolved the network issue.
 - Rebasing required elevated local Git access because worktree metadata lives under the main checkout's `.git/worktrees` directory.
 - Refreshed `data/labor_stats.json` on July 21, 2026 after `--check` showed June 25 data was stale.
+- Confirmed the original daily article workflow and X headline workflow are separate from the labor-stats workflow; they are not modified by this feature.
 - Restored tracked generated `public/` changes after local Hugo builds to keep the source diff clean.
 
 ## Things Learned
@@ -73,6 +75,7 @@ Go to C:\Users\asobe\Projects\Worktrees\incomeforeveryone-labor-stats and contin
 
 - The GitHub workflow has not been run in GitHub Actions yet; it has only been locally modeled by running the script and Hugo build.
 - Netlify deploy preview initially failed without public build-log access from this environment; the branch now globally pins `HUGO_VERSION = "0.145.0"` to match local/GitHub builds.
+- Manual dispatch of `.github/workflows/refresh-labor-stats.yml` passed on `main` after merge and no-opped because `data/labor_stats.json` was already current.
 - The `/api/labor-stats/` endpoint is public and ungated. The x402 payment layer is not implemented yet.
 - `public/labor-stats/index.html` is generated locally by `hugo` but remains ignored by Git because `public/` is ignored.
 
