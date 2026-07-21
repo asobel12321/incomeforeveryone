@@ -59,6 +59,8 @@ This branch starts the paid-access prep phase:
 - Added a repeatable x402 verification script and npm command so paid-route behavior is easy to recheck before future commits.
 - Re-read handoff context, confirmed the local worktree was clean, and verified PR #3 is still draft/mergeable with only Netlify and prior verification comments.
 - Added a production-preview runbook so the remaining Netlify configuration and x402 challenge probe steps are explicit before `/openapi.json` publication.
+- Pushed commit `05ec5fd` and confirmed the Netlify deploy preview became ready.
+- Probed the latest preview: public `/api/labor-stats/` returned `200 OK`; paid `/api/labor-stats/history` returned `503 premium_route_not_configured` because production x402 env vars are still unset.
 
 ## Things Learned
 
@@ -105,6 +107,11 @@ This branch starts the paid-access prep phase:
   - `node --check scripts\check_labor_stats_x402.mjs` passed.
   - `CHECK_X402_TESTNET_CHALLENGE=true npm.cmd run check:x402` passed after network approval.
 - Tracked generated `public/` changes were restored after verification.
+- Continuation verification on 2026-07-21:
+  - `git diff --check` passed with only standard Windows LF-to-CRLF warnings.
+  - Netlify deploy preview for `05ec5fd` reported ready.
+  - `curl.exe -i https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/` returned `200 OK`.
+  - `curl.exe -i https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/history` returned `503 Service Unavailable`, `premium_route_not_configured`, and `missing_configuration:["enabled"]`.
 
 ## Next Steps
 

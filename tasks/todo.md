@@ -165,8 +165,19 @@
 
 - [x] Re-check PR #3 status and comments after handoff.
 - [x] Add a production-preview runbook for Netlify x402 env setup and route probing.
+- [x] Confirm latest deploy preview is ready after the runbook commit.
+- [x] Probe latest deploy preview and confirm current disabled-route behavior.
 - [ ] Choose `X402_PAY_TO`.
 - [ ] Choose `X402_FACILITATOR_URL`.
 - [ ] Configure Netlify deploy-preview env vars outside the repo.
 - [ ] Trigger a fresh deploy preview with production-like x402 config.
 - [ ] Confirm `/api/labor-stats/history` returns a real `402` challenge in preview.
+
+## Production Preview Readiness Results
+
+- PR #3 remained open, draft, and mergeable after the handoff reload.
+- Commit `05ec5fd` added the production-preview runbook and was pushed to `origin/labor-stats-x402-prep`.
+- Netlify reported the deploy preview ready for `05ec5fd`.
+- Preview probe results:
+  - `curl.exe -i https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/` returned `200 OK`.
+  - `curl.exe -i https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/history` returned `503 Service Unavailable` with `premium_route_not_configured` and `missing_configuration:["enabled"]`.

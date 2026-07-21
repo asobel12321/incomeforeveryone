@@ -65,9 +65,7 @@ Keep this route disabled until the receiving wallet and facilitator are intentio
 
 ```powershell
 $preview = "https://deploy-preview-3--incomeforeveryone.netlify.app"
-$response = Invoke-WebRequest "$preview/api/labor-stats/history" -SkipHttpErrorCheck
-$response.StatusCode
-$response.Headers["PAYMENT-REQUIRED"]
+curl.exe -i "$preview/api/labor-stats/history"
 ```
 
 Expected result: status `402` and a non-empty `PAYMENT-REQUIRED` header. If the route returns `503`, configuration is still missing. If it returns `200` without payment, stop and disable the route before continuing.
