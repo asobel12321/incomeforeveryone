@@ -147,6 +147,19 @@ async function checkConfiguredChallenge() {
       if (accept?.asset !== "0x036CbD53842c5426634e7929541eC2318f3dCF7e") {
         fail(`Unexpected asset ${accept?.asset}.`);
       }
+
+      const bazaarSchema = decoded.extensions?.bazaar?.schema;
+      const inputSchema = bazaarSchema?.properties?.input?.properties?.queryParams;
+      const outputSchema = bazaarSchema?.properties?.output?.properties?.example;
+
+      if (!inputSchema) fail("Configured x402 check did not return Bazaar queryParams input schema.");
+      if (!outputSchema) fail("Configured x402 check did not return Bazaar example output schema.");
+      if (!inputSchema.properties?.from || !inputSchema.properties?.to) {
+        fail("Configured x402 check returned incomplete Bazaar query parameter schema.");
+      }
+      if (outputSchema.properties?.endpoint?.const !== "/api/labor-stats/history") {
+        fail("Configured x402 check returned unexpected Bazaar output endpoint schema.");
+      }
     },
   );
 }

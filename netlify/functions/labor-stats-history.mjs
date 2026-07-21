@@ -166,6 +166,110 @@ function x402Price(config) {
   };
 }
 
+function bazaarDiscoveryExtension() {
+  return {
+    input: {
+      queryParams: {
+        from: "2025-07-01",
+        to: "2026-07-01",
+      },
+    },
+    schema: {
+      type: "object",
+      properties: {
+        input: {
+          type: "object",
+          properties: {
+            queryParams: {
+              type: "object",
+              properties: {
+                from: {
+                  type: "string",
+                  format: "date",
+                  description: "Optional inclusive start date for historical observations.",
+                },
+                to: {
+                  type: "string",
+                  format: "date",
+                  description: "Optional inclusive end date for historical observations.",
+                },
+              },
+              additionalProperties: false,
+            },
+          },
+          required: ["queryParams"],
+          additionalProperties: false,
+        },
+        output: {
+          type: "object",
+          properties: {
+            example: {
+              type: "object",
+              properties: {
+                schema_version: { type: "string" },
+                endpoint: { type: "string", const: premiumRoute },
+                snapshot_as_of: { type: "string", format: "date" },
+                history_window: {
+                  type: "object",
+                  properties: {
+                    frequency: { type: "string" },
+                    observation_count_per_indicator: { type: "integer" },
+                    start_date: { type: "string", format: "date" },
+                    end_date: { type: "string", format: "date" },
+                  },
+                  required: ["frequency", "observation_count_per_indicator", "start_date", "end_date"],
+                },
+                indicators: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      id: { type: "string" },
+                      label: { type: "string" },
+                      unit: { type: "string" },
+                      series_id: { type: "string" },
+                      observations: {
+                        type: "array",
+                        items: {
+                          type: "object",
+                          properties: {
+                            date: { type: "string", format: "date" },
+                            period: { type: "string" },
+                            value: { type: "string" },
+                            raw_value: { type: "string" },
+                            month_over_month_change: { type: "string" },
+                          },
+                          required: ["date", "period", "value", "raw_value"],
+                        },
+                      },
+                    },
+                    required: ["id", "label", "unit", "series_id", "observations"],
+                  },
+                },
+                deltas: { type: "array", items: { type: "object" } },
+                sources: { type: "array", items: { type: "object" } },
+                access: { type: "object" },
+              },
+              required: [
+                "schema_version",
+                "endpoint",
+                "snapshot_as_of",
+                "history_window",
+                "indicators",
+                "sources",
+                "access",
+              ],
+            },
+          },
+          required: ["example"],
+          additionalProperties: false,
+        },
+      },
+      required: ["input", "output"],
+    },
+  };
+}
+
 let cachedServerKey;
 let cachedServerPromise;
 
@@ -209,6 +313,9 @@ async function getPaymentServer(config) {
         resource: `https://incomeforeveryone.org${premiumRoute}`,
         serviceName: "Income For Everyone Labor Stats History API",
         tags: ["labor", "economics", "automation", "analytics"],
+        extensions: {
+          bazaar: bazaarDiscoveryExtension(),
+        },
       },
     });
 
