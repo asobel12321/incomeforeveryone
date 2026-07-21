@@ -3,5 +3,6 @@ access_token
 resources/
 public/
 node_modules/
+.netlify/
 __pycache__/
 *.py[cod]

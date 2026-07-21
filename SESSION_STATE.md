@@ -66,6 +66,7 @@ This branch starts the paid-access prep phase:
 - Tightened `docs/labor-stats-x402-openapi-draft.json` with concrete nested component schemas for snapshot data, indicators, history windows, observations, deltas, sources, access metadata, release context, and direction status values.
 - Resolved Merit/x402scan runtime-header ambiguity by keeping the SDK-standard `PAYMENT-REQUIRED` header and adding `WWW-Authenticate: x402` to unpaid x402 `402` challenge responses.
 - Added optional facilitator auth-header env support: `X402_FACILITATOR_AUTH_HEADER_NAME` and `X402_FACILITATOR_AUTH_HEADER_VALUE` are passed through the x402 SDK `createAuthHeaders` hook for production facilitators that require API-key or bearer-token auth.
+- Linked the worktree to Netlify site `incomeforeveryone` (`af48d4d1-40e2-4aee-b0ef-f2af90a315b5`) and configured deploy-preview x402 values outside the repo: enabled flag, provided pay-to wallet, and PayAI facilitator URL. Function-only scope was forbidden on the Netlify Free plan, so values were created for deploy-preview with default/all scopes; production context remains unset.
 
 ## Things Learned
 
@@ -127,6 +128,7 @@ This branch starts the paid-access prep phase:
   - After optional facilitator auth support, `npm.cmd run check:functions` passed.
   - After optional facilitator auth support, `npm.cmd run check:x402` passed without network-backed challenge enabled.
   - After optional facilitator auth support, `CHECK_X402_TESTNET_CHALLENGE=true npm.cmd run check:x402` passed after network approval with optional auth header env values set in the test path.
+  - Netlify deploy-preview env API creation returned the three expected x402 variables in deploy-preview context with default/all scopes.
 
 ## Next Steps
 

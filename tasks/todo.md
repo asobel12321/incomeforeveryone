@@ -172,7 +172,7 @@
 - [ ] Choose `X402_PAY_TO`.
 - [ ] Choose `X402_FACILITATOR_URL` from Coinbase CDP x402, PayAI, or self-hosted facilitator.
 - [x] Add optional facilitator auth-header env support for production facilitator compatibility.
-- [ ] Configure Netlify deploy-preview env vars outside the repo.
+- [x] Configure Netlify deploy-preview env vars outside the repo.
 - [ ] Trigger a fresh deploy preview with production-like x402 config.
 - [ ] Confirm `/api/labor-stats/history` returns a real `402` challenge in preview.
 - [x] Tighten draft OpenAPI request/response schemas before publishing `/openapi.json`.
@@ -212,3 +212,8 @@
   - `npm.cmd run check:functions` passed.
   - `npm.cmd run check:x402` passed without network-backed challenge enabled.
   - `CHECK_X402_TESTNET_CHALLENGE=true npm.cmd run check:x402` passed after network approval with optional auth header env values set in the test path.
+- Netlify deploy-preview configuration:
+  - Linked the worktree to Netlify site `incomeforeveryone` (`af48d4d1-40e2-4aee-b0ef-f2af90a315b5`).
+  - Added `.netlify/` to `.gitignore` so local CLI link state is not committed.
+  - Configured deploy-preview context values for `X402_LABOR_STATS_ENABLED=true`, `X402_PAY_TO`, and `X402_FACILITATOR_URL=https://facilitator.payai.network`.
+  - Attempting function-only scope returned `Forbidden` on the Netlify Free plan, so the deploy-preview values were created with default/all scopes. Production context remains unset.
