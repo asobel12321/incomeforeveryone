@@ -4,6 +4,9 @@
     "title": "Income For Everyone Labor Stats API",
     "version": "2026-07-21",
     "description": "Labor-market snapshot and planned paid history API for agents tracking automation, employment, wages, and labor slack.",
+    "contact": {
+      "url": "https://incomeforeveryone.org/about/"
+    },
     "x-guidance": "Use GET /api/labor-stats/ for the latest free public snapshot. Use GET /api/labor-stats/history only after x402 launch when you need historical snapshots, revisions, deltas, and agent-oriented comparison metadata."
   },
   "servers": [
@@ -19,6 +22,7 @@
         "tags": [
           "Labor Stats"
         ],
+        "security": [],
         "responses": {
           "200": {
             "description": "Latest public labor stats snapshot.",
