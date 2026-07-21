@@ -62,6 +62,7 @@ This branch starts the paid-access prep phase:
 - Pushed commit `05ec5fd` and confirmed the Netlify deploy preview became ready.
 - Probed the latest preview: public `/api/labor-stats/` returned `200 OK`; paid `/api/labor-stats/history` returned `503 premium_route_not_configured` because production x402 env vars are still unset.
 - Checked current x402 docs on 2026-07-21 and recorded production facilitator candidates: Coinbase CDP x402 (`https://api.cdp.coinbase.com/platform/v2/x402`), PayAI (`https://facilitator.payai.network`), or self-hosted. The default x402.org facilitator remains documented as testnet/development only.
+- Checked current Merit/x402scan discovery guidance on 2026-07-21 and ran baseline discovery tools against the preview. Current expected failures: `OPENAPI_NOT_FOUND` for origin discovery because `/openapi.json` is intentionally unpublished, and `L3_NOT_FOUND` for endpoint fallback because the paid route is disabled instead of emitting a production `402`.
 
 ## Things Learned
 
@@ -113,6 +114,8 @@ This branch starts the paid-access prep phase:
   - Netlify deploy preview for `05ec5fd` reported ready.
   - `curl.exe -i https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/` returned `200 OK`.
   - `curl.exe -i https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/history` returned `503 Service Unavailable`, `premium_route_not_configured`, and `missing_configuration:["enabled"]`.
+  - `npx.cmd -y @agentcash/discovery@latest discover "https://deploy-preview-3--incomeforeveryone.netlify.app"` returned `OPENAPI_NOT_FOUND`.
+  - `npx.cmd -y @agentcash/discovery@latest check "https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/history"` returned `L3_NOT_FOUND`.
 
 ## Next Steps
 

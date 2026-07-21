@@ -168,11 +168,13 @@
 - [x] Confirm latest deploy preview is ready after the runbook commit.
 - [x] Probe latest deploy preview and confirm current disabled-route behavior.
 - [x] Check current x402 docs for production facilitator candidates.
+- [x] Check current Merit/x402scan discovery guidance and run baseline discovery tools against the preview.
 - [ ] Choose `X402_PAY_TO`.
 - [ ] Choose `X402_FACILITATOR_URL` from Coinbase CDP x402, PayAI, or self-hosted facilitator.
 - [ ] Configure Netlify deploy-preview env vars outside the repo.
 - [ ] Trigger a fresh deploy preview with production-like x402 config.
 - [ ] Confirm `/api/labor-stats/history` returns a real `402` challenge in preview.
+- [ ] Before publishing `/openapi.json`, tighten OpenAPI request/response schemas and resolve the `WWW-Authenticate` versus `PAYMENT-REQUIRED` runtime-header expectation.
 
 ## Production Preview Readiness Results
 
@@ -185,3 +187,9 @@
 - Current x402 docs checked on 2026-07-21:
   - Default `https://x402.org/facilitator` is for testing/development and supports Base Sepolia, not production Base mainnet.
   - Production candidates listed in x402 seller guidance include Coinbase CDP x402 at `https://api.cdp.coinbase.com/platform/v2/x402` and PayAI at `https://facilitator.payai.network`.
+- Merit/x402scan discovery guidance checked on 2026-07-21:
+  - `/openapi.json` is the canonical discovery contract.
+  - Required/recommended fields include `info.x-guidance`, payable-operation `x-payment-info`, `responses.402`, useful schemas, and recommended `info.contact.email`.
+  - Current quickstart mentions a valid `WWW-Authenticate` challenge, while the x402 SDK path currently tested here emits `PAYMENT-REQUIRED`; resolve this before registration.
+  - `npx.cmd -y @agentcash/discovery@latest discover "https://deploy-preview-3--incomeforeveryone.netlify.app"` returned `OPENAPI_NOT_FOUND`, expected because `/openapi.json` is intentionally unpublished.
+  - `npx.cmd -y @agentcash/discovery@latest check "https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/history"` returned `L3_NOT_FOUND`, expected while the paid route is disabled instead of returning production `402`.
