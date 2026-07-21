@@ -167,8 +167,9 @@
 - [x] Add a production-preview runbook for Netlify x402 env setup and route probing.
 - [x] Confirm latest deploy preview is ready after the runbook commit.
 - [x] Probe latest deploy preview and confirm current disabled-route behavior.
+- [x] Check current x402 docs for production facilitator candidates.
 - [ ] Choose `X402_PAY_TO`.
-- [ ] Choose `X402_FACILITATOR_URL`.
+- [ ] Choose `X402_FACILITATOR_URL` from Coinbase CDP x402, PayAI, or self-hosted facilitator.
 - [ ] Configure Netlify deploy-preview env vars outside the repo.
 - [ ] Trigger a fresh deploy preview with production-like x402 config.
 - [ ] Confirm `/api/labor-stats/history` returns a real `402` challenge in preview.
@@ -181,3 +182,6 @@
 - Preview probe results:
   - `curl.exe -i https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/` returned `200 OK`.
   - `curl.exe -i https://deploy-preview-3--incomeforeveryone.netlify.app/api/labor-stats/history` returned `503 Service Unavailable` with `premium_route_not_configured` and `missing_configuration:["enabled"]`.
+- Current x402 docs checked on 2026-07-21:
+  - Default `https://x402.org/facilitator` is for testing/development and supports Base Sepolia, not production Base mainnet.
+  - Production candidates listed in x402 seller guidance include Coinbase CDP x402 at `https://api.cdp.coinbase.com/platform/v2/x402` and PayAI at `https://facilitator.payai.network`.

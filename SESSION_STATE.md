@@ -61,6 +61,7 @@ This branch starts the paid-access prep phase:
 - Added a production-preview runbook so the remaining Netlify configuration and x402 challenge probe steps are explicit before `/openapi.json` publication.
 - Pushed commit `05ec5fd` and confirmed the Netlify deploy preview became ready.
 - Probed the latest preview: public `/api/labor-stats/` returned `200 OK`; paid `/api/labor-stats/history` returned `503 premium_route_not_configured` because production x402 env vars are still unset.
+- Checked current x402 docs on 2026-07-21 and recorded production facilitator candidates: Coinbase CDP x402 (`https://api.cdp.coinbase.com/platform/v2/x402`), PayAI (`https://facilitator.payai.network`), or self-hosted. The default x402.org facilitator remains documented as testnet/development only.
 
 ## Things Learned
 

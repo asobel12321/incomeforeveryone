@@ -26,6 +26,13 @@ Optional production overrides:
 
 Before production launch, confirm the facilitator supports the selected network and asset. Do not treat the public test facilitator as the production default.
 
+Candidate production facilitator values to evaluate:
+
+- Coinbase CDP x402: `https://api.cdp.coinbase.com/platform/v2/x402`
+- PayAI: `https://facilitator.payai.network`
+
+The official x402 docs list the default `https://x402.org/facilitator` as a testing/development facilitator for Base Sepolia and other testnets, not the production Base mainnet default.
+
 For local payload testing only, the function returns `data/labor_stats_history.json` when `NETLIFY_DEV=true` or when `X402_LABOR_STATS_DEV_BYPASS=true` outside production. This bypass is intentionally marked in the JSON response and must not be used as production access control.
 
 ## Verification
@@ -53,7 +60,7 @@ Keep this route disabled until the receiving wallet and facilitator are intentio
 
 1. Choose the production payment values:
    - `X402_PAY_TO`: receiving wallet address.
-   - `X402_FACILITATOR_URL`: production facilitator endpoint or self-facilitator endpoint.
+   - `X402_FACILITATOR_URL`: production facilitator endpoint or self-facilitator endpoint. Current candidates to evaluate are Coinbase CDP x402 and PayAI.
    - Confirm whether the defaults are acceptable: `X402_NETWORK=eip155:8453`, Base USDC asset `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`, and `X402_AMOUNT_ATOMIC=10000`.
 2. Add Netlify environment variables scoped to a deploy-preview or branch context first:
    - `X402_LABOR_STATS_ENABLED=true`
@@ -111,4 +118,5 @@ Registration readiness checklist:
 
 - x402 docs: server responds with `402 Payment Required`, clients retry with `PAYMENT-SIGNATURE`, and servers verify/settle before returning the resource.
 - x402 docs: facilitators reduce server-side blockchain complexity, but production routes need an explicit mainnet facilitator/self-facilitation choice.
+- x402 docs: the default x402.org facilitator is recommended for testing/development and supports Base Sepolia; production Base mainnet needs a production facilitator such as Coinbase CDP x402 or PayAI.
 - x402scan discovery docs: OpenAPI is the canonical discovery contract, paid operations need `x-payment-info`, and runtime 402 behavior is authoritative.
