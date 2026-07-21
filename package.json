@@ -1,0 +1,13 @@
+{
+  "name": "income-for-everyone",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check:functions": "node --check netlify/functions/labor-stats-history.mjs",
+    "check:x402": "node scripts/check_labor_stats_x402.mjs"
+  },
+  "dependencies": {
+    "@x402/core": "2.19.0",
+    "@x402/evm": "2.19.0"
+  }
+}

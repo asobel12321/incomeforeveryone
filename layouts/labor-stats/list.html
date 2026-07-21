@@ -1,6 +1,7 @@
 {{- define "main" }}
 
 {{- $stats := site.Data.labor_stats -}}
+{{- $access := site.Data.labor_stats_access -}}
 
 <section class="labor-stats-page" aria-labelledby="labor-stats-title">
   <header class="page-header section-header labor-stats-hero">
@@ -66,21 +67,25 @@
       <h2 id="labor-data-contract-title">Structured for a future paid endpoint</h2>
       <p>
         The public page is backed by stable IDs, units, periods, source URLs, and release metadata.
-        That same shape can become <code>{{ $stats.future_api.candidate_endpoint }}</code> before an x402-gated listing on {{ $stats.future_api.candidate_marketplace }}.
+        That same shape supports <code>{{ $access.public.endpoint }}</code>, while paid history is planned for <code>{{ $access.premium.endpoint }}</code>.
       </p>
     </div>
     <dl>
       <div>
         <dt>Candidate endpoint</dt>
-        <dd><code>{{ $stats.future_api.candidate_endpoint }}</code></dd>
+        <dd><code>{{ $access.public.endpoint }}</code></dd>
+      </div>
+      <div>
+        <dt>Paid route</dt>
+        <dd><code>{{ $access.premium.endpoint }}</code></dd>
       </div>
       <div>
         <dt>Payment protocol</dt>
-        <dd>{{ $stats.future_api.payment_protocol }}</dd>
+        <dd>{{ $access.premium.payment_protocol }}</dd>
       </div>
       <div>
-        <dt>Contract priority</dt>
-        <dd>{{ $stats.future_api.contract_note }}</dd>
+        <dt>Candidate price</dt>
+        <dd>{{ $access.premium.price.display }}</dd>
       </div>
     </dl>
   </section>

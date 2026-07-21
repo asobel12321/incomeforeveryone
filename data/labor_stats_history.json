@@ -1,0 +1,777 @@
+{
+  "schema_version": "2026-07-21",
+  "endpoint": "/api/labor-stats/history",
+  "snapshot_as_of": "2026-07-21",
+  "history_window": {
+    "frequency": "Monthly",
+    "observation_count_per_indicator": 13,
+    "start_date": "2025-05-01",
+    "end_date": "2026-06-01"
+  },
+  "indicators": [
+    {
+      "id": "unemployment-rate",
+      "label": "Unemployment rate",
+      "unit": "percent",
+      "frequency": "Monthly",
+      "seasonality": "Seasonally adjusted",
+      "series_id": "UNRATE",
+      "source_name": "U.S. Bureau of Labor Statistics via FRED",
+      "source_url": "https://fred.stlouisfed.org/series/UNRATE",
+      "release_url": "https://www.bls.gov/news.release/empsit.nr0.htm",
+      "observations": [
+        {
+          "date": "2025-05-01",
+          "period": "May 2025",
+          "value": "4.3",
+          "raw_value": "4.3"
+        },
+        {
+          "date": "2025-06-01",
+          "period": "June 2025",
+          "value": "4.1",
+          "raw_value": "4.1",
+          "month_over_month_change": "-0.2",
+          "status": "down"
+        },
+        {
+          "date": "2025-07-01",
+          "period": "July 2025",
+          "value": "4.3",
+          "raw_value": "4.3",
+          "month_over_month_change": "0.2",
+          "status": "up"
+        },
+        {
+          "date": "2025-08-01",
+          "period": "August 2025",
+          "value": "4.3",
+          "raw_value": "4.3",
+          "month_over_month_change": "0.0",
+          "status": "steady"
+        },
+        {
+          "date": "2025-09-01",
+          "period": "September 2025",
+          "value": "4.4",
+          "raw_value": "4.4",
+          "month_over_month_change": "0.1",
+          "status": "up"
+        },
+        {
+          "date": "2025-11-01",
+          "period": "November 2025",
+          "value": "4.5",
+          "raw_value": "4.5",
+          "month_over_month_change": "0.1",
+          "status": "up"
+        },
+        {
+          "date": "2025-12-01",
+          "period": "December 2025",
+          "value": "4.4",
+          "raw_value": "4.4",
+          "month_over_month_change": "-0.1",
+          "status": "down"
+        },
+        {
+          "date": "2026-01-01",
+          "period": "January 2026",
+          "value": "4.3",
+          "raw_value": "4.3",
+          "month_over_month_change": "-0.1",
+          "status": "down"
+        },
+        {
+          "date": "2026-02-01",
+          "period": "February 2026",
+          "value": "4.4",
+          "raw_value": "4.4",
+          "month_over_month_change": "0.1",
+          "status": "up"
+        },
+        {
+          "date": "2026-03-01",
+          "period": "March 2026",
+          "value": "4.3",
+          "raw_value": "4.3",
+          "month_over_month_change": "-0.1",
+          "status": "down"
+        },
+        {
+          "date": "2026-04-01",
+          "period": "April 2026",
+          "value": "4.3",
+          "raw_value": "4.3",
+          "month_over_month_change": "0.0",
+          "status": "steady"
+        },
+        {
+          "date": "2026-05-01",
+          "period": "May 2026",
+          "value": "4.3",
+          "raw_value": "4.3",
+          "month_over_month_change": "0.0",
+          "status": "steady"
+        },
+        {
+          "date": "2026-06-01",
+          "period": "June 2026",
+          "value": "4.2",
+          "raw_value": "4.2",
+          "month_over_month_change": "-0.1",
+          "status": "down"
+        }
+      ]
+    },
+    {
+      "id": "labor-force-participation",
+      "label": "Labor force participation",
+      "unit": "percent",
+      "frequency": "Monthly",
+      "seasonality": "Seasonally adjusted",
+      "series_id": "CIVPART",
+      "source_name": "U.S. Bureau of Labor Statistics via FRED",
+      "source_url": "https://fred.stlouisfed.org/series/CIVPART",
+      "release_url": "https://www.bls.gov/news.release/empsit.nr0.htm",
+      "observations": [
+        {
+          "date": "2025-05-01",
+          "period": "May 2025",
+          "value": "62.4",
+          "raw_value": "62.4"
+        },
+        {
+          "date": "2025-06-01",
+          "period": "June 2025",
+          "value": "62.3",
+          "raw_value": "62.3",
+          "month_over_month_change": "-0.1",
+          "status": "down"
+        },
+        {
+          "date": "2025-07-01",
+          "period": "July 2025",
+          "value": "62.2",
+          "raw_value": "62.2",
+          "month_over_month_change": "-0.1",
+          "status": "down"
+        },
+        {
+          "date": "2025-08-01",
+          "period": "August 2025",
+          "value": "62.3",
+          "raw_value": "62.3",
+          "month_over_month_change": "0.1",
+          "status": "up"
+        },
+        {
+          "date": "2025-09-01",
+          "period": "September 2025",
+          "value": "62.5",
+          "raw_value": "62.5",
+          "month_over_month_change": "0.2",
+          "status": "up"
+        },
+        {
+          "date": "2025-11-01",
+          "period": "November 2025",
+          "value": "62.5",
+          "raw_value": "62.5",
+          "month_over_month_change": "0.0",
+          "status": "steady"
+        },
+        {
+          "date": "2025-12-01",
+          "period": "December 2025",
+          "value": "62.4",
+          "raw_value": "62.4",
+          "month_over_month_change": "-0.1",
+          "status": "down"
+        },
+        {
+          "date": "2026-01-01",
+          "period": "January 2026",
+          "value": "62.1",
+          "raw_value": "62.1",
+          "month_over_month_change": "-0.3",
+          "status": "down"
+        },
+        {
+          "date": "2026-02-01",
+          "period": "February 2026",
+          "value": "62",
+          "raw_value": "62.0",
+          "month_over_month_change": "-0.1",
+          "status": "down"
+        },
+        {
+          "date": "2026-03-01",
+          "period": "March 2026",
+          "value": "61.9",
+          "raw_value": "61.9",
+          "month_over_month_change": "-0.1",
+          "status": "down"
+        },
+        {
+          "date": "2026-04-01",
+          "period": "April 2026",
+          "value": "61.8",
+          "raw_value": "61.8",
+          "month_over_month_change": "-0.1",
+          "status": "down"
+        },
+        {
+          "date": "2026-05-01",
+          "period": "May 2026",
+          "value": "61.8",
+          "raw_value": "61.8",
+          "month_over_month_change": "0.0",
+          "status": "steady"
+        },
+        {
+          "date": "2026-06-01",
+          "period": "June 2026",
+          "value": "61.5",
+          "raw_value": "61.5",
+          "month_over_month_change": "-0.3",
+          "status": "down"
+        }
+      ]
+    },
+    {
+      "id": "payroll-employment",
+      "label": "Total nonfarm payrolls",
+      "unit": "thousand jobs",
+      "frequency": "Monthly",
+      "seasonality": "Seasonally adjusted",
+      "series_id": "PAYEMS",
+      "source_name": "U.S. Bureau of Labor Statistics via FRED",
+      "source_url": "https://fred.stlouisfed.org/series/PAYEMS",
+      "release_url": "https://www.bls.gov/news.release/empsit.nr0.htm",
+      "observations": [
+        {
+          "date": "2025-06-01",
+          "period": "June 2025",
+          "value": "158,478",
+          "raw_value": "158478"
+        },
+        {
+          "date": "2025-07-01",
+          "period": "July 2025",
+          "value": "158,542",
+          "raw_value": "158542",
+          "month_over_month_change": "64",
+          "status": "up"
+        },
+        {
+          "date": "2025-08-01",
+          "period": "August 2025",
+          "value": "158,472",
+          "raw_value": "158472",
+          "month_over_month_change": "-70",
+          "status": "down"
+        },
+        {
+          "date": "2025-09-01",
+          "period": "September 2025",
+          "value": "158,548",
+          "raw_value": "158548",
+          "month_over_month_change": "76",
+          "status": "up"
+        },
+        {
+          "date": "2025-10-01",
+          "period": "October 2025",
+          "value": "158,408",
+          "raw_value": "158408",
+          "month_over_month_change": "-140",
+          "status": "down"
+        },
+        {
+          "date": "2025-11-01",
+          "period": "November 2025",
+          "value": "158,449",
+          "raw_value": "158449",
+          "month_over_month_change": "41",
+          "status": "up"
+        },
+        {
+          "date": "2025-12-01",
+          "period": "December 2025",
+          "value": "158,432",
+          "raw_value": "158432",
+          "month_over_month_change": "-17",
+          "status": "down"
+        },
+        {
+          "date": "2026-01-01",
+          "period": "January 2026",
+          "value": "158,592",
+          "raw_value": "158592",
+          "month_over_month_change": "160",
+          "status": "up"
+        },
+        {
+          "date": "2026-02-01",
+          "period": "February 2026",
+          "value": "158,436",
+          "raw_value": "158436",
+          "month_over_month_change": "-156",
+          "status": "down"
+        },
+        {
+          "date": "2026-03-01",
+          "period": "March 2026",
+          "value": "158,650",
+          "raw_value": "158650",
+          "month_over_month_change": "214",
+          "status": "up"
+        },
+        {
+          "date": "2026-04-01",
+          "period": "April 2026",
+          "value": "158,798",
+          "raw_value": "158798",
+          "month_over_month_change": "148",
+          "status": "up"
+        },
+        {
+          "date": "2026-05-01",
+          "period": "May 2026",
+          "value": "158,927",
+          "raw_value": "158927",
+          "month_over_month_change": "129",
+          "status": "up"
+        },
+        {
+          "date": "2026-06-01",
+          "period": "June 2026",
+          "value": "158,984",
+          "raw_value": "158984",
+          "month_over_month_change": "57",
+          "status": "up"
+        }
+      ]
+    },
+    {
+      "id": "job-openings",
+      "label": "Job openings",
+      "unit": "thousand openings",
+      "frequency": "Monthly",
+      "seasonality": "Seasonally adjusted",
+      "series_id": "JTSJOL",
+      "source_name": "U.S. Bureau of Labor Statistics via FRED",
+      "source_url": "https://fred.stlouisfed.org/series/JTSJOL",
+      "release_url": "https://www.bls.gov/news.release/jolts.nr0.htm",
+      "observations": [
+        {
+          "date": "2025-05-01",
+          "period": "May 2025",
+          "value": "7,310",
+          "raw_value": "7310"
+        },
+        {
+          "date": "2025-06-01",
+          "period": "June 2025",
+          "value": "7,204",
+          "raw_value": "7204",
+          "month_over_month_change": "-106",
+          "status": "down"
+        },
+        {
+          "date": "2025-07-01",
+          "period": "July 2025",
+          "value": "7,089",
+          "raw_value": "7089",
+          "month_over_month_change": "-115",
+          "status": "down"
+        },
+        {
+          "date": "2025-08-01",
+          "period": "August 2025",
+          "value": "6,919",
+          "raw_value": "6919",
+          "month_over_month_change": "-170",
+          "status": "down"
+        },
+        {
+          "date": "2025-09-01",
+          "period": "September 2025",
+          "value": "7,169",
+          "raw_value": "7169",
+          "month_over_month_change": "250",
+          "status": "up"
+        },
+        {
+          "date": "2025-10-01",
+          "period": "October 2025",
+          "value": "7,170",
+          "raw_value": "7170",
+          "month_over_month_change": "1",
+          "status": "up"
+        },
+        {
+          "date": "2025-11-01",
+          "period": "November 2025",
+          "value": "6,846",
+          "raw_value": "6846",
+          "month_over_month_change": "-324",
+          "status": "down"
+        },
+        {
+          "date": "2025-12-01",
+          "period": "December 2025",
+          "value": "6,550",
+          "raw_value": "6550",
+          "month_over_month_change": "-296",
+          "status": "down"
+        },
+        {
+          "date": "2026-01-01",
+          "period": "January 2026",
+          "value": "7,240",
+          "raw_value": "7240",
+          "month_over_month_change": "690",
+          "status": "up"
+        },
+        {
+          "date": "2026-02-01",
+          "period": "February 2026",
+          "value": "6,922",
+          "raw_value": "6922",
+          "month_over_month_change": "-318",
+          "status": "down"
+        },
+        {
+          "date": "2026-03-01",
+          "period": "March 2026",
+          "value": "6,887",
+          "raw_value": "6887",
+          "month_over_month_change": "-35",
+          "status": "down"
+        },
+        {
+          "date": "2026-04-01",
+          "period": "April 2026",
+          "value": "7,585",
+          "raw_value": "7585",
+          "month_over_month_change": "698",
+          "status": "up"
+        },
+        {
+          "date": "2026-05-01",
+          "period": "May 2026",
+          "value": "7,594",
+          "raw_value": "7594",
+          "month_over_month_change": "9",
+          "status": "up"
+        }
+      ]
+    },
+    {
+      "id": "u6-underemployment",
+      "label": "U-6 labor underutilization",
+      "unit": "percent",
+      "frequency": "Monthly",
+      "seasonality": "Seasonally adjusted",
+      "series_id": "U6RATE",
+      "source_name": "U.S. Bureau of Labor Statistics via FRED",
+      "source_url": "https://fred.stlouisfed.org/series/U6RATE",
+      "release_url": "https://www.bls.gov/news.release/empsit.nr0.htm",
+      "observations": [
+        {
+          "date": "2025-05-01",
+          "period": "May 2025",
+          "value": "7.8",
+          "raw_value": "7.8"
+        },
+        {
+          "date": "2025-06-01",
+          "period": "June 2025",
+          "value": "7.7",
+          "raw_value": "7.7",
+          "month_over_month_change": "-0.1",
+          "status": "down"
+        },
+        {
+          "date": "2025-07-01",
+          "period": "July 2025",
+          "value": "7.9",
+          "raw_value": "7.9",
+          "month_over_month_change": "0.2",
+          "status": "up"
+        },
+        {
+          "date": "2025-08-01",
+          "period": "August 2025",
+          "value": "8.1",
+          "raw_value": "8.1",
+          "month_over_month_change": "0.2",
+          "status": "up"
+        },
+        {
+          "date": "2025-09-01",
+          "period": "September 2025",
+          "value": "8.1",
+          "raw_value": "8.1",
+          "month_over_month_change": "0.0",
+          "status": "steady"
+        },
+        {
+          "date": "2025-11-01",
+          "period": "November 2025",
+          "value": "8.7",
+          "raw_value": "8.7",
+          "month_over_month_change": "0.6",
+          "status": "up"
+        },
+        {
+          "date": "2025-12-01",
+          "period": "December 2025",
+          "value": "8.4",
+          "raw_value": "8.4",
+          "month_over_month_change": "-0.3",
+          "status": "down"
+        },
+        {
+          "date": "2026-01-01",
+          "period": "January 2026",
+          "value": "8.1",
+          "raw_value": "8.1",
+          "month_over_month_change": "-0.3",
+          "status": "down"
+        },
+        {
+          "date": "2026-02-01",
+          "period": "February 2026",
+          "value": "7.9",
+          "raw_value": "7.9",
+          "month_over_month_change": "-0.2",
+          "status": "down"
+        },
+        {
+          "date": "2026-03-01",
+          "period": "March 2026",
+          "value": "8",
+          "raw_value": "8.0",
+          "month_over_month_change": "0.1",
+          "status": "up"
+        },
+        {
+          "date": "2026-04-01",
+          "period": "April 2026",
+          "value": "8.2",
+          "raw_value": "8.2",
+          "month_over_month_change": "0.2",
+          "status": "up"
+        },
+        {
+          "date": "2026-05-01",
+          "period": "May 2026",
+          "value": "8.1",
+          "raw_value": "8.1",
+          "month_over_month_change": "-0.1",
+          "status": "down"
+        },
+        {
+          "date": "2026-06-01",
+          "period": "June 2026",
+          "value": "7.9",
+          "raw_value": "7.9",
+          "month_over_month_change": "-0.2",
+          "status": "down"
+        }
+      ]
+    },
+    {
+      "id": "production-wages",
+      "label": "Production and nonsupervisory hourly earnings",
+      "unit": "dollars per hour",
+      "frequency": "Monthly",
+      "seasonality": "Seasonally adjusted",
+      "series_id": "AHETPI",
+      "source_name": "U.S. Bureau of Labor Statistics via FRED",
+      "source_url": "https://fred.stlouisfed.org/series/AHETPI",
+      "release_url": "https://www.bls.gov/news.release/empsit.nr0.htm",
+      "observations": [
+        {
+          "date": "2025-06-01",
+          "period": "June 2025",
+          "value": "$31.31",
+          "raw_value": "31.31"
+        },
+        {
+          "date": "2025-07-01",
+          "period": "July 2025",
+          "value": "$31.39",
+          "raw_value": "31.39",
+          "month_over_month_change": "0.08",
+          "status": "up"
+        },
+        {
+          "date": "2025-08-01",
+          "period": "August 2025",
+          "value": "$31.49",
+          "raw_value": "31.49",
+          "month_over_month_change": "0.10",
+          "status": "up"
+        },
+        {
+          "date": "2025-09-01",
+          "period": "September 2025",
+          "value": "$31.56",
+          "raw_value": "31.56",
+          "month_over_month_change": "0.07",
+          "status": "up"
+        },
+        {
+          "date": "2025-10-01",
+          "period": "October 2025",
+          "value": "$31.70",
+          "raw_value": "31.70",
+          "month_over_month_change": "0.14",
+          "status": "up"
+        },
+        {
+          "date": "2025-11-01",
+          "period": "November 2025",
+          "value": "$31.79",
+          "raw_value": "31.79",
+          "month_over_month_change": "0.09",
+          "status": "up"
+        },
+        {
+          "date": "2025-12-01",
+          "period": "December 2025",
+          "value": "$31.83",
+          "raw_value": "31.83",
+          "month_over_month_change": "0.04",
+          "status": "up"
+        },
+        {
+          "date": "2026-01-01",
+          "period": "January 2026",
+          "value": "$31.94",
+          "raw_value": "31.94",
+          "month_over_month_change": "0.11",
+          "status": "up"
+        },
+        {
+          "date": "2026-02-01",
+          "period": "February 2026",
+          "value": "$32.04",
+          "raw_value": "32.04",
+          "month_over_month_change": "0.10",
+          "status": "up"
+        },
+        {
+          "date": "2026-03-01",
+          "period": "March 2026",
+          "value": "$32.12",
+          "raw_value": "32.12",
+          "month_over_month_change": "0.08",
+          "status": "up"
+        },
+        {
+          "date": "2026-04-01",
+          "period": "April 2026",
+          "value": "$32.23",
+          "raw_value": "32.23",
+          "month_over_month_change": "0.11",
+          "status": "up"
+        },
+        {
+          "date": "2026-05-01",
+          "period": "May 2026",
+          "value": "$32.31",
+          "raw_value": "32.31",
+          "month_over_month_change": "0.08",
+          "status": "up"
+        },
+        {
+          "date": "2026-06-01",
+          "period": "June 2026",
+          "value": "$32.38",
+          "raw_value": "32.38",
+          "month_over_month_change": "0.07",
+          "status": "up"
+        }
+      ]
+    }
+  ],
+  "revisions": [],
+  "deltas": [
+    {
+      "id": "unemployment-rate",
+      "label": "Unemployment rate",
+      "current_period": "June 2026",
+      "previous_period": "May 2026",
+      "change": "-0.1",
+      "status": "down"
+    },
+    {
+      "id": "labor-force-participation",
+      "label": "Labor force participation",
+      "current_period": "June 2026",
+      "previous_period": "May 2026",
+      "change": "-0.3",
+      "status": "down"
+    },
+    {
+      "id": "payroll-employment",
+      "label": "Total nonfarm payrolls",
+      "current_period": "June 2026",
+      "previous_period": "May 2026",
+      "change": "57",
+      "status": "up"
+    },
+    {
+      "id": "job-openings",
+      "label": "Job openings",
+      "current_period": "May 2026",
+      "previous_period": "April 2026",
+      "change": "9",
+      "status": "up"
+    },
+    {
+      "id": "u6-underemployment",
+      "label": "U-6 labor underutilization",
+      "current_period": "June 2026",
+      "previous_period": "May 2026",
+      "change": "-0.2",
+      "status": "down"
+    },
+    {
+      "id": "production-wages",
+      "label": "Production and nonsupervisory hourly earnings",
+      "current_period": "June 2026",
+      "previous_period": "May 2026",
+      "change": "0.07",
+      "status": "up"
+    }
+  ],
+  "sources": [
+    {
+      "name": "BLS Employment Situation",
+      "url": "https://www.bls.gov/news.release/empsit.nr0.htm",
+      "last_checked": "2026-07-21"
+    },
+    {
+      "name": "BLS Job Openings and Labor Turnover Survey",
+      "url": "https://www.bls.gov/news.release/jolts.nr0.htm",
+      "last_checked": "2026-07-21"
+    },
+    {
+      "name": "FRED labor-market series pages",
+      "url": "https://fred.stlouisfed.org/",
+      "last_checked": "2026-07-21"
+    }
+  ],
+  "access": {
+    "tier": "premium",
+    "payment_required": true,
+    "payment_protocol": "x402",
+    "public_fallback": "/api/labor-stats/"
+  }
+}

@@ -1,19 +1,21 @@
 {{- $stats := site.Data.labor_stats -}}
-{{- $futureApi := $stats.future_api -}}
+{{- $access := site.Data.labor_stats_access -}}
 {{- $payload := dict
   "schema_version" "2026-06-25"
-  "endpoint" $futureApi.candidate_endpoint
+  "endpoint" $access.public.endpoint
   "snapshot_as_of" $stats.as_of
   "access" (dict
-    "tier" "public"
-    "payment_required" false
-    "payment_protocol" $futureApi.payment_protocol
-    "marketplace_candidate" $futureApi.candidate_marketplace
-    "premium_gating_status" "planned"
+    "tier" $access.public.tier
+    "payment_required" $access.public.payment_required
+    "payment_protocol" $access.premium.payment_protocol
+    "marketplace_candidate" $access.listing.marketplace
+    "premium_gating_status" $access.premium.status
+    "premium_candidate_endpoint" $access.premium.endpoint
+    "premium_candidate_price" $access.premium.price.display
   )
   "contract" (dict
     "stable_indicator_fields" (slice "id" "label" "value" "unit" "period" "frequency" "seasonality" "series_id" "source_name" "source_url" "release_url" "updated" "status" "interpretation")
-    "contract_note" $futureApi.contract_note
+    "contract_note" "Keep public snapshot ids, source fields, periods, units, and release metadata stable before exposing paid historical agent access."
   )
   "data" $stats
 -}}

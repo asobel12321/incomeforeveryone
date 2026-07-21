@@ -5,6 +5,14 @@
 [build.environment]
   HUGO_VERSION = "0.145.0"
 
+[[redirects]]
+  from = "/api/labor-stats/history"
+  to = "/.netlify/functions/labor-stats-history"
+  status = 200
+
+[functions."labor-stats-history"]
+  included_files = ["data/labor_stats_history.json"]
+
 [functions."trigger-daily-labor-watch"]
   schedule = "30 13 * * *"
 
