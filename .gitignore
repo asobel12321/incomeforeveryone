@@ -2,5 +2,6 @@ access_token
 .hugo_build.lock
 resources/
 public/
+node_modules/
 __pycache__/
 *.py[cod]

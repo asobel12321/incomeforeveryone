@@ -109,11 +109,17 @@ hugo
 ```
 
 The `.github/workflows/refresh-labor-stats.yml` workflow refreshes public FRED-backed series on weekday mornings and commits `data/labor_stats.json` only when values actually change. It does not require secrets.
+The same refresh also writes `data/labor_stats_history.json`, a compact premium-candidate history payload for `/api/labor-stats/history`.
 
 Agent-readable access:
 
 - `/api/labor-stats/` renders the same public data as JSON for agents and lightweight integrations.
-- The endpoint is public and ungated today. Its response includes access metadata reserved for a future x402-paid tier and Merit Systems listing.
+- The endpoint is public and ungated today. Its response includes access metadata reserved for a future x402-paid tier and Merit Systems/x402scan listing.
+- Paid-access prep lives in `data/labor_stats_access.json` and `docs/labor-stats-x402.md`.
+- Candidate paid route: `/api/labor-stats/history`, intended for historical snapshots, revisions, deltas, and agent-oriented comparison metadata.
+- `netlify/functions/labor-stats-history.mjs` uses the x402 SDK for request-time payment challenge, verification, and settlement. It stays disabled until Netlify x402 configuration is explicitly set.
+- Local/dev bypass: set `NETLIFY_DEV=true` or `X402_LABOR_STATS_DEV_BYPASS=true` outside production to return `data/labor_stats_history.json` without payment while testing the payload shape.
+- Production defaults target Base mainnet USDC: `X402_NETWORK=eip155:8453`, `X402_ASSET=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`, and `X402_AMOUNT_ATOMIC=10000` (`$0.01` USDC). Set `X402_PAY_TO`, `X402_FACILITATOR_URL`, and `X402_LABOR_STATS_ENABLED=true` in Netlify before launch.
 
 ## Quality Rules
 

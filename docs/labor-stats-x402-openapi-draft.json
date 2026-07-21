@@ -1,0 +1,189 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Income For Everyone Labor Stats API",
+    "version": "2026-07-21",
+    "description": "Labor-market snapshot and planned paid history API for agents tracking automation, employment, wages, and labor slack.",
+    "x-guidance": "Use GET /api/labor-stats/ for the latest free public snapshot. Use GET /api/labor-stats/history only after x402 launch when you need historical snapshots, revisions, deltas, and agent-oriented comparison metadata."
+  },
+  "servers": [
+    {
+      "url": "https://incomeforeveryone.org"
+    }
+  ],
+  "paths": {
+    "/api/labor-stats/": {
+      "get": {
+        "operationId": "getLaborStatsSnapshot",
+        "summary": "Latest public labor-market snapshot",
+        "tags": [
+          "Labor Stats"
+        ],
+        "responses": {
+          "200": {
+            "description": "Latest public labor stats snapshot.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LaborStatsSnapshot"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/labor-stats/history": {
+      "get": {
+        "operationId": "getLaborStatsHistory",
+        "summary": "Paid historical labor-market snapshots",
+        "tags": [
+          "Labor Stats"
+        ],
+        "x-payment-info": {
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.010000"
+          },
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ]
+        },
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Optional inclusive start date for historical snapshots."
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Optional inclusive end date for historical snapshots."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Historical premium labor stats payload after successful x402 payment.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LaborStatsHistory"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "503": {
+            "description": "Premium route is not configured yet."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "LaborStatsSnapshot": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "endpoint",
+          "snapshot_as_of",
+          "access",
+          "contract",
+          "data"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "snapshot_as_of": {
+            "type": "string",
+            "format": "date"
+          },
+          "access": {
+            "type": "object"
+          },
+          "contract": {
+            "type": "object"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "LaborStatsHistory": {
+        "type": "object",
+        "required": [
+          "schema_version",
+          "endpoint",
+          "snapshot_as_of",
+          "history_window",
+          "indicators",
+          "sources",
+          "access"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string",
+            "const": "/api/labor-stats/history"
+          },
+          "snapshot_as_of": {
+            "type": "string",
+            "format": "date"
+          },
+          "history_window": {
+            "type": "object"
+          },
+          "indicators": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "revisions": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "deltas": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "access": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}

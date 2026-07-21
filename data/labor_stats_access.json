@@ -1,0 +1,53 @@
+{
+  "schema_version": "2026-07-21",
+  "public": {
+    "endpoint": "/api/labor-stats/",
+    "tier": "public",
+    "payment_required": false,
+    "description": "Latest public U.S. labor-market snapshot with stable source and release metadata."
+  },
+  "premium": {
+    "endpoint": "/api/labor-stats/history",
+    "tier": "premium",
+    "status": "planned",
+    "payment_required": true,
+    "payment_protocol": "x402",
+    "price": {
+      "mode": "fixed",
+      "currency": "USD",
+      "amount": "0.010000",
+      "display": "$0.01 per request"
+    },
+    "network": {
+      "name": "Base",
+      "chain_id": "eip155:8453",
+      "asset": "USDC"
+    },
+    "description": "Historical labor-market snapshots, revisions, deltas, and agent-oriented comparison metadata.",
+    "planned_fields": [
+      "schema_version",
+      "endpoint",
+      "snapshot_as_of",
+      "history_window",
+      "indicators",
+      "revisions",
+      "deltas",
+      "sources",
+      "access"
+    ]
+  },
+  "listing": {
+    "marketplace": "x402scan / Merit Systems",
+    "title": "Income For Everyone Labor Stats History API",
+    "summary": "Pay-per-request U.S. labor-market history and revision data for agents tracking automation, employment, wages, and labor slack.",
+    "tags": [
+      "labor",
+      "economics",
+      "automation",
+      "public-data",
+      "analytics"
+    ],
+    "openapi_draft": "docs/labor-stats-x402-openapi-draft.json",
+    "guidance": "Use the public snapshot for latest headline values. Use the paid history endpoint when an agent needs time series snapshots, month-over-month deltas, revision context, or machine-readable provenance."
+  }
+}

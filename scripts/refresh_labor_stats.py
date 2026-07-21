@@ -19,7 +19,9 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DATA_PATH = REPO_ROOT / "data" / "labor_stats.json"
+HISTORY_DATA_PATH = REPO_ROOT / "data" / "labor_stats_history.json"
 FRED_CSV_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id={series_id}&cosd=2025-01-01"
+HISTORY_OBSERVATION_LIMIT = 13
 
 
 @dataclass(frozen=True)
@@ -202,7 +204,18 @@ def build_interpretation(
 
 
 def build_indicator(definition: IndicatorDefinition) -> dict[str, str]:
-    observations = parse_observations(definition.series_id, fetch_csv(definition.series_id))
+    observations = fetch_observations(definition)
+    return build_indicator_from_observations(definition, observations)
+
+
+def fetch_observations(definition: IndicatorDefinition) -> list[tuple[date, Decimal]]:
+    return parse_observations(definition.series_id, fetch_csv(definition.series_id))
+
+
+def build_indicator_from_observations(
+    definition: IndicatorDefinition,
+    observations: list[tuple[date, Decimal]],
+) -> dict[str, str]:
     current_period, current_value = observations[-1]
     _, previous_value = observations[-2]
     value_display = format_value(current_value, definition.unit)
@@ -223,6 +236,91 @@ def build_indicator(definition: IndicatorDefinition) -> dict[str, str]:
         "updated": date.today().isoformat(),
         "status": status,
         "interpretation": build_interpretation(definition, value_display, current_value, previous_value, status),
+    }
+
+
+def build_history_observations(
+    definition: IndicatorDefinition,
+    observations: list[tuple[date, Decimal]],
+) -> list[dict[str, str]]:
+    rows: list[dict[str, str]] = []
+    recent = observations[-HISTORY_OBSERVATION_LIMIT:]
+
+    for index, (period, value) in enumerate(recent):
+        previous_value = recent[index - 1][1] if index > 0 else None
+        row = {
+            "date": period.isoformat(),
+            "period": format_period(period),
+            "value": format_value(value, definition.unit),
+            "raw_value": str(value),
+        }
+
+        if previous_value is not None:
+            change = value - previous_value
+            row["month_over_month_change"] = str(change)
+            row["status"] = status_for(definition, value, previous_value)
+
+        rows.append(row)
+
+    return rows
+
+
+def build_history_payload(snapshot: dict, observations_by_id: dict[str, list[tuple[date, Decimal]]]) -> dict:
+    indicators = []
+    deltas = []
+
+    for definition in INDICATORS:
+        observations = observations_by_id[definition.id]
+        current_period, current_value = observations[-1]
+        previous_period, previous_value = observations[-2]
+        change = current_value - previous_value
+        status = status_for(definition, current_value, previous_value)
+
+        indicators.append(
+            {
+                "id": definition.id,
+                "label": definition.label,
+                "unit": definition.unit,
+                "frequency": "Monthly",
+                "seasonality": "Seasonally adjusted",
+                "series_id": definition.series_id,
+                "source_name": definition.source_name,
+                "source_url": definition.source_url,
+                "release_url": definition.release_url,
+                "observations": build_history_observations(definition, observations),
+            }
+        )
+        deltas.append(
+            {
+                "id": definition.id,
+                "label": definition.label,
+                "current_period": format_period(current_period),
+                "previous_period": format_period(previous_period),
+                "change": str(change),
+                "status": status,
+            }
+        )
+
+    return {
+        "schema_version": "2026-07-21",
+        "endpoint": "/api/labor-stats/history",
+        "snapshot_as_of": snapshot["as_of"],
+        "history_window": {
+            "frequency": "Monthly",
+            "observation_count_per_indicator": HISTORY_OBSERVATION_LIMIT,
+            "start_date": min(rows[-HISTORY_OBSERVATION_LIMIT][0] for rows in observations_by_id.values()).isoformat(),
+            "end_date": max(rows[-1][0] for rows in observations_by_id.values()).isoformat(),
+        },
+        "indicators": indicators,
+        "revisions": [],
+        "deltas": deltas,
+        "sources": snapshot["sources"],
+        "access": {
+            "tier": "premium",
+            "payment_required": True,
+            "payment_protocol": "x402",
+            "public_fallback": "/api/labor-stats/",
+        },
     }
 
 
@@ -267,9 +365,13 @@ def merge_existing_metadata(indicators: list[dict[str, str]], existing: dict) ->
     return indicators, changed
 
 
-def build_payload(existing: dict) -> dict:
+def build_payload(existing: dict) -> tuple[dict, dict]:
+    observations_by_id = {definition.id: fetch_observations(definition) for definition in INDICATORS}
     indicators, indicators_changed = merge_existing_metadata(
-        [build_indicator(definition) for definition in INDICATORS],
+        [
+            build_indicator_from_observations(definition, observations_by_id[definition.id])
+            for definition in INDICATORS
+        ],
         existing,
     )
     today = date.today().isoformat()
@@ -277,7 +379,7 @@ def build_payload(existing: dict) -> dict:
     release_context = existing.get("release_context", {})
     as_of_date = datetime.strptime(as_of, "%Y-%m-%d").date()
 
-    return {
+    snapshot = {
         "as_of": as_of,
         "coverage": "United States",
         "release_context": {
@@ -315,29 +417,43 @@ def build_payload(existing: dict) -> dict:
             "contract_note": "Keep ids, source fields, periods, units, and release metadata stable before exposing paid agent access.",
         },
     }
+    return snapshot, build_history_payload(snapshot, observations_by_id)
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=Path, default=DATA_PATH)
+    parser.add_argument("--history-output", type=Path, default=HISTORY_DATA_PATH)
     parser.add_argument("--check", action="store_true", help="Exit nonzero if the output file would change.")
     args = parser.parse_args()
 
     existing = load_existing(args.output)
-    payload = build_payload(existing)
+    payload, history_payload = build_payload(existing)
     rendered = json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
+    history_rendered = json.dumps(history_payload, indent=2, ensure_ascii=False) + "\n"
 
     if args.check:
-        existing = args.output.read_text(encoding="utf-8") if args.output.exists() else ""
-        if existing != rendered:
-            print(f"{args.output} is not current.", file=sys.stderr)
+        existing_snapshot = args.output.read_text(encoding="utf-8") if args.output.exists() else ""
+        existing_history = args.history_output.read_text(encoding="utf-8") if args.history_output.exists() else ""
+        stale_paths = [
+            str(path)
+            for path, existing_text, new_text in (
+                (args.output, existing_snapshot, rendered),
+                (args.history_output, existing_history, history_rendered),
+            )
+            if existing_text != new_text
+        ]
+        if stale_paths:
+            print(f"{', '.join(stale_paths)} is not current.", file=sys.stderr)
             return 1
-        print(f"{args.output} is current.")
+        print(f"{args.output} and {args.history_output} are current.")
         return 0
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(rendered, encoding="utf-8", newline="\n")
-    print(f"Refreshed {args.output}")
+    args.history_output.parent.mkdir(parents=True, exist_ok=True)
+    args.history_output.write_text(history_rendered, encoding="utf-8", newline="\n")
+    print(f"Refreshed {args.output} and {args.history_output}")
     return 0
 
 
