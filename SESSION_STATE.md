@@ -30,8 +30,9 @@ This section supersedes the historical July handoff below.
 - All workflow YAML parsed; published and source OpenAPI documents match.
 - `git diff --check`: passed (only normal Windows line-ending warnings).
 - Updated local dashboard checked in the in-app browser, including a 390px viewport with no horizontal overflow.
-- `python -m unittest discover -s scripts -p test_publication_health.py -v`: passed, five tests.
+- `python -m unittest discover -s scripts -p test_publication_health.py -v`: passed, six tests, including a Netlify preview with production-canonical RSS links.
 - `python scripts/check_publication_health.py --today 2026-10-01`: intentionally exits 1 on the current production state; reports article September 3, stats source check July 21, and X marker August 7 as stale.
+- Draft PR #4 deploy preview is ready. Public stats/page/favicon returned 200; unpaid paid history returned 402; invalid paid date range returned 400 before payment. Monitor against preview reports refreshed stats pass and stale article/X fail, as expected.
 - Local Hugo preview: `http://localhost:1313/labor-stats/`, output outside the repository.
 
 ### Remaining Work

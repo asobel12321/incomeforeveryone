@@ -67,7 +67,7 @@ def check_articles(base_url: str, today: date, max_days: int) -> str:
     for item in feed.findall("./channel/item"):
         link = urllib.parse.urlsplit(item.findtext("link", ""))
         match = re.fullmatch(rf"/posts/({DATE_PATTERN})/", link.path)
-        if match and link.netloc == urllib.parse.urlsplit(base_url).netloc:
+        if match:
             # Hugo's midnight UTC pubDate is the prior evening in New York;
             # the dated article URL is the intended editorial publication day.
             dates.append(parse_date(match.group(1)))

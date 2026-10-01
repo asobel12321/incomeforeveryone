@@ -45,6 +45,18 @@ class PublicationHealthTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     health.check_articles(BASE, TODAY, 1)
 
+    def test_preview_feed_uses_preview_for_article_check(self):
+        preview = "https://deploy-preview-4--incomeforeveryone.netlify.app"
+        urls = []
+
+        def fake_fetch(url, _types):
+            urls.append(url)
+            return feed("2026-09-30") if url.endswith(".xml") else b"<html></html>"
+
+        with patch.object(health, "fetch_bytes", side_effect=fake_fetch):
+            health.check_articles(preview, TODAY, 1)
+        self.assertEqual(urls[-1], f"{preview}/posts/2026-09-30/")
+
     def test_stats_use_oldest_source_check_not_monthly_snapshot_age(self):
         with patch.object(health, "fetch_bytes", return_value=stats("2026-09-30", "2026-09-26")):
             self.assertIn("2026-09-26", health.check_stats(BASE, TODAY, 5))
