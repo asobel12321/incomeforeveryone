@@ -5,4 +5,4 @@ layout: "list"
 hideMeta: true
 ---
 
-These indicators are a compact public snapshot of the labor market behind the automation and income-security story. The data is intentionally structured so it can later power an agent-readable endpoint.
+These monthly indicators track the labor market behind the automation and income-security story. Values are seasonally adjusted and may be revised by the source agencies.

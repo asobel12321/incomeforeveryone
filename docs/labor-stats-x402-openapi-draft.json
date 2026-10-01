@@ -3,11 +3,11 @@
   "info": {
     "title": "Income For Everyone Labor Stats API",
     "version": "2026-07-21",
-    "description": "Labor-market snapshot and planned paid history API for agents tracking automation, employment, wages, and labor slack.",
+    "description": "Public labor-market snapshot and x402-paid recent monthly observations for agents tracking employment, wages, and labor slack.",
     "contact": {
       "url": "https://incomeforeveryone.org/about/"
     },
-    "x-guidance": "Use GET /api/labor-stats for the latest free public snapshot. Use GET /api/labor-stats/history only after x402 launch when you need historical snapshots, revisions, deltas, and agent-oriented comparison metadata."
+    "x-guidance": "Use GET /api/labor-stats for the latest free snapshot. Paid history returns up to 13 recent monthly observations per indicator with inclusive from/to date filters. Revisions is reserved and empty; historical data vintages are not tracked."
   },
   "servers": [
     {
@@ -65,7 +65,7 @@
               "type": "string",
               "format": "date"
             },
-            "description": "Optional inclusive start date for historical snapshots."
+            "description": "Optional inclusive observation start date (YYYY-MM-DD)."
           },
           {
             "name": "to",
@@ -75,12 +75,15 @@
               "type": "string",
               "format": "date"
             },
-            "description": "Optional inclusive end date for historical snapshots."
+            "description": "Optional inclusive observation end date (YYYY-MM-DD)."
           }
         ],
         "responses": {
+          "400": {
+            "description": "Invalid, duplicate, unknown, reversed, or empty observation range. Rejected before payment."
+          },
           "200": {
-            "description": "Historical premium labor stats payload after successful x402 payment.",
+            "description": "Recent monthly observations and changes after successful x402 payment. Deltas compare the last two returned observations for each indicator; indicators with fewer than two observations have no delta.",
             "content": {
               "application/json": {
                 "schema": {
@@ -419,6 +422,7 @@
           },
           "observation_count_per_indicator": {
             "type": "integer",
+            "description": "Maximum returned observation count across indicators. Individual series may have fewer observations.",
             "minimum": 1
           },
           "start_date": {

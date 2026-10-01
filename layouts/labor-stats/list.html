@@ -30,8 +30,8 @@
       <strong>{{ time.Format "January 2, 2006" $stats.as_of }}</strong>
     </div>
     <div>
-      <span>Next employment release</span>
-      <strong>{{ time.Format "January 2, 2006" $stats.release_context.next_employment_release }}</strong>
+      <span>Release calendar</span>
+      <strong><a href="https://www.bls.gov/schedule/">BLS release schedule</a></strong>
     </div>
   </div>
 
@@ -64,15 +64,15 @@
   <section class="labor-data-contract" aria-labelledby="labor-data-contract-title">
     <div>
       <p class="section-kicker">Agent-ready path</p>
-      <h2 id="labor-data-contract-title">Structured for a future paid endpoint</h2>
+      <h2 id="labor-data-contract-title">Labor data API</h2>
       <p>
         The public page is backed by stable IDs, units, periods, source URLs, and release metadata.
-        That same shape supports <code>{{ $access.public.endpoint }}</code>, while paid history is planned for <code>{{ $access.premium.endpoint }}</code>.
+        The latest snapshot is free at <code>{{ $access.public.endpoint }}</code>. Recent monthly observations and changes are available at <code>{{ $access.premium.endpoint }}</code> with x402 payment.
       </p>
     </div>
     <dl>
       <div>
-        <dt>Candidate endpoint</dt>
+        <dt>Public endpoint</dt>
         <dd><code>{{ $access.public.endpoint }}</code></dd>
       </div>
       <div>
@@ -84,7 +84,7 @@
         <dd>{{ $access.premium.payment_protocol }}</dd>
       </div>
       <div>
-        <dt>Candidate price</dt>
+        <dt>Price</dt>
         <dd>{{ $access.premium.price.display }}</dd>
       </div>
     </dl>

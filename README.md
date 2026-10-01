@@ -10,7 +10,7 @@ Hugo/PaperMod site for publishing daily AI labor and automation posts.
 4. Commit and push to `origin/main`.
 5. Netlify builds the site with `hugo` and publishes `public/` to `https://incomeforeveryone.org/`.
 
-The source repo is `C:\Users\asobe\Documents\incomeforeveryone`. The similarly named folder at `C:\Users\asobe\incomeforeveryone` is an unused Hugo scaffold.
+The active source repo is `C:\Users\asobe\Projects\Active\incomeforeveryone`.
 
 ## Faster Daily Workflow
 
@@ -43,11 +43,13 @@ git push
 This repo includes a GitHub Actions workflow at `.github/workflows/daily-labor-watch.yml`.
 Netlify scheduled functions trigger that workflow because GitHub scheduled Actions proved unreliable for this repo.
 
+A GitHub-native backup runs at `14:15 UTC` independently of the Netlify dispatch token. Both schedulers use the same concurrency group and skip an article that already exists for the date. GitHub schedules may be delayed; keep the Netlify schedules as the primary path when its credential is valid.
+
 It runs every day at `13:30 UTC`, which is `9:30 AM America/New_York` during daylight saving time, with a `14:00 UTC` backup trigger. The workflow:
 
 1. Calls the OpenAI Responses API with web search.
 2. Creates `content/posts/YYYY-MM-DD.md`.
-3. Runs `hugo`.
+3. Runs `hugo` into a runner temporary directory so tracked `public/` files cannot block the commit/rebase/push step.
 4. Commits and pushes the new post.
 5. Lets Netlify publish from the pushed commit.
 
@@ -74,6 +76,8 @@ Netlify triggers it every day at `15:30 UTC`, which gives the daily article work
 4. Posts to X.
 5. Writes `data/x-posted/YYYY-MM-DD.json` and commits it so reruns skip duplicate posts.
 
+A GitHub-native backup runs at `15:45 UTC` with the same concurrency group and date markers. Both paths require available X API credits. HTTP 402 `credits depleted` requires account billing action; changing authentication secrets does not fix it.
+
 Required GitHub setup:
 
 1. Go to `Settings` -> `Secrets and variables` -> `Actions`.
@@ -90,6 +94,18 @@ python scripts/post_daily_x_headline.py --date YYYY-MM-DD --dry-run
 ```
 
 You can run a real post manually from GitHub Actions by opening `Daily X headline post` and entering a date.
+
+## Publication Health
+
+`.github/workflows/publication-health.yml` checks the deployed daily article feed and article URL, deployed public labor-stats API source-check dates, and the latest committed X publication marker. It runs every day at `21:45 UTC`, after the article and X schedules, and can also be run manually. It uses no API credentials and never posts to X. A failed check appears as a failed GitHub Actions run with all three results in its job summary.
+
+Run the same read-only check locally:
+
+```powershell
+python scripts/check_publication_health.py
+```
+
+The article and X limits are one calendar day, and the stats source-check limit is four days to allow for weekends. The X result is based on a committed marker, not a live X API query. If X posting is intentionally paused, its check will continue to fail until the monitor is updated to reflect that decision.
 
 ## Labor Stats Section
 
@@ -108,18 +124,19 @@ python scripts/refresh_labor_stats.py
 hugo
 ```
 
-The `.github/workflows/refresh-labor-stats.yml` workflow refreshes public FRED-backed series on weekday mornings and commits `data/labor_stats.json` only when values actually change. It does not require secrets.
-The same refresh also writes `data/labor_stats_history.json`, a compact premium-candidate history payload for `/api/labor-stats/history`.
+The `.github/workflows/refresh-labor-stats.yml` workflow refreshes public FRED-backed series on weekdays and commits the snapshot and history when their contents change, including source-check dates. It does not require secrets. Its Hugo validation writes outside tracked `public/`, allowing a clean rebase before pushing.
+The same refresh writes `data/labor_stats_history.json`, containing up to 13 recent monthly observations per indicator. Upcoming release dates are omitted because the refresher does not maintain a release calendar; the dashboard links directly to the official BLS schedule.
 
 Agent-readable access:
 
 - `/api/labor-stats/` renders the same public data as JSON for agents and lightweight integrations.
-- The endpoint is public and ungated today. Its response includes access metadata reserved for a future x402-paid tier and Merit Systems/x402scan listing.
+- The snapshot endpoint is public and ungated. Its response includes metadata for the x402-paid history endpoint.
 - Paid-access prep lives in `data/labor_stats_access.json` and `docs/labor-stats-x402.md`.
 - `/openapi.json` publishes the agent discovery contract for the public snapshot and paid history route.
-- Candidate paid route: `/api/labor-stats/history`, intended for historical snapshots, revisions, deltas, and agent-oriented comparison metadata.
+- Paid route: `/api/labor-stats/history`, with recent monthly observations, monthly changes, and source metadata. Inclusive `from` and `to` filters accept `YYYY-MM-DD` dates. Invalid, duplicate, unsupported, reversed, or empty ranges return 400 before payment. Each delta compares the last two returned observations; series with fewer than two have no delta. `observation_count_per_indicator` is the maximum returned count across series, which may have different coverage.
+- Revision vintages are not tracked. The `revisions` array is reserved and currently empty; this service does not reconstruct previously published values.
 - `netlify/functions/labor-stats-history.mjs` uses the x402 SDK for request-time payment challenge, verification, and settlement. It stays disabled until Netlify x402 configuration is explicitly set.
-- Local/dev bypass: set `NETLIFY_DEV=true` or `X402_LABOR_STATS_DEV_BYPASS=true` outside production to return `data/labor_stats_history.json` without payment while testing the payload shape.
+- Local/dev bypass: set `NETLIFY_DEV=true` or `X402_LABOR_STATS_DEV_BYPASS=true` outside production to inspect the history response without payment. Both flags are blocked when `CONTEXT=production`.
 - Production defaults target Base mainnet USDC: `X402_NETWORK=eip155:8453`, `X402_ASSET=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`, and `X402_AMOUNT_ATOMIC=10000` (`$0.01` USDC). Set `X402_PAY_TO`, `X402_FACILITATOR_URL`, and `X402_LABOR_STATS_ENABLED=true` in Netlify before launch.
 - If the chosen production facilitator requires an API key or bearer token, set `X402_FACILITATOR_AUTH_HEADER_NAME` and `X402_FACILITATOR_AUTH_HEADER_VALUE` in Netlify. Do not commit facilitator credentials to the repository.
 
@@ -130,7 +147,7 @@ npm.cmd run check:functions
 npm.cmd run check:x402
 ```
 
-The x402 check covers disabled mode, local/dev bypass, and method rejection without network access. To also verify a real testnet `PAYMENT-REQUIRED` challenge against the public x402 facilitator:
+The x402 check covers disabled mode, local/dev bypass, production bypass rejection, date filtering, invalid ranges before payment, and method rejection without network access. To also verify a real testnet `PAYMENT-REQUIRED` challenge against the public x402 facilitator:
 
 ```powershell
 $env:CHECK_X402_TESTNET_CHALLENGE='true'; npm.cmd run check:x402; Remove-Item Env:CHECK_X402_TESTNET_CHALLENGE

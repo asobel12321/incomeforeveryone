@@ -1,5 +1,49 @@
 # Session State
 
+## Current Repair Session - September 30, 2026
+
+This section supersedes the historical July handoff below.
+
+- Workspace: `C:/Users/asobe/Projects/Active/incomeforeveryone`.
+- Branch: `codex/repair-publishing`, based on remote main `6dedacc`.
+- Local main was fast-forwarded by 153 commits. Previously untracked local instruction/handoff files are preserved at `C:/Users/asobe/AppData/Local/Temp/ife-local-notes-db8b5b44779f40c4a5b5cfa6881f2473/`.
+- The audit is recorded in `docs/AUDIT-2026-09-30.md`.
+- Repair changes are on `codex/repair-publishing` awaiting review and merge. No production deployment, credential change, payment, or X publication was performed.
+
+### Changes
+
+- `.github/workflows/refresh-labor-stats.yml` and `daily-labor-watch.yml`: Hugo validates into runner temporary output, avoiding tracked `public/` changes that broke stats rebases since July 22.
+- Article and X workflows now have GitHub-native backup schedules (14:15 / 15:45 UTC), independent of the invalid Netlify dispatch credential. Article checkout explicitly uses current main; article/X pushes rebase after committing.
+- `scripts/refresh_labor_stats.py`, both generated labor data files, and `layouts/labor-stats/list.html`: September 30 refresh with August observations; omit unsupported upcoming-release dates and link the official BLS calendar.
+- `netlify/functions/labor-stats-history.mjs`: inclusive date filtering; reject malformed, duplicate, unsupported, reversed, or empty ranges before payment; recompute returned window/deltas; block dev bypass in production; require explicit payment verification before settlement/fulfillment.
+- `scripts/check_labor_stats_x402.mjs`: regression checks for filters, invalid ranges, and production bypass rejection.
+- Access metadata, dashboard content, README, project map, and both OpenAPI contracts now describe implemented recent observations rather than unimplemented revision history. Browser favicon points to the existing SVG.
+- `.github/workflows/publication-health.yml`, `scripts/check_publication_health.py`, and `scripts/test_publication_health.py`: added daily read-only checks for deployed article/stats freshness and the latest committed X marker. The job summary reports every failed component.
+
+### Verification
+
+- Live FRED refresh and subsequent `--check`: passed.
+- Hugo 0.145.0 build: passed, 126 pages; temporary output and no tracked public changes.
+- Python compilation for all three automation scripts: passed.
+- `npm.cmd run check:functions` and expanded `npm.cmd run check:x402`: passed.
+- `CHECK_X402_TESTNET_CHALLENGE=true` x402 check: passed with a real unpaid testnet challenge; no transaction performed.
+- All workflow YAML parsed; published and source OpenAPI documents match.
+- `git diff --check`: passed (only normal Windows line-ending warnings).
+- Updated local dashboard checked in the in-app browser, including a 390px viewport with no horizontal overflow.
+- `python -m unittest discover -s scripts -p test_publication_health.py -v`: passed, five tests.
+- `python scripts/check_publication_health.py --today 2026-10-01`: intentionally exits 1 on the current production state; reports article September 3, stats source check July 21, and X marker August 7 as stale.
+- Local Hugo preview: `http://localhost:1313/labor-stats/`, output outside the repository.
+
+### Remaining Work
+
+1. Review and merge the repair branch, then verify GitHub workflow and Netlify deploy results. Backup schedules and publication monitoring only become active on main. Production is still on September 3 source until merge/deployment.
+2. The credential owner must repair Netlify `GITHUB_WORKFLOW_TOKEN`; all three September 30 scheduler logs report GitHub 401 Bad credentials. Project instructions prohibit modifying deployment credentials here.
+3. X API billing needs attention: confirmed HTTP 402 credits depleted since August 8; latest successful post August 7. No account billing action was taken.
+4. Fresh article generation against the current OpenAI account and paid history settlement/fulfillment remain untested.
+5. The new monitor is local until published; verify its first scheduled/manual run after the branch reaches main. Further scope: editorial/source validation and dependency action-version maintenance.
+
+## Historical July Handoff
+
 ## Objective
 
 Continue Income For Everyone labor stats work after the public feature and refresh hardening PRs merged. Current phase: production x402 configuration and deploy-preview verification before publishing discovery metadata for the labor stats API.

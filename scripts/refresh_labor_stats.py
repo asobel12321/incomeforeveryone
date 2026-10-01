@@ -376,7 +376,6 @@ def build_payload(existing: dict) -> tuple[dict, dict]:
     )
     today = date.today().isoformat()
     as_of = today if indicators_changed else existing.get("as_of", today)
-    release_context = existing.get("release_context", {})
     as_of_date = datetime.strptime(as_of, "%Y-%m-%d").date()
 
     snapshot = {
@@ -387,8 +386,6 @@ def build_payload(existing: dict) -> tuple[dict, dict]:
                 "Latest monthly labor-market releases available as of "
                 f"{as_of_date.strftime('%B')} {as_of_date.day}, {as_of_date.year}"
             ),
-            "next_employment_release": release_context.get("next_employment_release", ""),
-            "next_jolts_release": release_context.get("next_jolts_release", ""),
             "note": "Values are public, seasonally adjusted headline indicators from BLS series as displayed by FRED. Data may be revised.",
         },
         "indicators": indicators,
