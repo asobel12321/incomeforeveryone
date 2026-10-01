@@ -1,6 +1,6 @@
 # Session State
 
-## Current Repair Session - September 30, 2026
+## Current Repair Session - October 1, 2026
 
 This section supersedes the historical July handoff below.
 
@@ -8,7 +8,7 @@ This section supersedes the historical July handoff below.
 - Branch: `codex/repair-publishing`, based on remote main `6dedacc`.
 - Local main was fast-forwarded by 153 commits. Previously untracked local instruction/handoff files are preserved at `C:/Users/asobe/AppData/Local/Temp/ife-local-notes-db8b5b44779f40c4a5b5cfa6881f2473/`.
 - The audit is recorded in `docs/AUDIT-2026-09-30.md`.
-- Repair changes are on `codex/repair-publishing` awaiting review and merge. No production deployment, credential change, payment, or X publication was performed.
+- Repair changes are on `codex/repair-publishing` in PR #4, awaiting merge. No production deployment, credential change, payment, or X publication was performed.
 
 ### Changes
 
@@ -32,12 +32,14 @@ This section supersedes the historical July handoff below.
 - Updated local dashboard checked in the in-app browser, including a 390px viewport with no horizontal overflow.
 - `python -m unittest discover -s scripts -p test_publication_health.py -v`: passed, six tests, including a Netlify preview with production-canonical RSS links.
 - `python scripts/check_publication_health.py --today 2026-10-01`: intentionally exits 1 on the current production state; reports article September 3, stats source check July 21, and X marker August 7 as stale.
-- Draft PR #4 deploy preview is ready. Public stats/page/favicon returned 200; unpaid paid history returned 402; invalid paid date range returned 400 before payment. Monitor against preview reports refreshed stats pass and stale article/X fail, as expected.
+- PR #4 deploy preview is ready. Public stats/page/favicon returned 200; unpaid paid history returned 402; invalid paid date range returned 400 before payment. Monitor against preview reports refreshed stats pass and stale article/X fail, as expected.
 - Local Hugo preview: `http://localhost:1313/labor-stats/`, output outside the repository.
+- October 1 PR review: branch is clean and mergeable, with a successful Netlify preview check. Reviewed the workflow, paid-route, monitoring, metadata, and documentation diffs; no release-blocking code issue found.
+- October 1 repeat checks: six monitor tests, Python compilation, `npm.cmd run check:functions`, `npm.cmd run check:x402`, and Hugo 0.145.0 build (126 pages) passed. Deploy preview returned 200 for the public API, 402 for unpaid history, and 400 for an invalid date range.
 
 ### Remaining Work
 
-1. Review and merge the repair branch, then verify GitHub workflow and Netlify deploy results. Backup schedules and publication monitoring only become active on main. Production is still on September 3 source until merge/deployment.
+1. Merge the reviewed repair branch when approved, then verify GitHub workflow and Netlify deploy results. Backup schedules and publication monitoring only become active on main. Production is still on September 3 source until merge/deployment.
 2. The credential owner must repair Netlify `GITHUB_WORKFLOW_TOKEN`; all three September 30 scheduler logs report GitHub 401 Bad credentials. Project instructions prohibit modifying deployment credentials here.
 3. X API billing needs attention: confirmed HTTP 402 credits depleted since August 8; latest successful post August 7. No account billing action was taken.
 4. Fresh article generation against the current OpenAI account and paid history settlement/fulfillment remain untested.
