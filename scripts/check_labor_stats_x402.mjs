@@ -1,4 +1,5 @@
 import handler from "../netlify/functions/labor-stats-history.mjs";
+import assert from "node:assert/strict";
 
 const route = "https://incomeforeveryone.org/api/labor-stats/history";
 
@@ -102,6 +103,64 @@ async function checkMethodRejection() {
   if (body.error !== "method_not_allowed") fail(`POST returned ${body.error}, expected method_not_allowed.`);
 }
 
+async function checkDateRanges() {
+  await withTemporaryEnv({ NETLIFY_DEV: "true", CONTEXT: "dev" }, async () => {
+    const full = await parseJsonResponse(await handler(new Request(route)));
+    const from = full.indicators[0].observations[3].date;
+    const to = full.indicators[0].observations[5].date;
+    const response = await handler(new Request(`${route}?from=${from}&to=${to}`));
+    assert.equal(response.status, 200);
+    const filtered = await parseJsonResponse(response);
+    assert.equal(filtered.indicators[0].observations.length, 3);
+    assert.equal(filtered.history_window.start_date, from);
+    assert.equal(filtered.history_window.end_date, to);
+    assert.equal(filtered.history_window.observation_count_per_indicator, 3);
+    for (const indicator of filtered.indicators) {
+      assert.ok(indicator.observations.every((row) => row.date >= from && row.date <= to));
+      if (indicator.observations.length) {
+        assert.equal(indicator.observations[0].month_over_month_change, undefined);
+      }
+    }
+    const current = full.indicators[0].observations[5];
+    assert.equal(filtered.deltas[0].current_period, current.period);
+    assert.equal(filtered.deltas[0].change, current.month_over_month_change);
+
+    const single = await parseJsonResponse(await handler(new Request(`${route}?from=${from}&to=${from}`)));
+    assert.equal(single.indicators[0].observations.length, 1);
+    assert.deepEqual(single.deltas, []);
+    const since = await parseJsonResponse(await handler(new Request(`${route}?from=${to}`)));
+    assert.equal(since.indicators[0].observations.length, 8);
+    const until = await parseJsonResponse(await handler(new Request(`${route}?to=${from}`)));
+    assert.equal(until.indicators[0].observations.length, 4);
+    const unchanged = await parseJsonResponse(await handler(new Request(route)));
+    assert.deepEqual(unchanged, full);
+  });
+
+  // Invalid input must fail before even contacting a payment facilitator.
+  await withTemporaryEnv({
+    NETLIFY_DEV: undefined,
+    CONTEXT: "production",
+    X402_LABOR_STATS_ENABLED: "true",
+    X402_PAY_TO: "0x000000000000000000000000000000000000dEaD",
+    X402_FACILITATOR_URL: "https://invalid.example",
+  }, async () => {
+    for (const query of ["from=2026-02-30", "from=2026-13-01", "from=", "from=nope",
+      "from=2026-02-01&to=2026-01-01", "from=2026-01-01&from=2026-02-01",
+      "unexpected=true", "from=2099-01-01"]) {
+      const response = await handler(new Request(`${route}?${query}`));
+      assert.equal(response.status, 400, query);
+      assert.equal((await parseJsonResponse(response)).error, "invalid_date_range");
+    }
+  });
+}
+
+async function checkProductionBypassBlocked() {
+  await withTemporaryEnv({ CONTEXT: "production", NETLIFY_DEV: "true",
+    X402_LABOR_STATS_DEV_BYPASS: "true", X402_LABOR_STATS_ENABLED: undefined }, async () => {
+    assert.equal((await handler(new Request(route))).status, 503);
+  });
+}
+
 async function checkConfiguredChallenge() {
   if (process.env.CHECK_X402_TESTNET_CHALLENGE !== "true") {
     console.log("Skipping configured x402 challenge check; set CHECK_X402_TESTNET_CHALLENGE=true to enable it.");
@@ -167,6 +226,8 @@ async function checkConfiguredChallenge() {
 await checkDisabledPath();
 await checkDevBypassPath();
 await checkMethodRejection();
+await checkDateRanges();
+await checkProductionBypassBlocked();
 await checkConfiguredChallenge();
 
 console.log("labor stats x402 checks passed");

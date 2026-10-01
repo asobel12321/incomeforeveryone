@@ -82,6 +82,7 @@ async function facilitatorAuthHeaders(config) {
 }
 
 function devBypassEnabled() {
+  if (process.env.CONTEXT === "production") return false;
   return (
     process.env.NETLIFY_DEV === "true" ||
     (process.env.X402_LABOR_STATS_DEV_BYPASS === "true" && process.env.CONTEXT !== "production")
@@ -91,6 +92,68 @@ function devBypassEnabled() {
 async function loadHistoryPayload() {
   const raw = await readFile(join(process.cwd(), "data", "labor_stats_history.json"), "utf8");
   return JSON.parse(raw);
+}
+
+function readDateRange(request) {
+  const params = new URL(request.url).searchParams;
+  for (const key of params.keys()) {
+    if (!["from", "to"].includes(key) || params.getAll(key).length !== 1) {
+      throw new RangeError("Use only one from and one to parameter.");
+    }
+  }
+  const range = { from: params.get("from"), to: params.get("to") };
+  for (const value of Object.values(range)) {
+    if (value === null) continue;
+    const parsed = new Date(`${value}T00:00:00Z`);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value) || !Number.isFinite(parsed.getTime()) ||
+        parsed.toISOString().slice(0, 10) !== value) {
+      throw new RangeError("Dates must be valid YYYY-MM-DD calendar dates.");
+    }
+  }
+  if (range.from && range.to && range.from > range.to) {
+    throw new RangeError("from must be on or before to.");
+  }
+  return range;
+}
+
+function filterHistory(payload, range) {
+  if (!range.from && !range.to) return payload;
+  const indicators = payload.indicators.map((indicator) => {
+    const observations = indicator.observations
+      .filter((row) => (!range.from || row.date >= range.from) && (!range.to || row.date <= range.to))
+      .map((row) => ({ ...row }));
+    // The first returned month has no preceding observation within this range.
+    if (observations.length) {
+      delete observations[0].month_over_month_change;
+      delete observations[0].status;
+    }
+    return { ...indicator, observations };
+  });
+  const dates = indicators.flatMap((indicator) => indicator.observations.map((row) => row.date)).sort();
+  if (!dates.length) throw new RangeError("No observations are available in the requested range.");
+  const deltas = indicators.filter((indicator) => indicator.observations.length >= 2).map((indicator) => {
+    const current = indicator.observations.at(-1);
+    const previous = indicator.observations.at(-2);
+    return {
+      id: indicator.id,
+      label: indicator.label,
+      current_period: current.period,
+      previous_period: previous.period,
+      change: current.month_over_month_change,
+      status: current.status,
+    };
+  });
+  return {
+    ...payload,
+    indicators,
+    deltas,
+    history_window: {
+      ...payload.history_window,
+      observation_count_per_indicator: Math.max(...indicators.map((indicator) => indicator.observations.length)),
+      start_date: dates[0],
+      end_date: dates.at(-1),
+    },
+  };
 }
 
 function createAdapter(request) {
@@ -308,7 +371,7 @@ async function getPaymentServer(config) {
           },
         ],
         description:
-          "Historical labor-market snapshots, revisions, deltas, and agent-oriented comparison metadata.",
+          "Recent monthly labor-market observations, month-over-month changes, and source metadata.",
         mimeType: "application/json",
         resource: `https://incomeforeveryone.org${premiumRoute}`,
         serviceName: "Income For Everyone Labor Stats History API",
@@ -336,21 +399,9 @@ export default async (request) => {
 
   const config = x402Config();
   const missing = missingConfig(config);
+  const devBypass = devBypassEnabled();
 
-  if (devBypassEnabled()) {
-    const payload = await loadHistoryPayload();
-    return jsonResponse(200, {
-      ...payload,
-      access: {
-        ...payload.access,
-        dev_bypass: true,
-        payment_verified: false,
-        warning: "Local/dev bypass only. Production must verify and settle x402 payment before fulfillment.",
-      },
-    });
-  }
-
-  if (!config.enabled || missing.length > 0) {
+  if (!devBypass && (!config.enabled || missing.length > 0)) {
     return jsonResponse(503, {
       error: "premium_route_not_configured",
       endpoint: premiumRoute,
@@ -368,6 +419,29 @@ export default async (request) => {
       ],
       missing_configuration: config.enabled ? missing : ["enabled"],
       public_fallback: "/api/labor-stats/",
+    });
+  }
+
+  let payload;
+  try {
+    const range = readDateRange(request);
+    payload = filterHistory(await loadHistoryPayload(), range);
+  } catch (error) {
+    if (error instanceof RangeError) {
+      return jsonResponse(400, { error: "invalid_date_range", detail: error.message });
+    }
+    return jsonResponse(503, { error: "history_unavailable", public_fallback: "/api/labor-stats/" });
+  }
+
+  if (devBypass) {
+    return jsonResponse(200, {
+      ...payload,
+      access: {
+        ...payload.access,
+        dev_bypass: true,
+        payment_verified: false,
+        warning: "Local/dev bypass only. Production must verify and settle x402 payment before fulfillment.",
+      },
     });
   }
 
@@ -395,7 +469,9 @@ export default async (request) => {
     return responseFromInstructions(paymentResult.response);
   }
 
-  const payload = await loadHistoryPayload();
+  if (paymentResult.type !== "payment-verified") {
+    return jsonResponse(503, { error: "payment_verification_required" });
+  }
   const body = JSON.stringify({
     ...payload,
     access: {

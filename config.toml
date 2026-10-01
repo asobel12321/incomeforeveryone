@@ -23,6 +23,9 @@ theme = "PaperMod"
   Title = "Tracking the labor shock behind the AI boom"
   Content = "Income For Everyone is a daily record of how AI and automation are changing work, weakening job security, and moving Universal Basic Income from theory toward practical policy."
 
+[params.assets]
+  favicon = "/favicon.svg"
+
 [[menu.main]]
   identifier = "posts"
   name = "Briefs"

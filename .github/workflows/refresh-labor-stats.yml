@@ -38,7 +38,7 @@ jobs:
         run: python scripts/refresh_labor_stats.py
 
       - name: Build site
-        run: hugo
+        run: hugo --destination "$RUNNER_TEMP/hugo-validation"
 
       - name: Commit and push data
         run: |
