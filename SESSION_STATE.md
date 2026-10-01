@@ -5,10 +5,10 @@
 This section supersedes the historical July handoff below.
 
 - Workspace: `C:/Users/asobe/Projects/Active/incomeforeveryone`.
-- Branch: `codex/repair-publishing`, based on remote main `6dedacc`.
+- Branch: `codex/repair-publishing`, fast-forwarded to deployed main `9371320` after PR #4 merged.
 - Local main was fast-forwarded by 153 commits. Previously untracked local instruction/handoff files are preserved at `C:/Users/asobe/AppData/Local/Temp/ife-local-notes-db8b5b44779f40c4a5b5cfa6881f2473/`.
 - The audit is recorded in `docs/AUDIT-2026-09-30.md`.
-- Repair changes are on `codex/repair-publishing` in PR #4, awaiting merge. No production deployment, credential change, payment, or X publication was performed.
+- PR #4 merged into main as `835a001` on October 1. The manual stats refresh pushed `9371320`, and production now serves the refreshed data. No credential change, payment, or X publication was performed.
 
 ### Changes
 
@@ -36,10 +36,12 @@ This section supersedes the historical July handoff below.
 - Local Hugo preview: `http://localhost:1313/labor-stats/`, output outside the repository.
 - October 1 PR review: branch is clean and mergeable, with a successful Netlify preview check. Reviewed the workflow, paid-route, monitoring, metadata, and documentation diffs; no release-blocking code issue found.
 - October 1 repeat checks: six monitor tests, Python compilation, `npm.cmd run check:functions`, `npm.cmd run check:x402`, and Hugo 0.145.0 build (126 pages) passed. Deploy preview returned 200 for the public API, 402 for unpaid history, and 400 for an invalid date range.
+- Post-merge production served the new OpenAPI description and rejected an invalid paid date range with 400. Manual GitHub Actions stats refresh [run 36860582204](https://github.com/asobel12321/incomeforeveryone/actions/runs/36860582204) passed fetch, Hugo build, commit, and push; main advanced to `9371320`.
+- Production public API now reports `last_checked: 2026-10-01` for all three sources; unpaid history returns 402. Read-only health check: labor stats PASS, articles FAIL (latest September 3), X marker FAIL (latest August 7).
 
 ### Remaining Work
 
-1. Merge the reviewed repair branch when approved, then verify GitHub workflow and Netlify deploy results. Backup schedules and publication monitoring only become active on main. Production is still on September 3 source until merge/deployment.
+1. Verify the first GitHub-native article backup and publication-health scheduled runs on main. Article backup starts at 14:15 UTC; health check starts at 21:45 UTC. Current production article remains September 3 until generation succeeds.
 2. The credential owner must repair Netlify `GITHUB_WORKFLOW_TOKEN`; all three September 30 scheduler logs report GitHub 401 Bad credentials. Project instructions prohibit modifying deployment credentials here.
 3. X API billing needs attention: confirmed HTTP 402 credits depleted since August 8; latest successful post August 7. No account billing action was taken.
 4. Fresh article generation against the current OpenAI account and paid history settlement/fulfillment remain untested.
