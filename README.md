@@ -156,6 +156,16 @@ $env:CHECK_X402_TESTNET_CHALLENGE='true'; npm.cmd run check:x402; Remove-Item En
 ## Quality Rules
 
 - Prefer primary reporting and official data: Reuters, AP, Bloomberg, BLS, company filings, government agencies, major newspapers, and credible research.
+- Articles can set `source_quality` front matter for the public trust box:
+
+```yaml
+source_quality:
+  primary_sources: "Reuters/AP/company filings"
+  official_data: "BLS JOLTS and jobless claims"
+  uncertainty: "Medium"
+```
+
+Use `Low`, `Medium`, or `High` uncertainty. Older posts without this metadata display conservative default notes.
 - Do not publish placeholder links like `[Link here]` or `[Read more]` without a descriptive title.
 - Do not publish ChatGPT citation artifacts, `oaicite`, or invisible zero-width references.
 - Lead post titles with the concrete news angle, not a repeated series label like `AI & Labor Watch`.
