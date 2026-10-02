@@ -5,4 +5,5 @@ public/
 node_modules/
 .netlify/
 __pycache__/
+newsletter-preview/
 *.py[cod]

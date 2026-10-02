@@ -13,6 +13,7 @@ This is a Hugo site with Netlify deployment configuration.
 - `data/labor_stats_access.json` - Public vs paid labor stats boundary, candidate pricing, x402 metadata, and listing prep fields.
 - `data/labor_stats_history.json` - Compact premium-candidate history payload generated from recent FRED observations.
 - `docs/labor-stats-x402.md` - x402 paid-access plan, runtime notes, pricing, and listing readiness checklist.
+- `docs/AI_JOBS_BRIEF.md` - Newsletter feed and free Brevo launch steps.
 - `docs/labor-stats-x402-openapi-draft.json` - Source draft for the public snapshot and paid history OpenAPI contract.
 - `i18n/` - Localization files.
 - `layouts/` - Hugo templates and layout overrides.
@@ -27,6 +28,7 @@ This is a Hugo site with Netlify deployment configuration.
 - `scripts/refresh_labor_stats.py` - Also refreshes `data/labor_stats_history.json` for the candidate paid history route.
 - `scripts/check_labor_stats_x402.mjs` - Verifies the paid labor stats function in disabled, dev-bypass, method rejection, and optional testnet challenge modes.
 - `scripts/check_publication_health.py` - Read-only deployed article/stats and committed X marker freshness checks.
+- `scripts/prepare_newsletter.py` - Prepares local HTML and plain-text AI Jobs Brief editions from published daily articles; it does not send mail.
 - `scripts/test_publication_health.py` - Focused tests for stale/future dates, source-check freshness, marker validity, and aggregate reporting.
 - `static/` - Static files copied into the site output.
 - `static/_headers` - Netlify response headers, including JSON content type for the labor stats API routes and `/openapi.json`.
@@ -48,6 +50,8 @@ This is a Hugo site with Netlify deployment configuration.
 - Prefer existing Hugo and Netlify conventions in this repository.
 - Check `README.md` and `netlify.toml` for the current build command before changing deployment behavior.
 - Netlify scheduled functions trigger the daily post workflow and the daily tweet brief.
+- `/newsletter/` links to a Brevo-hosted signup form when `params.newsletterSignupURL` is set; the site does not collect addresses.
+- `/ai-jobs-brief.xml` is a dedicated full-content RSS feed restricted to dated daily posts. `layouts/home.aijobsbrief.xml` renders it; provider setup is documented in `docs/AI_JOBS_BRIEF.md`.
 - GitHub-native backups run the article workflow at 14:15 UTC and X workflow at 15:45 UTC, independently of the Netlify dispatch credential. Existing concurrency groups and per-date files prevent duplicate publication.
 - `.github/workflows/publication-health.yml` checks deployed article and stats freshness plus the recorded X marker at 21:45 UTC daily. A failed run summarizes all failed components; it does not repair or publish anything.
 - CI Hugo validation writes to `$RUNNER_TEMP/hugo-validation`, not tracked `public/`, so generated output cannot prevent the automation's rebase-before-push.

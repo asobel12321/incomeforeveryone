@@ -64,6 +64,20 @@ Required GitHub setup:
 
 You can also run it manually from GitHub Actions with an optional `YYYY-MM-DD` date.
 
+## AI Jobs Brief Newsletter
+
+`/newsletter/` introduces the planned daily email edition and links to the Brevo-hosted signup form configured in `params.newsletterSignupURL`. The site does not collect addresses. The form requires explicit newsletter consent and adds subscribers without a confirmation email; test that flow before deployment.
+
+Prepare a reviewable plain-text and HTML edition from one published daily article:
+
+```powershell
+python scripts/prepare_newsletter.py --date 2026-08-07 --output-dir newsletter-preview
+```
+
+The script reads only `content/posts/YYYY-MM-DD.md`, requires the standard three-story format and `draft: false`, and writes two local files under the ignored `newsletter-preview/` directory. It makes no API calls and sends nothing. Review the claims, source links, and subject before using either file with an email provider. Special issues with different filenames are excluded.
+
+`/ai-jobs-brief.xml` is a separate provider-ready RSS feed containing only the newest dated daily articles and their full content. It does not change the regular `/posts/index.xml` feed. See `docs/AI_JOBS_BRIEF.md` for the $0 Brevo launch path, feed setup, consent, and daily send limit.
+
 ## Daily X Post
 
 The repo also includes `.github/workflows/daily-x-post.yml` for the `AILayoffAlerts` X account.
