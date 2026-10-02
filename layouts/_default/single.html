@@ -45,6 +45,13 @@
   {{- end }}
 
   {{- if eq .Section "posts" }}
+  {{- with .Params.video_script }}
+  <section class="article-video-script" aria-labelledby="video-script-title">
+    <h2 id="video-script-title">Short video script</h2>
+    <p class="article-video-script-note">About 30–60 seconds of narration</p>
+    <p>{{ . }}</p>
+  </section>
+  {{- end }}
   {{- partial "source_quality.html" . }}
   {{- end }}
 

@@ -157,7 +157,7 @@ Short synthesis paragraph.
 """
 
 
-def call_openai(prompt: str, model: str) -> str:
+def call_openai(prompt: str, model: str, *, web_search: bool = True) -> str:
     api_key = re.sub(r"\s+", "", os.environ.get("OPENAI_API_KEY") or "")
     if not api_key:
         raise RuntimeError("OPENAI_API_KEY is required.")
@@ -165,14 +165,10 @@ def call_openai(prompt: str, model: str) -> str:
     body = {
         "model": model,
         "input": prompt,
-        "tools": [
-            {
-                "type": "web_search",
-                "search_context_size": "medium",
-            }
-        ],
-        "tool_choice": "auto",
     }
+    if web_search:
+        body["tools"] = [{"type": "web_search", "search_context_size": "medium"}]
+        body["tool_choice"] = "auto"
 
     req = urllib.request.Request(
         "https://api.openai.com/v1/responses",

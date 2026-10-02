@@ -1,5 +1,15 @@
 # Session State
 
+## X Video Publishing - October 2, 2026
+
+- Objective: publish the daily narrated video in the same X post as the article link, rendering it only in the X workflow.
+- Branch: `codex/x-video-publishing`, based on `origin/main` at `e1c059f` in a separate managed worktree. The shared `codex/repair-publishing` checkout still has unrelated newsletter and generated-output edits; do not sweep them into this branch.
+- Status: article workflow generates and commits a 75–130 word script; X workflow renders one MP4 for an unposted date, uploads it in chunks, waits for processing, posts one article-link-plus-video tweet, and records post/media IDs. A failed render or upload stops posting.
+- Changed files: `.github/workflows/daily-labor-watch.yml`, `.github/workflows/daily-x-post.yml`, `.gitignore`, `README.md`, `docs/PROJECT_MAP.md`, `assets/css/extended/income-for-everyone.css`, `layouts/_default/single.html`, `scripts/generate_daily_post.py`, `scripts/generate_video_script.py`, `scripts/render_short_video.py`, `scripts/post_daily_x_headline.py`, three matching test files, and this handoff.
+- Verification: 10 focused offline tests passed, Python compilation passed, both workflow YAML files parsed, Hugo built 128 pages, and `git diff --check` passed with Windows line-ending warnings only. No live X media upload, tweet, or OpenAI narration was sent in this session.
+- Known issues: first scheduled run must confirm X media permissions/limits and actual voice quality. `OPENAI_API_KEY` and X credentials must remain configured as GitHub secrets. If a video upload is rejected, the workflow leaves no marker, allowing a controlled retry.
+- Next steps: publish the focused branch to GitHub, review CI/deploy preview, merge into `main`, then observe the first new article and X video post.
+
 ## Current Repair Session - October 1, 2026
 
 This section supersedes the historical July handoff below.

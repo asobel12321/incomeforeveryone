@@ -63,7 +63,28 @@ jobs:
             sleep 60
           done
 
-      - name: Post daily headline to X
+      - name: Check publication marker
+        id: publication
+        run: |
+          if [ -f "data/x-posted/${{ steps.post-date.outputs.date }}.json" ]; then
+            echo "needed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "needed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Render narrated video for X
+        if: steps.publication.outputs.needed == 'true'
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
+          python scripts/render_short_video.py --date "${{ steps.post-date.outputs.date }}" --output-dir "$RUNNER_TEMP/x-video"
+
+      - name: Post daily article and video to X
+        if: steps.publication.outputs.needed == 'true'
         env:
           X_CLIENT_ID: ${{ secrets.X_CLIENT_ID }}
           X_CLIENT_SECRET: ${{ secrets.X_CLIENT_SECRET }}
@@ -77,7 +98,7 @@ jobs:
           X_POST_CTA: ${{ vars.X_POST_CTA || 'Follow @AILayoffAlerts for the daily signal.' }}
           X_POST_HASHTAGS: ${{ vars.X_POST_HASHTAGS || 'AILayoffs FutureOfWork' }}
         run: |
-          python scripts/post_daily_x_headline.py --date "${{ steps.post-date.outputs.date }}"
+          python scripts/post_daily_x_headline.py --date "${{ steps.post-date.outputs.date }}" --video "$RUNNER_TEMP/x-video/${{ steps.post-date.outputs.date }}/video.mp4"
 
       - name: Commit posted marker
         run: |

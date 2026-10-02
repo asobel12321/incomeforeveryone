@@ -6,4 +6,5 @@ node_modules/
 .netlify/
 __pycache__/
 newsletter-preview/
+video-preview/
 *.py[cod]
