@@ -14,6 +14,7 @@ import re
 import secrets
 import sys
 import textwrap
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -27,7 +28,10 @@ POSTED_DIR = REPO_ROOT / "data" / "x-posted"
 BASE_URL = "https://incomeforeveryone.org"
 TIMEZONE = "America/New_York"
 POST_URL = "https://api.x.com/2/tweets"
+MEDIA_URL = "https://api.x.com/2/media/upload"
 TOKEN_URL = "https://api.x.com/2/oauth2/token"
+MEDIA_CHUNK_SIZE = 4 * 1024 * 1024
+MEDIA_PROCESSING_TIMEOUT = 300
 MAX_POST_LENGTH = 280
 DEFAULT_CTA = "Follow @AILayoffAlerts for the daily signal."
 DEFAULT_HASHTAGS = "#AILayoffs #FutureOfWork"
@@ -125,27 +129,6 @@ def build_post(title: str, post_date: str) -> str:
     return fit_post(template, title, flavor, cta, hashtags, url)
 
 
-def post_to_x_bearer(text: str, token: str) -> dict:
-    payload = json.dumps({"text": text}).encode("utf-8")
-    request = urllib.request.Request(
-        POST_URL,
-        data=payload,
-        headers={
-            "Authorization": f"Bearer {token}",
-            "Content-Type": "application/json",
-            "User-Agent": "ai-layoff-alerts-daily-post/1.0",
-        },
-        method="POST",
-    )
-
-    try:
-        with urllib.request.urlopen(request, timeout=30) as response:
-            return json.loads(response.read().decode("utf-8"))
-    except urllib.error.HTTPError as exc:
-        detail = exc.read().decode("utf-8", errors="replace")
-        raise RuntimeError(f"X API returned HTTP {exc.code}: {detail}") from exc
-
-
 def oauth1_credentials() -> tuple[str, str, str, str] | None:
     api_key = os.environ.get("X_API_KEY", "").strip()
     api_secret = (
@@ -164,7 +147,7 @@ def oauth_quote(value: str) -> str:
     return urllib.parse.quote(value, safe="~")
 
 
-def post_to_x_oauth1(text: str, credentials: tuple[str, str, str, str]) -> dict:
+def oauth1_authorization(method: str, url: str, credentials: tuple[str, str, str, str]) -> str:
     api_key, api_secret, access_token, access_secret = credentials
     oauth_params = {
         "oauth_consumer_key": api_key,
@@ -175,39 +158,104 @@ def post_to_x_oauth1(text: str, credentials: tuple[str, str, str, str]) -> dict:
         "oauth_version": "1.0",
     }
 
+    parsed = urllib.parse.urlsplit(url)
+    query_params = urllib.parse.parse_qsl(parsed.query, keep_blank_values=True)
+    params = list(oauth_params.items()) + query_params
     param_string = "&".join(
         f"{oauth_quote(key)}={oauth_quote(value)}"
-        for key, value in sorted(oauth_params.items())
+        for key, value in sorted(params, key=lambda item: (oauth_quote(item[0]), oauth_quote(item[1])))
     )
-    base_string = "&".join(["POST", oauth_quote(POST_URL), oauth_quote(param_string)])
+    base_url = urllib.parse.urlunsplit((parsed.scheme, parsed.netloc, parsed.path, "", ""))
+    base_string = "&".join([method.upper(), oauth_quote(base_url), oauth_quote(param_string)])
     signing_key = f"{oauth_quote(api_secret)}&{oauth_quote(access_secret)}"
     signature = base64.b64encode(
         hmac.new(signing_key.encode("utf-8"), base_string.encode("utf-8"), hashlib.sha1).digest()
     ).decode("ascii")
 
-    auth_header = "OAuth " + ", ".join(
+    return "OAuth " + ", ".join(
         f'{oauth_quote(key)}="{oauth_quote(value)}"'
         for key, value in sorted({**oauth_params, "oauth_signature": signature}.items())
     )
 
-    payload = json.dumps({"text": text}).encode("utf-8")
-    request = urllib.request.Request(
-        POST_URL,
-        data=payload,
-        headers={
-            "Authorization": auth_header,
-            "Content-Type": "application/json",
-            "User-Agent": "ai-layoff-alerts-daily-post/1.0",
-        },
-        method="POST",
-    )
 
+def x_request(method: str, url: str, auth: str | tuple[str, str, str, str],
+              data: bytes | None = None, content_type: str | None = None) -> dict:
+    authorization = (oauth1_authorization(method, url, auth) if isinstance(auth, tuple)
+                     else f"Bearer {auth}")
+    headers = {"Authorization": authorization, "User-Agent": "ai-layoff-alerts-daily-post/1.0"}
+    if content_type:
+        headers["Content-Type"] = content_type
+    request = urllib.request.Request(
+        url, data=data, headers=headers, method=method,
+    )
     try:
-        with urllib.request.urlopen(request, timeout=30) as response:
-            return json.loads(response.read().decode("utf-8"))
+        with urllib.request.urlopen(request, timeout=60) as response:
+            body = response.read()
+            return json.loads(body.decode("utf-8")) if body else {}
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode("utf-8", errors="replace")
         raise RuntimeError(f"X API returned HTTP {exc.code}: {detail}") from exc
+
+
+def x_json(method: str, url: str, auth: str | tuple[str, str, str, str], payload: dict) -> dict:
+    return x_request(method, url, auth, json.dumps(payload).encode("utf-8"), "application/json")
+
+
+def multipart_chunk(index: int, chunk: bytes) -> tuple[bytes, str]:
+    boundary = f"ife-{secrets.token_hex(16)}"
+    body = (
+        f"--{boundary}\r\nContent-Disposition: form-data; name=\"segment_index\"\r\n\r\n{index}\r\n"
+        f"--{boundary}\r\nContent-Disposition: form-data; name=\"media\"; filename=\"video.mp4\"\r\n"
+        "Content-Type: video/mp4\r\n\r\n"
+    ).encode("ascii") + chunk + f"\r\n--{boundary}--\r\n".encode("ascii")
+    return body, f"multipart/form-data; boundary={boundary}"
+
+
+def upload_video(path: Path, auth: str | tuple[str, str, str, str]) -> str:
+    size = path.stat().st_size
+    if size <= 0:
+        raise RuntimeError(f"Video is empty: {path}")
+    result = x_json("POST", f"{MEDIA_URL}/initialize", auth, {
+        "media_type": "video/mp4", "total_bytes": size, "media_category": "tweet_video",
+    })
+    media_id = str(result.get("data", {}).get("id", ""))
+    if not media_id:
+        raise RuntimeError(f"X media initialize did not return an id: {result}")
+
+    with path.open("rb") as video:
+        for index, chunk in enumerate(iter(lambda: video.read(MEDIA_CHUNK_SIZE), b"")):
+            body, content_type = multipart_chunk(index, chunk)
+            x_request("POST", f"{MEDIA_URL}/{media_id}/append", auth, body, content_type)
+
+    result = x_request("POST", f"{MEDIA_URL}/{media_id}/finalize", auth)
+    deadline = time.monotonic() + MEDIA_PROCESSING_TIMEOUT
+    while True:
+        processing = result.get("data", {}).get("processing_info")
+        if not processing:
+            return media_id
+        state = processing.get("state")
+        if state == "succeeded":
+            return media_id
+        if state == "failed":
+            raise RuntimeError(f"X rejected video processing: {processing.get('error', processing)}")
+        if state not in ("pending", "in_progress"):
+            raise RuntimeError(f"Unexpected X video processing state: {state}")
+        delay = max(1, min(int(processing.get("check_after_secs", 2)), 30))
+        if time.monotonic() + delay > deadline:
+            raise RuntimeError("X video processing timed out before posting")
+        time.sleep(delay)
+        status_url = f"{MEDIA_URL}?{urllib.parse.urlencode({'command': 'STATUS', 'media_id': media_id})}"
+        result = x_request("GET", status_url, auth)
+
+
+def post_to_x(text: str, auth: str | tuple[str, str, str, str], media_id: str | None = None) -> dict:
+    payload = {"text": text}
+    if media_id:
+        payload["media"] = {"media_ids": [media_id]}
+    result = x_json("POST", POST_URL, auth, payload)
+    if not result.get("data", {}).get("id"):
+        raise RuntimeError(f"X post did not return an id: {result}")
+    return result
 
 
 def refresh_access_token() -> tuple[str, str | None]:
@@ -263,7 +311,7 @@ def refresh_access_token() -> tuple[str, str | None]:
     return access_token, new_refresh_token
 
 
-def write_marker(post_date: str, title: str, result: dict) -> None:
+def write_marker(post_date: str, title: str, result: dict, media_id: str | None = None) -> None:
     POSTED_DIR.mkdir(parents=True, exist_ok=True)
     marker = POSTED_DIR / f"{post_date}.json"
     marker.write_text(
@@ -272,6 +320,7 @@ def write_marker(post_date: str, title: str, result: dict) -> None:
                 "date": post_date,
                 "title": title,
                 "tweetId": result.get("data", {}).get("id"),
+                "mediaId": media_id,
                 "postedAt": dt.datetime.now(dt.timezone.utc).isoformat(),
             },
             indent=2,
@@ -284,6 +333,7 @@ def write_marker(post_date: str, title: str, result: dict) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Post the daily AI labor watch article to X.")
     parser.add_argument("--date", default=default_post_date())
+    parser.add_argument("--video", type=Path, help="Attach this rendered MP4 to the article tweet.")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--force", action="store_true", help="Post even if the date marker already exists.")
     args = parser.parse_args()
@@ -305,16 +355,19 @@ def main() -> int:
     if args.dry_run:
         print(text)
         print(f"\nCharacter count: {len(text)}")
+        if args.video:
+            print(f"Video to attach: {args.video}")
         return 0
 
-    oauth1 = oauth1_credentials()
-    if oauth1:
-        result = post_to_x_oauth1(text, oauth1)
-    else:
-        token, _ = refresh_access_token()
-        result = post_to_x_bearer(text, token)
+    if args.video and (not args.video.is_file() or args.video.suffix.lower() != ".mp4"):
+        raise RuntimeError(f"Expected a rendered MP4 at {args.video}")
+    auth = oauth1_credentials()
+    if not auth:
+        auth, _ = refresh_access_token()
+    media_id = upload_video(args.video, auth) if args.video else None
+    result = post_to_x(text, auth, media_id)
 
-    write_marker(args.date, title, result)
+    write_marker(args.date, title, result, media_id)
     print(json.dumps(result, indent=2))
     return 0
 

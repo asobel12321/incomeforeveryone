@@ -56,6 +56,17 @@ jobs:
             python scripts/generate_daily_post.py
           fi
 
+      - name: Generate short video script
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5.4-mini' }}
+        run: |
+          if [ -n "${{ inputs.date || '' }}" ]; then
+            python scripts/generate_video_script.py --date "${{ inputs.date }}" --model "$OPENAI_MODEL"
+          else
+            python scripts/generate_video_script.py --model "$OPENAI_MODEL"
+          fi
+
       - name: Build site
         run: hugo --destination "$RUNNER_TEMP/hugo-validation"
 

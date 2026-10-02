@@ -49,9 +49,24 @@ It runs every day at `13:30 UTC`, which is `9:30 AM America/New_York` during day
 
 1. Calls the OpenAI Responses API with web search.
 2. Creates `content/posts/YYYY-MM-DD.md`.
-3. Runs `hugo` into a runner temporary directory so tracked `public/` files cannot block the commit/rebase/push step.
-4. Commits and pushes the new post.
-5. Lets Netlify publish from the pushed commit.
+3. Generates a 75–130 word `video_script` from the finished article and saves it in front matter.
+4. Runs `hugo` into a runner temporary directory so tracked `public/` files cannot block the commit/rebase/push step.
+5. Commits and pushes the new post.
+6. Lets Netlify publish from the pushed commit.
+
+Article pages show the roughly 30–60 second script. It uses only the finished article as source material. The X workflow renders the script into a branded vertical MP4 with AI narration, timed captions, three story headlines, and a closing takeaway. Video rendering happens only in the X workflow, once per unposted date. The on-video label discloses AI-generated narration as described in [OpenAI's text-to-speech guidance](https://developers.openai.com/api/docs/guides/text-to-speech). Review the daily output for factual accuracy and narration quality.
+
+To add a script to an older article without changing its body:
+
+```powershell
+python scripts/generate_video_script.py --date YYYY-MM-DD
+```
+
+To render a local preview without posting:
+
+```powershell
+python scripts/render_short_video.py --date YYYY-MM-DD
+```
 
 Required GitHub setup:
 
@@ -84,22 +99,23 @@ The repo also includes `.github/workflows/daily-x-post.yml` for the `AILayoffAle
 
 Netlify triggers it every day at `15:30 UTC`, which gives the daily article workflow and Netlify deploy more time to finish after the `14:00 UTC` article backup trigger. The workflow:
 
-1. Reads `content/posts/YYYY-MM-DD.md`.
-2. Extracts the Hugo front matter title.
-3. Builds an engagement-oriented X post with the article URL.
-4. Posts to X.
-5. Writes `data/x-posted/YYYY-MM-DD.json` and commits it so reruns skip duplicate posts.
+1. Waits for `content/posts/YYYY-MM-DD.md` with its generated `video_script`.
+2. Renders a narrated 30–60 second MP4 using `OPENAI_API_KEY` and FFmpeg.
+3. Builds an X post with the article URL, uploads the MP4 through X's chunked media API, and waits for processing to succeed.
+4. Publishes one post containing both the article link and video. Rendering or upload failure stops publication.
+5. Writes `data/x-posted/YYYY-MM-DD.json` with the post and media IDs and commits it so reruns skip duplicate posts.
 
-A GitHub-native backup runs at `15:45 UTC` with the same concurrency group and date markers. Both paths require available X API credits. HTTP 402 `credits depleted` requires account billing action; changing authentication secrets does not fix it.
+A GitHub-native backup runs at `15:45 UTC` with the same concurrency group and date markers. Both paths require the `OPENAI_API_KEY` secret, available OpenAI speech usage, and available X API credits. HTTP 402 `credits depleted` requires account billing action; changing authentication secrets does not fix it. X account video limits or media-upload permissions may also reject the post.
 
 Required GitHub setup:
 
 1. Go to `Settings` -> `Secrets and variables` -> `Actions`.
-2. Recommended: add OAuth 1.0a repository secrets `X_API_KEY`, `X_API_SECRET`, `X_ACCESS_TOKEN`, and `X_ACCESS_TOKEN_SECRET` from the `AILayoffAlerts` X developer app. These do not rotate daily.
-3. Optional fallback: add OAuth 2.0 repository secrets `X_CLIENT_ID`, `X_CLIENT_SECRET`, and `X_REFRESH_TOKEN`. X can rotate refresh tokens after use, so update `X_REFRESH_TOKEN` whenever X returns a replacement.
-4. Optional fallback: add repository secret `X_USER_BEARER_TOKEN` if you want to test with a short-lived OAuth 2.0 access token.
-5. Optional: add repository variable `X_POST_CTA`.
-6. Optional: add repository variable `X_POST_HASHTAGS`. Keep it to one or two tags, such as `AILayoffs FutureOfWork`.
+2. Add `OPENAI_API_KEY` for narration. The runner installs FFmpeg if needed.
+3. Recommended: add OAuth 1.0a repository secrets `X_API_KEY`, `X_API_SECRET`, `X_ACCESS_TOKEN`, and `X_ACCESS_TOKEN_SECRET` from the `AILayoffAlerts` X developer app. These do not rotate daily.
+4. Optional fallback: add OAuth 2.0 repository secrets `X_CLIENT_ID`, `X_CLIENT_SECRET`, and `X_REFRESH_TOKEN`. X can rotate refresh tokens after use, so update `X_REFRESH_TOKEN` whenever X returns a replacement.
+5. Optional fallback: add repository secret `X_USER_BEARER_TOKEN` if you want to test with a short-lived OAuth 2.0 access token.
+6. Optional: add repository variable `X_POST_CTA`.
+7. Optional: add repository variable `X_POST_HASHTAGS`. Keep it to one or two tags, such as `AILayoffs FutureOfWork`.
 
 You can test without posting from a local checkout:
 

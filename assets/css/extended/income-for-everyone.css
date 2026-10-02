@@ -650,6 +650,31 @@ a:hover {
   line-height: 1.55;
 }
 
+.article-video-script {
+  max-width: 760px;
+  margin: 34px 0 20px;
+  padding: 20px 22px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--entry);
+  line-height: 1.6;
+}
+
+.article-video-script h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.article-video-script-note {
+  margin: 4px 0 14px;
+  color: var(--secondary);
+  font-size: 0.88rem;
+}
+
+.article-video-script p:last-child {
+  margin-bottom: 0;
+}
+
 .source-quality h2 {
   margin: 0 0 12px;
   color: #4e3a29;
