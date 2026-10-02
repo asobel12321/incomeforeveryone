@@ -1,0 +1,37 @@
+{{- define "main" }}
+<main class="newsletter-page">
+  <header class="page-header">
+    <p class="section-kicker">Income For Everyone</p>
+    <h1>{{ .Title }}</h1>
+    <p>Three sourced stories on AI and work, with the labor-market context that matters.</p>
+  </header>
+  <div class="newsletter-body">
+    {{- with site.Params.newsletterSignupURL }}
+    <p>Get the daily brief by email. Subscribe using the secure form.</p>
+    <p><a class="hero-button hero-button-primary" href="{{ . }}">Subscribe to AI Jobs Brief</a></p>
+    <p class="newsletter-privacy">Subscriptions and unsubscribes are managed by our email provider. You can also follow the <a href="/ai-jobs-brief.xml">RSS feed</a>.</p>
+    {{- else }}
+    <p>The email edition is in preparation. Read today's coverage in the <a href="/posts/">daily archive</a> or follow the <a href="/ai-jobs-brief.xml">RSS feed</a>.</p>
+    {{- end }}
+  </div>
+  {{- $daily := slice }}
+  {{- range (where site.RegularPages "Section" "posts").ByDate.Reverse }}
+    {{- if and (findRE `^\d{4}-\d{2}-\d{2}$` .File.BaseFileName) (lt (len $daily) 3) }}
+      {{- $daily = $daily | append . }}
+    {{- end }}
+  {{- end }}
+  {{- with $daily }}
+  <section class="newsletter-latest" aria-labelledby="newsletter-latest-heading">
+    <h2 id="newsletter-latest-heading">Recent editions</h2>
+    <ul>
+      {{- range . }}
+      <li>
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+      </li>
+      {{- end }}
+    </ul>
+  </section>
+  {{- end }}
+</main>
+{{- end }}

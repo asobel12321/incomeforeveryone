@@ -66,6 +66,69 @@ a:hover {
   padding-top: 32px;
 }
 
+.newsletter-page {
+  max-width: 690px;
+  margin: 0 auto;
+  padding: 20px 0 64px;
+}
+
+.newsletter-page .page-header h1 {
+  margin: 0 0 12px;
+  font-size: 2.4rem;
+  line-height: 1.15;
+}
+
+.newsletter-body {
+  border-top: 1px solid var(--border);
+  margin-top: 26px;
+  padding-top: 16px;
+}
+
+.newsletter-privacy {
+  color: var(--secondary);
+  font-size: 0.84rem;
+}
+
+.newsletter-latest {
+  border-top: 1px solid var(--border);
+  margin-top: 40px;
+  padding-top: 22px;
+}
+
+.newsletter-latest h2 {
+  margin: 0 0 12px;
+  font-size: 1.25rem;
+}
+
+.newsletter-latest ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.newsletter-latest li {
+  border-bottom: 1px solid var(--border);
+  padding: 12px 0;
+}
+
+.newsletter-latest time {
+  display: block;
+  color: var(--secondary);
+  font-size: 0.8rem;
+}
+
+.newsletter-latest a {
+  display: block;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+@media (max-width: 600px) {
+  .newsletter-page .page-header h1 {
+    font-size: 2rem;
+  }
+}
+
 .first-entry,
 .home-info {
   min-height: auto;
