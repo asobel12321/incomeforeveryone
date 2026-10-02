@@ -55,7 +55,11 @@ def extract_response_text(payload: dict) -> str:
 
 def validate_post(markdown: str, post_date: str) -> None:
     required = [
-        rf'^---\s*\ntitle:\s*".+"\s*\ndate:\s*{re.escape(post_date)}\s*\ndraft:\s*false\s*\n---',
+        rf'^---\s*\ntitle:\s*".+"\s*\ndate:\s*{re.escape(post_date)}\s*\ndraft:\s*false\s*\n',
+        r"^source_quality:\s*$",
+        r'^\s+primary_sources:\s*".+"\s*$',
+        r'^\s+official_data:\s*".+"\s*$',
+        r'^\s+uncertainty:\s*"(Low|Medium|High)"\s*$',
         r"### Key Stories",
         r"### What This Tells Us",
         r"#UBI #Automation #LaborCrisis #FutureOfWork #DignityForAll",
@@ -104,6 +108,10 @@ Requirements:
 - Include exactly 3 key stories.
 - Each story must include a bold headline, 1-2 sentences of labor/automation/UBI relevance, and one Markdown link with the real article title and URL.
 - Include a short "What This Tells Us" synthesis section.
+- Add source_quality front matter with short evidence notes:
+  - primary_sources: primary or direct sources used, or "None; secondary reporting only"
+  - official_data: official data used, or "None"
+  - uncertainty: "Low", "Medium", or "High"
 - Do not include footnotes, ChatGPT citation markers, contentReference, oaicite, placeholders, invisible reference tokens, or invented URLs.
 - Return only Markdown, no code fence.
 
@@ -113,6 +121,10 @@ Use this exact structure:
 title: "Specific News-Led Title"
 date: {post_date}
 draft: false
+source_quality:
+  primary_sources: "Reuters/AP/company filings"
+  official_data: "BLS JOLTS and jobless claims"
+  uncertainty: "Medium"
 ---
 
 Opening paragraph.

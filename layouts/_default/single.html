@@ -44,9 +44,9 @@
   </div>
   {{- end }}
 
-  <aside class="article-trust">
-    <strong>Editorial note:</strong> Posts are brief, cited snapshots of public reporting and official data, focused on how automation changes bargaining power, job security, and the case for UBI.
-  </aside>
+  {{- if eq .Section "posts" }}
+  {{- partial "source_quality.html" . }}
+  {{- end }}
 
   <footer class="post-footer">
     {{- $tags := .Language.Params.Taxonomies.tag | default "tags" }}

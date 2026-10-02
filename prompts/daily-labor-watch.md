@@ -14,6 +14,10 @@ Requirements:
 - Include a short "What This Tells Us" section.
 - Do not include ChatGPT citation markers, footnotes, `contentReference`, `oaicite`, source placeholders, or invisible reference tokens.
 - Do not invent URLs, pilots, numbers, or dates.
+- Add source-quality front matter that summarizes the article's evidence:
+  - `primary_sources`: a short phrase naming primary or direct sources used, or "None; secondary reporting only"
+  - `official_data`: a short phrase naming official data used, or "None"
+  - `uncertainty`: "Low", "Medium", or "High"
 - Use this exact front matter format:
 
 ```markdown
@@ -21,12 +25,26 @@ Requirements:
 title: "Specific News-Led Title"
 date: YYYY-MM-DD
 draft: false
+source_quality:
+  primary_sources: "Short evidence note"
+  official_data: "Short official-data note"
+  uncertainty: "Low|Medium|High"
 ---
 ```
 
-Use this body structure:
+Use this full post structure:
 
 ```markdown
+---
+title: "Specific News-Led Title"
+date: YYYY-MM-DD
+draft: false
+source_quality:
+  primary_sources: "Reuters/AP/company filings"
+  official_data: "BLS JOLTS and jobless claims"
+  uncertainty: "Medium"
+---
+
 Opening paragraph.
 
 ---

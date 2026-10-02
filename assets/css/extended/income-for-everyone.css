@@ -587,6 +587,53 @@ a:hover {
   line-height: 1.55;
 }
 
+.source-quality h2 {
+  margin: 0 0 12px;
+  color: #4e3a29;
+  font-size: 0.82rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.source-quality dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.source-quality dl > div {
+  padding: 10px 12px;
+  border: 1px solid #e0d0bf;
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.52);
+}
+
+.source-quality dt {
+  color: #7a4a21;
+  font-size: 0.69rem;
+  font-weight: 850;
+  letter-spacing: 0.07em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.source-quality dd {
+  margin: 5px 0 0;
+  color: #4e3a29;
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.source-quality p {
+  margin: 12px 0 0;
+  color: #68513b;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
 .post-content blockquote {
   border-inline-start: 4px solid var(--accent);
   color: var(--secondary);
@@ -697,7 +744,8 @@ a:hover {
   }
 
   .labor-indicator-source > div,
-  .labor-data-contract dl > div {
+  .labor-data-contract dl > div,
+  .source-quality dl {
     grid-template-columns: 1fr;
     gap: 3px;
   }
