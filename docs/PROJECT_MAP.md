@@ -16,6 +16,7 @@ This is a Hugo site with Netlify deployment configuration.
 - `docs/labor-stats-x402-openapi-draft.json` - Source draft for the public snapshot and paid history OpenAPI contract.
 - `i18n/` - Localization files.
 - `layouts/` - Hugo templates and layout overrides.
+- `layouts/partials/source_quality.html` - Article trust box that displays source-quality badges from optional post front matter.
 - `layouts/api/labor-stats.html` - Static JSON response template for `/api/labor-stats/`.
 - `netlify/` - Netlify-specific files.
 - `netlify/functions/labor-stats-history.mjs` - x402-gated history route with inclusive observation date filters; disabled when payment configuration is absent.
@@ -53,6 +54,7 @@ This is a Hugo site with Netlify deployment configuration.
 - The dashboard links to the official BLS release calendar. The refresher omits unsupported upcoming-release dates rather than preserving stale values.
 - Paid history supports inclusive `from`/`to` observation filters. Invalid or empty ranges are rejected before payment. Revision vintages are not implemented; `revisions` remains an empty reserved field.
 - The labor stats page and public `/api/labor-stats/` JSON route are static Hugo output. The API response includes access metadata for the x402-gated history endpoint.
+- Article pages render a compact source-quality box after the post body. New posts should fill `source_quality.primary_sources`, `source_quality.official_data`, and `source_quality.uncertainty`; older posts use conservative defaults.
 - The candidate premium route `/api/labor-stats/history` is routed to a Netlify Function because x402 requires request-time `402 Payment Required` behavior and payment verification before fulfillment.
 - The premium route can return `data/labor_stats_history.json` only after x402 verification/settlement succeeds, or in explicit local/dev bypass mode. Production remains disabled until Netlify x402 environment configuration is set.
 - The premium route supports one optional facilitator auth header via Netlify env vars for production facilitators that require API-key or bearer-token auth.

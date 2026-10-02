@@ -1,0 +1,28 @@
+{{- $quality := .Params.source_quality -}}
+{{- $primarySources := "Cited links reviewed; direct sources used when available." -}}
+{{- $officialData := "Official data used when cited in the article." -}}
+{{- $uncertainty := "Medium" -}}
+{{- with $quality -}}
+  {{- with index . "primary_sources" -}}{{- $primarySources = . -}}{{- end -}}
+  {{- with index . "official_data" -}}{{- $officialData = . -}}{{- end -}}
+  {{- with index . "uncertainty" -}}{{- $uncertainty = . -}}{{- end -}}
+{{- end -}}
+
+<aside class="article-trust source-quality" aria-labelledby="source-quality-title">
+  <h2 id="source-quality-title">Source quality</h2>
+  <dl>
+    <div>
+      <dt>Primary sources used</dt>
+      <dd>{{ $primarySources }}</dd>
+    </div>
+    <div>
+      <dt>Official data used</dt>
+      <dd>{{ $officialData }}</dd>
+    </div>
+    <div>
+      <dt>Uncertainty level</dt>
+      <dd>{{ $uncertainty }}</dd>
+    </div>
+  </dl>
+  <p>Posts are brief, cited snapshots of public reporting and official data, focused on how automation changes bargaining power, job security, and the case for UBI.</p>
+</aside>
