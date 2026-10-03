@@ -1,5 +1,49 @@
 # Session State
 
+## Objective
+
+Finalize public article APIs and a JSON feed for agent discovery.
+
+## Branch
+
+`codex/agent-article-feeds`, created from `origin/main` at `12fcd13` in a managed worktree. The shared `codex/repair-publishing` checkout and its unrelated edits were left intact.
+
+## Current Status
+
+October 3, 2026: commit `727537b` is pushed on PR #13. The Netlify deploy preview is ready and the new routes have been verified there. Merge and production verification remain.
+
+## Files Changed
+
+`config.toml`, `content/api/latest.md`, `content/api/articles.md`, `layouts/api/latest.html`, `layouts/api/articles.html`, `layouts/partials/api/article.json`, `layouts/home.jsonfeed.json`, `layouts/partials/extend_head.html`, `static/_headers`, `static/openapi.json`, `docs/labor-stats-x402-openapi-draft.json`, `README.md`, `docs/PROJECT_MAP.md`, and this handoff.
+
+## Accomplishments
+
+The latest article API, recent articles API, and JSON Feed share one Hugo article serializer. The feed is linked from HTML heads and all three routes are described in OpenAPI.
+
+## Things Tried
+
+Built the branch with the PaperMod theme from the shared checkout because the managed worktree's theme directory is empty. Generated output went to a temporary directory.
+
+## Things Learned
+
+Current `main` includes the October 3 article, which becomes the latest API result. Hugo excludes draft posts from these outputs.
+
+## Known Issues
+
+Production responses have not been verified yet. The worktree lacks its own PaperMod theme files, so future local builds should pass `--themesDir C:\Users\asobe\Projects\Active\incomeforeveryone\themes` or initialize the theme.
+
+## Verification Run
+
+`hugo --themesDir C:\Users\asobe\Projects\Active\incomeforeveryone\themes --destination $env:TEMP\ife-agent-feed-check` passed with 135 pages. Parsed generated JSON; latest article matched the first of 20 articles and feed items; the draft was absent; HTML contained the JSON Feed discovery link; both OpenAPI copies matched and included the new paths. `git diff --check` passed with only line-ending conversion warnings.
+
+Netlify PR #13 deploy preview returned `200` for `/api/latest/`, `/api/articles/`, `/feed.json`, and `/openapi.json`. The JSON routes had `application/json; charset=utf-8`; the feed had `application/feed+json; charset=utf-8`. The article API and JSON Feed each contained 20 items, the feed's first item matched the latest route, the OpenAPI contained the route, and the homepage advertised the feed.
+
+## Next Steps
+
+Merge PR #13 after checks pass, confirm the production routes and content types, and update this handoff with the merge/deploy result.
+
+## Prior Session Notes
+
 ## Michael Runner Command Repair - October 3, 2026
 
 - Objective: repair the daily X workflow commands after the first GitHub Linux retry failed before rendering or posting.

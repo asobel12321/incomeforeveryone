@@ -1,0 +1,6 @@
+{{- $posts := where site.RegularPages "Section" "posts" -}}
+{{- $articles := slice -}}
+{{- range first 20 $posts.ByDate.Reverse -}}
+  {{- $articles = $articles | append (partial "api/article.json" .) -}}
+{{- end -}}
+{{- dict "schema_version" "1" "endpoint" "/api/articles/" "limit" 20 "articles" $articles | jsonify -}}

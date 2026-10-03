@@ -2,6 +2,18 @@
   Content-Type: application/json; charset=utf-8
   Cache-Control: public, max-age=900
 
+/api/latest/
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=900
+
+/api/articles/
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=900
+
+/feed.json
+  Content-Type: application/feed+json; charset=utf-8
+  Cache-Control: public, max-age=900
+
 /api/labor-stats/history
   Content-Type: application/json; charset=utf-8
   Cache-Control: no-store

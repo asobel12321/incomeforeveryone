@@ -1,0 +1,8 @@
+{{- return (dict
+  "id" .Permalink
+  "url" .Permalink
+  "title" .Title
+  "date_published" (.PublishDate.Format "2006-01-02T15:04:05Z07:00")
+  "summary" (.Summary | plainify)
+  "content_html" .Content
+) -}}

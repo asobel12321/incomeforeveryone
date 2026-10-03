@@ -141,6 +141,13 @@ python scripts/check_publication_health.py
 
 The article and X limits are one calendar day, and the stats source-check limit is four days to allow for weekends. The X result is based on a committed marker, not a live X API query. If X posting is intentionally paused, its check will continue to fail until the monitor is updated to reflect that decision.
 
+## Public Article Feeds
+
+- `/api/latest/` returns the newest published post as JSON, including its summary, publication date, canonical URL, and full HTML content.
+- `/api/articles/` returns the 20 newest published posts in the same shape, newest first. Drafts are excluded by Hugo.
+- `/feed.json` publishes those 20 posts as [JSON Feed 1.1](https://www.jsonfeed.org/version/1.1/) with the recommended `application/feed+json` content type. The existing `/index.xml`, `/posts/index.xml`, and `/ai-jobs-brief.xml` RSS feeds remain available.
+- All three outputs are public, static Hugo files. They update on each successful site build and do not require payment or API keys. `/openapi.json` describes the two article API routes and the JSON feed.
+
 ## Labor Stats Section
 
 The `/labor-stats/` page displays a curated snapshot of public U.S. labor-market indicators. The page is backed by `data/labor_stats.json`, which keeps stable indicator IDs, units, periods, source URLs, and release metadata so the same structure can later support an agent-readable API endpoint.

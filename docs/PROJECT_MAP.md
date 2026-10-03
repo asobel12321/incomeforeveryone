@@ -14,11 +14,14 @@ This is a Hugo site with Netlify deployment configuration.
 - `data/labor_stats_history.json` - Compact premium-candidate history payload generated from recent FRED observations.
 - `docs/labor-stats-x402.md` - x402 paid-access plan, runtime notes, pricing, and listing readiness checklist.
 - `docs/AI_JOBS_BRIEF.md` - Newsletter feed and free Brevo launch steps.
-- `docs/labor-stats-x402-openapi-draft.json` - Source draft for the public snapshot and paid history OpenAPI contract.
+- `docs/labor-stats-x402-openapi-draft.json` - Source draft for the public article, feed, labor snapshot, and paid history OpenAPI contract.
 - `i18n/` - Localization files.
 - `layouts/` - Hugo templates and layout overrides.
 - `layouts/partials/source_quality.html` - Article trust box that displays source-quality badges from optional post front matter.
 - `layouts/api/labor-stats.html` - Static JSON response template for `/api/labor-stats/`.
+- `layouts/api/latest.html`, `layouts/api/articles.html`, and `layouts/partials/api/article.json` - Shared article serialization for the public JSON routes.
+- `layouts/home.jsonfeed.json` - JSON Feed 1.1 output at `/feed.json`.
+- `layouts/partials/extend_head.html` - JSON Feed discovery link in HTML page heads.
 - `netlify/` - Netlify-specific files.
 - `netlify/functions/labor-stats-history.mjs` - x402-gated history route with inclusive observation date filters; disabled when payment configuration is absent.
 - `prompts/` - Project prompt/context material.
@@ -37,6 +40,7 @@ This is a Hugo site with Netlify deployment configuration.
 - `static/_headers` - Netlify response headers, including JSON content type for the labor stats API routes and `/openapi.json`.
 - `static/favicon.svg` - Root favicon used by discovery tooling and browsers.
 - `static/openapi.json` - Published OpenAPI discovery contract copied from the reviewed labor stats x402 draft.
+- `content/api/latest.md` and `content/api/articles.md` - Hugo page definitions for the article JSON routes.
 - `themes/` - Hugo theme dependencies.
 
 ## Important Files
@@ -55,6 +59,7 @@ This is a Hugo site with Netlify deployment configuration.
 - Netlify scheduled functions trigger the daily post workflow and the daily tweet brief.
 - `/newsletter/` links to a Brevo-hosted signup form when `params.newsletterSignupURL` is set; the site does not collect addresses.
 - `/ai-jobs-brief.xml` is a dedicated full-content RSS feed restricted to dated daily posts. `layouts/home.aijobsbrief.xml` renders it; provider setup is documented in `docs/AI_JOBS_BRIEF.md`.
+- `/api/latest/` and `/api/articles/` expose the newest one and newest 20 published posts as static JSON with full HTML content. `/feed.json` is a JSON Feed 1.1 view of the same 20 posts. All are public and updated by the Hugo build.
 - GitHub-native backups run the article workflow at 14:15 UTC and X workflow at 15:45 UTC, independently of the Netlify dispatch credential. Existing concurrency groups and per-date files prevent duplicate publication.
 - `.github/workflows/publication-health.yml` checks deployed article and stats freshness plus the recorded X marker at 21:45 UTC daily. A failed run summarizes all failed components; it does not repair or publish anything.
 - CI Hugo validation writes to `$RUNNER_TEMP/hugo-validation`, not tracked `public/`, so generated output cannot prevent the automation's rebase-before-push.
