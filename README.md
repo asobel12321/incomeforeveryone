@@ -139,6 +139,8 @@ Run the same read-only check locally:
 python scripts/check_publication_health.py
 ```
 
+On Windows Python installs without IANA time-zone data, pass the current New York date with `--today YYYY-MM-DD` (or install Python's `tzdata` package). The hosted Linux workflow has the time-zone data it needs.
+
 The article and X limits are one calendar day, and the stats source-check limit is four days to allow for weekends. The X result is based on a committed marker, not a live X API query. If X posting is intentionally paused, its check will continue to fail until the monitor is updated to reflect that decision.
 
 ## Public Article Feeds
