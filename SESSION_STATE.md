@@ -1,5 +1,15 @@
 # Session State
 
+## Daily Video Motion and Audio Polish - October 3, 2026
+
+- Objective: improve daily X videos without a new paid video service, and audition a free local narration option.
+- Branch/status: `codex/video-motion-audio` in focused managed worktree `C:/Users/asobe/.codex/worktrees/video-motion-audio/incomeforeveryone`, rebased onto `main` at `af1a09e`. The shared `codex/repair-publishing` checkout remains untouched with its prior uncommitted changes.
+- Changed files: `scripts/render_short_video.py`, `scripts/test_render_short_video.py`, `README.md`, `docs/PROJECT_MAP.md`, and this handoff.
+- Behavior: a running progress line, animated fact divider, and highlighted spoken figures add motion to the existing sourced cards. Narrated audio gets a high-pass filter and FFmpeg loudness normalization. Rendering remains only in the X workflow; voice provider and publishing behavior remain OpenAI/X.
+- Voice trial: an isolated Python 3.12 Kokoro ONNX environment and int8 model were placed under the visualizations folder, outside the repo. Two nonpublication samples of the same short excerpt were generated: `kokoro-af_nicole.wav` (13.9 seconds) and `kokoro-am_michael.wav` (10.2 seconds). CPU inference took roughly two minutes and another 1.5 minutes respectively on this machine, so production use needs a runner-speed trial and listening review. Google Chirp was researched but no credentials or billing state were available for a sample.
+- Verification: 15 focused script/renderer/X tests passed; Hugo built 131 pages after rebase to an external destination; `git diff --check` passed. A representative frame showed no overlaps after shifting the new fact divider. A 3-second narrated MP4 encoded as 1080x1920 H.264/AAC with the new audio filter. No live OpenAI, Google, or X request was made.
+- Known issues/next: listen to both Kokoro samples and compare with the production OpenAI voice before any provider switch. Check the first scheduled video for audio loudness and caption sync; the Kokoro trial files are local previews only. Current OpenAI TTS snapshot and Whisper timing model deprecations remain tracked in prior sections.
+
 ## Video Caption and Fact Card Improvements - October 2, 2026
 
 - Objective: improve daily X videos with captions timed from the finished narration and a reusable, source-labeled fact card for each article story.

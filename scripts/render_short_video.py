@@ -217,6 +217,16 @@ def timed_caption_chunks(words: list[tuple[str, float, float]], duration: float,
     return cues
 
 
+def emphasized_caption(value: str) -> str:
+    """Color figures in spoken captions without changing the transcript."""
+    wrapped = wrap_words(value, 24)
+    return re.sub(
+        r"(?<!\w)\$?\d[\d,.]*%?",
+        lambda match: r"{\c&H00A3E4C2&}" + match.group(0) + r"{\c&H00FFFFFF&}",
+        wrapped,
+    )
+
+
 def make_ass(title: str, post_date: str, script: str, duration: float, *, ai_voice: bool,
              stories: list[str] | None = None, cards: list[tuple[str, str]] | None = None,
              caption_cues: list[tuple[str, float, float]] | None = None) -> str:
@@ -229,6 +239,11 @@ def make_ass(title: str, post_date: str, script: str, duration: float, *, ai_voi
     events = [
         f"Dialogue: 0,{ass_time(0)},{ass_time(duration)},Brand,,0,0,0,,INCOME FOR EVERYONE",
         f"Dialogue: 0,{ass_time(0)},{ass_time(duration)},Footer,,0,0,0,,{ass_escape(display_date)}  •  incomeforeveryone.org",
+        f"Dialogue: 0,{ass_time(0)},{ass_time(duration)},ProgressTrack,,0,0,0,,"
+        r"{\pos(70,1730)\p1}m 0 0 l 940 0 940 6 0 6",
+        f"Dialogue: 0,{ass_time(0)},{ass_time(duration)},ProgressFill,,0,0,0,,"
+        rf"{{\pos(70,1730)\org(70,1730)\fscx0\t(0,{round(duration * 1000)},\fscx100)\p1}}"
+        "m 0 0 l 940 0 940 6 0 6",
     ]
     if len(stories or []) == 3:
         intro = min(5.0, duration * 0.15)
@@ -268,6 +283,11 @@ def make_ass(title: str, post_date: str, script: str, duration: float, *, ai_voi
                     )
                     fact = context
                 events.append(
+                    f"Dialogue: 0,{ass_time(start)},{ass_time(end)},FactRule,,0,0,0,,"
+                    r"{\pos(70,1035)\org(70,1035)\fscx0\t(200,900,\fscx100)\p1}"
+                    "m 0 0 l 940 0 940 6 0 6"
+                )
+                events.append(
                     f"Dialogue: 0,{ass_time(start)},{ass_time(end)},FactText,,0,0,0,,"
                     r"{\fad(450,350)}" + wrap_words(fact, 34)
                 )
@@ -299,7 +319,8 @@ def make_ass(title: str, post_date: str, script: str, duration: float, *, ai_voi
             end = duration if index == len(chunks) - 1 else elapsed
             caption_cues.append((chunk, start, end))
     for chunk, start, end in caption_cues:
-        events.append(f"Dialogue: 1,{ass_time(start)},{ass_time(end)},Caption,,0,0,0,,{wrap_words(chunk, 24)}")
+        events.append(f"Dialogue: 1,{ass_time(start)},{ass_time(end)},Caption,,0,0,0,,"
+                      r"{\fad(80,80)}" + emphasized_caption(chunk))
     return """[Script Info]
 ScriptType: v4.00+
 PlayResX: 1080
@@ -314,9 +335,12 @@ Style: SceneLabel,Arial,38,&H00A3E4C2,&H00A3E4C2,&H000C1820,&H000C1820,1,0,0,0,1
 Style: SceneNumber,Arial,42,&H00A3E4C2,&H00A3E4C2,&H000C1820,&H000C1820,1,0,0,0,100,100,2,0,1,0,0,7,70,70,515,1
 Style: SceneTitle,Arial,58,&H00FFFFFF,&H00FFFFFF,&H000C1820,&H000C1820,1,0,0,0,100,100,0,0,1,0,0,7,70,70,670,1
 Style: FactNumber,Arial,92,&H00A3E4C2,&H00A3E4C2,&H000C1820,&H000C1820,1,0,0,0,100,100,0,0,1,0,0,7,70,70,930,1
-Style: FactText,Arial,38,&H00FFFFFF,&H00FFFFFF,&H000C1820,&H000C1820,0,0,0,0,100,100,0,0,1,0,0,7,70,70,1040,1
+Style: FactText,Arial,38,&H00FFFFFF,&H00FFFFFF,&H000C1820,&H000C1820,0,0,0,0,100,100,0,0,1,0,0,7,70,70,1070,1
+Style: FactRule,Arial,20,&H00A3E4C2,&H00A3E4C2,&H000C1820,&H000C1820,0,0,0,0,100,100,0,0,1,0,0,7,70,70,1035,1
 Style: Source,Arial,27,&H00C8D4D2,&H00C8D4D2,&H000C1820,&H000C1820,0,0,0,0,100,100,0,0,1,0,0,7,70,70,1250,1
 Style: Progress,Arial,46,&H00A3E4C2,&H00A3E4C2,&H000C1820,&H000C1820,1,0,0,0,100,100,2,0,1,0,0,8,70,70,505,1
+Style: ProgressTrack,Arial,20,&H0051645F,&H0051645F,&H000C1820,&H000C1820,0,0,0,0,100,100,0,0,1,0,0,7,70,70,1730,1
+Style: ProgressFill,Arial,20,&H00A3E4C2,&H00A3E4C2,&H000C1820,&H000C1820,0,0,0,0,100,100,0,0,1,0,0,7,70,70,1730,1
 Style: Caption,Arial,64,&H00FFFFFF,&H00FFFFFF,&H000C1820,&HAA0C1820,1,0,0,0,100,100,0,0,3,8,1,2,68,68,405,1
 Style: Footer,Arial,30,&H00C8D4D2,&H00C8D4D2,&H000C1820,&H000C1820,0,0,0,0,100,100,0,0,1,0,0,2,60,60,80,1
 Style: Disclosure,Arial,28,&H00C8D4D2,&H00C8D4D2,&H000C1820,&H000C1820,0,0,0,0,100,100,0,0,1,0,0,9,60,60,85,1
@@ -336,6 +360,7 @@ def render_video(work_dir: Path, duration: float, audio: Path | None) -> Path:
     command = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", *inputs,
                "-vf", "ass=captions.ass", "-t", str(duration), "-c:v", "libx264",
                "-preset", "veryfast", "-crf", "23", "-pix_fmt", "yuv420p",
+               *([] if not audio else ["-af", "highpass=f=70,loudnorm=I=-16:TP=-1.5:LRA=11,aresample=48000"]),
                "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", "video.mp4"]
     subprocess.run(command, cwd=work_dir, check=True)
     return output
