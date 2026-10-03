@@ -28,7 +28,6 @@
       {{- partial "post_canonical.html" . -}}
     </div>
     {{- end }}
-    <p class="article-deck">A concise read on the labor-market signals, automation pressures, and income-security implications behind today's news.</p>
   </header>
   {{- $isHidden := (.Param "cover.hiddenInSingle") | default (.Param "cover.hidden") | default false }}
   {{- partial "cover.html" (dict "cxt" . "IsSingle" true "isHidden" $isHidden) }}

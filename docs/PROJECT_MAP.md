@@ -29,6 +29,7 @@ This is a Hugo site with Netlify deployment configuration.
 - `scripts/` - Utility scripts.
 - `scripts/refresh_labor_stats.py` - Refreshes `data/labor_stats.json` from public FRED CSV feeds without requiring secrets.
 - `scripts/refresh_labor_stats.py` - Also refreshes `data/labor_stats_history.json` for the candidate paid history route.
+- `scripts/generate_daily_post.py` - Generates the daily article with recent-brief context and retries once if its headline, lead, story headings, conclusion, or source URLs repeat recent coverage.
 - `scripts/check_labor_stats_x402.mjs` - Verifies the paid labor stats function in disabled, dev-bypass, method rejection, and optional testnet challenge modes.
 - `scripts/check_publication_health.py` - Read-only deployed article/stats and committed X marker freshness checks.
 - `scripts/prepare_newsletter.py` - Prepares local HTML and plain-text AI Jobs Brief editions from published daily articles; it does not send mail.

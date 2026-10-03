@@ -2,47 +2,43 @@
 
 ## Objective
 
-Finalize the AI Jobs Brief weekly Brevo campaign and record the live operating state.
+Reduce repetitive wording and recycled source articles in future daily briefs, then deploy the focused change.
 
 ## Branch
 
-`codex/weekly-newsletter-launch`, created from merged `origin/main` at `23c57ef` in the focused managed worktree. The shared `codex/repair-publishing` checkout and its unrelated edits remain intact.
+`codex/article-variety`, based on `origin/main` at `38119e0` in a clean managed worktree. The shared `codex/repair-publishing` checkout and its unrelated edits remain intact.
 
 ## Current Status
 
-October 3, 2026: [PR #14](https://github.com/asobel12321/incomeforeveryone/pull/14) merged into `main` as `23c57ef`. With owner approval, the Brevo `AI Jobs Brief RSS` integration is **active** for automatic Wednesday sends at 1:00 PM America/New_York to the `AI Jobs Brief` list. The template contains the newest full article, the footer identifies Income for Everyone at 100 Broad St, New York, NY 10004, and the verified sender and weekly subject are aligned. A controlled template test reached the owner's address; no subscriber campaign has been sent. The first scheduled run is Wednesday, October 7, 2026, if new feed items exist. Paid x402 fulfillment remains unverified.
+October 3, 2026: implementation and local verification complete; deployment is pending. The generator compares a proposed article with the seven most recent published briefs, retries once on close wording or reused source URLs, and fails without saving a second repeat. Article pages no longer show the identical generic deck sentence. Future articles omit the fixed hashtag footer.
 
 ## Files Changed
 
-`README.md`, `docs/AI_JOBS_BRIEF.md`, `docs/PROJECT_MAP.md`, and this handoff. No application or generated site files were changed in this focused worktree.
+`scripts/generate_daily_post.py`, new `scripts/test_generate_daily_post.py`, `prompts/daily-labor-watch.md`, `layouts/_default/single.html`, `README.md`, `docs/PROJECT_MAP.md`, and this handoff. No generated `public/` files changed.
 
 ## Accomplishments
 
-Updated the Brevo template footer, sender, and subject; switched the integration from daily manual drafts to Wednesday automatic sends; verified the active status and controlled test delivery.
+Added recent-article context to the prompt; checked titles, leads, story headlines, conclusions, and source URLs; required three distinct article links; updated the manual prompt and documentation. The detector caught the reused California AP source in the October 3 article.
 
 ## Things Tried
 
-Used Brevo's RSS preview and a template test to check content and delivery separately. The template test omits RSS article data outside the integration context. The shared checkout was not reset or cleaned.
+The initial local compile and Hugo build lacked filesystem access to the managed worktree. Both succeeded when rerun with approved worktree access.
 
 ## Things Learned
 
-Brevo's Wednesday campaign window begins at the prior Wednesday's 12:30 PM New York time and ends at 12:30 PM on send day. With a template repeat limit of one, the email contains the newest feed article from that window. The RSS preview rendered the full October 3 article and its three source links.
+The October 1 and October 3 published briefs cited the same California AP article. Recent content is available in current `main`, unlike the older shared checkout. The weekly AI Jobs Brief campaign is active; the prior session notes below retain its setup details.
 
 ## Known Issues
 
-The template test confirmed delivery, sender authentication, footer, and a generated unsubscribe link, but omitted RSS content. Check the first integration-generated subscriber campaign for final content, links, mobile layout, and unsubscribe behavior. The current weekly format selects only the newest full article; change the template if the owner chooses a multi-article digest. A paid x402 settlement and response have not been tested. The worktree lacks its own PaperMod theme files, so local builds should pass `--themesDir C:\Users\asobe\Projects\Active\incomeforeveryone\themes` or initialize the theme.
+The checks catch close wording and repeated URLs, not all repeated ideas or unsupported claims. A very quiet news day may fail publication after two repeated drafts; review the first scheduled run and adjust only if the rejection is unjustified. The managed worktree uses the theme directory from the primary checkout for local builds. Paid x402 fulfillment remains unverified.
 
 ## Verification Run
 
-`git fetch origin main` updated `origin/main` to `0be8672`. Live `/api/latest/`, `/feed.json`, `/newsletter/`, `/ai-jobs-brief.xml`, and `/openapi.json` returned `200`; `/api/labor-stats/history` returned `402`. The feed's newest item and latest article API both point to `/posts/2026-10-03/`. The public labor snapshot reports `2026-10-02`. GitHub Actions show October 3 article and X video runs successful; the later X run skipped the already posted date. No payment or email was sent.
-
-`git diff --check` passed. `hugo --noBuildLock --themesDir C:\Users\asobe\Projects\Active\incomeforeveryone\themes --destination C:\Users\asobe\AppData\Local\Temp\ife-finalize-operations-hugo-20261003` passed with 135 pages. The first Hugo attempt failed only because this managed worktree could not create its build-lock file; `--noBuildLock` resolved that environment constraint. `python scripts\prepare_newsletter.py --date 2026-10-03 --output-dir C:\Users\asobe\Projects\Active\incomeforeveryone\newsletter-preview\2026-10-03` generated ignored HTML and text drafts from current `main`; all three newsletter tests passed. The draft was not sent. Brevo loaded the live feed and saved `AI Jobs Brief RSS` under My Integrations with the `Disabled` label and toggle off. Its selected list is `AI Jobs Brief`, sender is `newsletter@incomeforeveryone.org`, manual draft schedule is daily at 1:00 PM New York, and no email was sent. PR #14's Netlify preview, header rules, and redirect rules passed. The read-only production health check passed Articles, Labor stats, and X marker with `--today 2026-10-03`; the default invocation failed locally because this Windows Python lacks IANA `tzdata`.
-
-The Brevo RSS template was edited and saved. Its rendered desktop and mobile RSS previews show exactly one October 3 article with full HTML body, three source links, the article link, Income for Everyone, 100 Broad St, New York, NY 10004, and an unsubscribe link. A controlled template test to the approved owner address arrived with subject `AI Jobs Brief | Weekly AI and Labor Update`, sender `newsletter@incomeforeveryone.org`, `signed-by: incomeforeveryone.org`, the footer address, and a generated unsubscribe link. The template test did not include RSS article content. The integration was saved for Wednesday at 13:00 America/New_York with automatic sending selected; its listing then showed `Active` and the switch checked. No subscriber campaign has been sent.
+`python -m unittest discover -s scripts -p 'test_*.py'` passed (33 tests). `python -m py_compile scripts\generate_daily_post.py scripts\test_generate_daily_post.py` passed. Hugo 0.145.0 built 135 pages with `--themesDir` set to the primary checkout and generated output under `%TEMP%`. `git diff --check` passed with Windows line-ending warnings only. No live OpenAI generation or automatic publication was triggered.
 
 ## Next Steps
 
-Check Brevo's first Wednesday integration-generated campaign on October 7 for the full article, source links, subject, sender, and unsubscribe behavior. Decide whether the weekly edition should remain the newest full brief or become a multi-article digest. Inspect the next scheduled publication health run. Plan a controlled x402 payment test to verify settlement and paid fulfillment. Preserve the shared checkout until its older duplicate edits are reconciled with `main`.
+Commit the focused branch, create and review its PR/deploy preview, merge to `main`, verify production, and inspect the next generated daily brief for wording and source freshness.
 
 ## Prior Session Notes
 
