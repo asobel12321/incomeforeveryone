@@ -6,7 +6,10 @@ import json
 from unittest.mock import patch
 from pathlib import Path
 
-from render_short_video import make_ass, read_article, synthesize_speech
+from render_short_video import (
+    make_ass, read_article, story_cards, synthesize_speech, timed_caption_chunks,
+    transcribe_word_timing,
+)
 
 
 SCRIPT = " ".join(["Workers are seeing changes in hiring and job security."] * 10)
@@ -39,6 +42,66 @@ class RenderShortVideoTests(unittest.TestCase):
             self.assertIn(headline, subtitles)
         self.assertIn("WHY IT MATTERS", subtitles)
         self.assertIn("AI-generated narration", subtitles)
+
+    def test_story_card_uses_article_fact_and_source(self):
+        article = (
+            '---\ntitle: "Labor brief"\ndate: 2026-10-02\n'
+            f'video_script: >-\n  {SCRIPT}\n---\n'
+            '### Key Stories\n\n- **Hiring slows**\n'
+            '  Employers added 29,000 jobs in September. The outlook remains uncertain.\n'
+            '  [Report](https://www.example.org/report)\n\n'
+            '- **A policy change**\n  A new law requires written notice to workers.\n'
+            '  [Law](https://example.net/law)\n'
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "post.md"
+            path.write_text(article, encoding="utf-8")
+            cards = story_cards(path)
+        self.assertEqual(cards[0], ("29,000 jobs|Employers added 29,000 jobs in September", "example.org"))
+        self.assertEqual(cards[1], ("A new law requires written notice to workers.", "example.net"))
+        subtitles = make_ass("Labor brief", "2026-10-02", SCRIPT, 38.0, ai_voice=True,
+                             stories=["One", "Two", "Three"], cards=cards + [("3%|more jobs", "source.org")])
+        self.assertIn("29,000", subtitles)
+        self.assertIn("SOURCE: example.org", subtitles)
+        self.assertIn("FactNumber", subtitles)
+
+    def test_audio_word_times_set_caption_cues(self):
+        words = [("Workers", 0.4, 0.8), ("are", 1.0, 1.2), ("seeing", 1.4, 1.8)]
+        cues = timed_caption_chunks(words, 3.0, words_per_chunk=2)
+        self.assertEqual(cues[0][0], "Workers are")
+        self.assertAlmostEqual(cues[0][1], 0.32)
+        self.assertAlmostEqual(cues[0][2], 1.32)
+        self.assertEqual(cues[1][0], "seeing")
+        self.assertAlmostEqual(cues[1][1], 1.32)
+        self.assertAlmostEqual(cues[1][2], 1.92)
+        subtitles = make_ass("Labor brief", "2026-10-02", SCRIPT, 38.0, ai_voice=True,
+                             caption_cues=[("Workers are", 2.0, 3.0)])
+        self.assertIn("Dialogue: 1,0:00:02.00,0:00:03.00,Caption", subtitles)
+
+    def test_transcription_requests_word_timestamps(self):
+        class Response:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *args):
+                return False
+
+            def read(self):
+                return json.dumps({"words": [
+                    {"word": "Workers", "start": 0.2, "end": 0.5},
+                    {"word": "are", "start": 0.5, "end": 0.8},
+                ]}).encode()
+
+        with tempfile.TemporaryDirectory() as directory:
+            audio = Path(directory) / "narration.mp3"
+            audio.write_bytes(b"mp3")
+            with patch.dict("os.environ", {"OPENAI_API_KEY": "test-key"}):
+                with patch("render_short_video.urllib.request.urlopen", return_value=Response()) as urlopen:
+                    words = transcribe_word_timing(audio, "Workers are")
+        self.assertEqual(words, [("Workers", 0.2, 0.5), ("are", 0.5, 0.8)])
+        request = urlopen.call_args.args[0]
+        self.assertIn(b'timestamp_granularities[]', request.data)
+        self.assertIn(b'whisper-1', request.data)
 
     def test_speech_request_uses_delivery_style(self):
         class Response:

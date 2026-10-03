@@ -1,5 +1,15 @@
 # Session State
 
+## Video Caption and Fact Card Improvements - October 2, 2026
+
+- Objective: improve daily X videos with captions timed from the finished narration and a reusable, source-labeled fact card for each article story.
+- Branch/status: focused managed worktree at `C:/Users/asobe/.codex/worktrees/video-visuals/incomeforeveryone`, starting from merged `main` at `61922bc`. The shared `codex/repair-publishing` checkout and its uncommitted work remain untouched.
+- Changed files: `scripts/render_short_video.py`, `scripts/test_render_short_video.py`, `README.md`, `docs/PROJECT_MAP.md`, and this handoff.
+- Behavior: AI narration is transcribed once for word timestamps; captions use those times if the transcript resembles the article script, otherwise they retain estimated timing with a warning. Each of the three story scenes displays a short fact from the article summary and the linked source host. Numeric claims become animated large-type cards; nonnumeric stories display the source text without inventing a number. The MP4 is still rendered only in the X workflow.
+- Verification: 13 focused video/script/X tests passed; Hugo built 130 pages with `--noBuildLock` and an external destination; a representative October 2 frame was visually checked for fact/source/caption spacing; `git diff --check` passed. The OpenAI transcription request and X post have not been run live.
+- Known issue: OpenAI's `whisper-1` currently provides word timestamps but is scheduled for removal February 26, 2027. Replace this timing path before then. If the transcription API fails, the renderer falls back to estimated captions and still produces the video.
+- Next: review a real narrated X video for visual pacing, accurate facts and source attribution, and caption sync; inspect the first scheduled Actions run for transcription warnings. No live post was made during this change.
+
 ## X Video Publishing - October 2, 2026
 
 - Objective: publish the daily narrated video in the same X post as the article link, rendering it only in the X workflow.
