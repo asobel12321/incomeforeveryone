@@ -2,15 +2,15 @@
 
 ## Objective
 
-Review unfinished launch work and correct the current operating documentation.
+Finalize the AI Jobs Brief weekly Brevo campaign and record the live operating state.
 
 ## Branch
 
-`codex/finalize-operations`, created from `origin/main` at `0be8672` in a managed worktree. The shared `codex/repair-publishing` checkout and its unrelated edits remain intact.
+`codex/weekly-newsletter-launch`, created from merged `origin/main` at `23c57ef` in the focused managed worktree. The shared `codex/repair-publishing` checkout and its unrelated edits remain intact.
 
 ## Current Status
 
-October 3, 2026: PR #13 is merged as `0be8672`. [PR #14](https://github.com/asobel12321/incomeforeveryone/pull/14) records the launch status corrections and is ready for review with passing Netlify checks. Automatic approval review rejected merging it into the shared default branch because "ok keep going" did not clearly authorize that exact action; explicit owner approval is needed. Production article APIs, JSON feed, newsletter page/feed, and labor snapshot respond successfully. Today's article and X video runs succeeded; the later X run skipped the already posted date. With owner approval, the Brevo `AI Jobs Brief RSS` integration was configured and saved disabled with manual drafts. Its template now renders one full article in a live RSS preview; no email was sent. Paid history emits a `402` challenge; successful payment settlement and fulfillment remain unverified.
+October 3, 2026: [PR #14](https://github.com/asobel12321/incomeforeveryone/pull/14) merged into `main` as `23c57ef`. With owner approval, the Brevo `AI Jobs Brief RSS` integration is **active** for automatic Wednesday sends at 1:00 PM America/New_York to the `AI Jobs Brief` list. The template contains the newest full article, the footer identifies Income for Everyone at 100 Broad St, New York, NY 10004, and the verified sender and weekly subject are aligned. A controlled template test reached the owner's address; no subscriber campaign has been sent. The first scheduled run is Wednesday, October 7, 2026, if new feed items exist. Paid x402 fulfillment remains unverified.
 
 ## Files Changed
 
@@ -18,19 +18,19 @@ October 3, 2026: PR #13 is merged as `0be8672`. [PR #14](https://github.com/asob
 
 ## Accomplishments
 
-Fetched current `origin/main`, verified deployed publishing routes and today's workflows, and corrected stale newsletter and public API descriptions.
+Updated the Brevo template footer, sender, and subject; switched the integration from daily manual drafts to Wednesday automatic sends; verified the active status and controlled test delivery.
 
 ## Things Tried
 
-Compared the shared checkout with current `main`, inspected recent GitHub Actions runs, and read production response metadata. The shared checkout was not reset or cleaned.
+Used Brevo's RSS preview and a template test to check content and delivery separately. The template test omits RSS article data outside the integration context. The shared checkout was not reset or cleaned.
 
 ## Things Learned
 
-Production `/api/latest/`, `/feed.json`, and `/ai-jobs-brief.xml` point to the October 3 article. The public labor snapshot reports `2026-10-02`. A later successful X run skipped rendering and posting because the October 3 marker already existed.
+Brevo's Wednesday campaign window begins at the prior Wednesday's 12:30 PM New York time and ends at 12:30 PM on send day. With a template repeat limit of one, the email contains the newest feed article from that window. The RSS preview rendered the full October 3 article and its three source links.
 
 ## Known Issues
 
-Brevo's RSS integration is installed and disabled. The template's stock `Sendinblue SAS` name and Paris mailing address must be replaced with accurate owner details before a controlled test. Its template-level preview shows a default personal sender and subject; confirm the integration's separate campaign sender and subject in a controlled test. No controlled campaign test or automatic delivery has occurred. A paid x402 settlement and response have not been tested. The worktree lacks its own PaperMod theme files, so local builds should pass `--themesDir C:\Users\asobe\Projects\Active\incomeforeveryone\themes` or initialize the theme.
+The template test confirmed delivery, sender authentication, footer, and a generated unsubscribe link, but omitted RSS content. Check the first integration-generated subscriber campaign for final content, links, mobile layout, and unsubscribe behavior. The current weekly format selects only the newest full article; change the template if the owner chooses a multi-article digest. A paid x402 settlement and response have not been tested. The worktree lacks its own PaperMod theme files, so local builds should pass `--themesDir C:\Users\asobe\Projects\Active\incomeforeveryone\themes` or initialize the theme.
 
 ## Verification Run
 
@@ -38,11 +38,11 @@ Brevo's RSS integration is installed and disabled. The template's stock `Sendinb
 
 `git diff --check` passed. `hugo --noBuildLock --themesDir C:\Users\asobe\Projects\Active\incomeforeveryone\themes --destination C:\Users\asobe\AppData\Local\Temp\ife-finalize-operations-hugo-20261003` passed with 135 pages. The first Hugo attempt failed only because this managed worktree could not create its build-lock file; `--noBuildLock` resolved that environment constraint. `python scripts\prepare_newsletter.py --date 2026-10-03 --output-dir C:\Users\asobe\Projects\Active\incomeforeveryone\newsletter-preview\2026-10-03` generated ignored HTML and text drafts from current `main`; all three newsletter tests passed. The draft was not sent. Brevo loaded the live feed and saved `AI Jobs Brief RSS` under My Integrations with the `Disabled` label and toggle off. Its selected list is `AI Jobs Brief`, sender is `newsletter@incomeforeveryone.org`, manual draft schedule is daily at 1:00 PM New York, and no email was sent. PR #14's Netlify preview, header rules, and redirect rules passed. The read-only production health check passed Articles, Labor stats, and X marker with `--today 2026-10-03`; the default invocation failed locally because this Windows Python lacks IANA `tzdata`.
 
-The Brevo RSS template was edited and saved. Its rendered desktop and mobile RSS previews now show exactly one October 3 article with full HTML body, three source links, and the article link; its unsubscribe link is present. The stock logo and empty RSS image were removed. The template footer still carries Brevo's stock company name and Paris address, and the template-level sender/subject preview is separate from the integration's configured campaign settings. The integration listing still shows `Disabled` and its switch off. No test email was sent. A renewed `git diff --check` passed after the documentation update.
+The Brevo RSS template was edited and saved. Its rendered desktop and mobile RSS previews show exactly one October 3 article with full HTML body, three source links, the article link, Income for Everyone, 100 Broad St, New York, NY 10004, and an unsubscribe link. A controlled template test to the approved owner address arrived with subject `AI Jobs Brief | Weekly AI and Labor Update`, sender `newsletter@incomeforeveryone.org`, `signed-by: incomeforeveryone.org`, the footer address, and a generated unsubscribe link. The template test did not include RSS article content. The integration was saved for Wednesday at 13:00 America/New_York with automatic sending selected; its listing then showed `Active` and the switch checked. No subscriber campaign has been sent.
 
 ## Next Steps
 
-Replace the Brevo template's stock company name and Paris address with the owner's accurate sender details, then run a controlled email test and check actual campaign sender, subject, and unsubscribe behavior. Keep the integration disabled until that review and a separate activation decision. Obtain explicit owner approval to merge PR #14. Inspect the next scheduled publication health run. Plan a controlled x402 payment test to verify settlement and paid fulfillment. Preserve the shared checkout until its older duplicate edits are reconciled with `main`.
+Check Brevo's first Wednesday integration-generated campaign on October 7 for the full article, source links, subject, sender, and unsubscribe behavior. Decide whether the weekly edition should remain the newest full brief or become a multi-article digest. Inspect the next scheduled publication health run. Plan a controlled x402 payment test to verify settlement and paid fulfillment. Preserve the shared checkout until its older duplicate edits are reconciled with `main`.
 
 ## Prior Session Notes
 

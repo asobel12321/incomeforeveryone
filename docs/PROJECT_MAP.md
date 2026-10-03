@@ -57,7 +57,7 @@ This is a Hugo site with Netlify deployment configuration.
 - Prefer existing Hugo and Netlify conventions in this repository.
 - Check `README.md` and `netlify.toml` for the current build command before changing deployment behavior.
 - Netlify scheduled functions trigger the daily post workflow and the daily tweet brief.
-- `/newsletter/` links to a Brevo-hosted signup form when `params.newsletterSignupURL` is set; the site does not collect addresses.
+- `/newsletter/` links to a Brevo-hosted signup form when `params.newsletterSignupURL` is set; the site does not collect addresses. Its Brevo RSS integration is active for automatic Wednesday 1:00 PM New York sends from the newest full-content article.
 - `/ai-jobs-brief.xml` is a dedicated full-content RSS feed restricted to dated daily posts. `layouts/home.aijobsbrief.xml` renders it; provider setup is documented in `docs/AI_JOBS_BRIEF.md`.
 - `/api/latest/` and `/api/articles/` expose the newest one and newest 20 published posts as static JSON with full HTML content. `/feed.json` is a JSON Feed 1.1 view of the same 20 posts. All are public and updated by the Hugo build.
 - GitHub-native backups run the article workflow at 14:15 UTC and X workflow at 15:45 UTC, independently of the Netlify dispatch credential. Existing concurrency groups and per-date files prevent duplicate publication.

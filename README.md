@@ -85,7 +85,7 @@ You can also run it manually from GitHub Actions with an optional `YYYY-MM-DD` d
 
 ## AI Jobs Brief Newsletter
 
-`/newsletter/` is live and links to the Brevo-hosted signup form configured in `params.newsletterSignupURL`. The site does not collect addresses. The form requires explicit newsletter consent and adds subscribers without a confirmation email; an owner signup reached the dedicated list. The RSS feed is live. A Brevo RSS integration is configured for manual drafts and remains disabled; no newsletter campaign has been sent.
+`/newsletter/` is live and links to the Brevo-hosted signup form configured in `params.newsletterSignupURL`. The site does not collect addresses. The form requires explicit newsletter consent and adds subscribers without a confirmation email; an owner signup reached the dedicated list. The RSS feed is live. The Brevo RSS integration is active for automatic Wednesday sends at 1:00 PM America/New_York. A controlled template test reached the owner's address; no subscriber campaign has been sent yet.
 
 Prepare a reviewable plain-text and HTML edition from one published daily article:
 
