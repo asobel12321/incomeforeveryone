@@ -85,7 +85,7 @@ You can also run it manually from GitHub Actions with an optional `YYYY-MM-DD` d
 
 ## AI Jobs Brief Newsletter
 
-`/newsletter/` introduces the planned daily email edition and links to the Brevo-hosted signup form configured in `params.newsletterSignupURL`. The site does not collect addresses. The form requires explicit newsletter consent and adds subscribers without a confirmation email; test that flow before deployment.
+`/newsletter/` is live and links to the Brevo-hosted signup form configured in `params.newsletterSignupURL`. The site does not collect addresses. The form requires explicit newsletter consent and adds subscribers without a confirmation email; an owner signup reached the dedicated list. The RSS feed is live. A Brevo RSS integration is configured for manual drafts and remains disabled; no newsletter campaign has been sent.
 
 Prepare a reviewable plain-text and HTML edition from one published daily article:
 
@@ -138,6 +138,8 @@ Run the same read-only check locally:
 ```powershell
 python scripts/check_publication_health.py
 ```
+
+On Windows Python installs without IANA time-zone data, pass the current New York date with `--today YYYY-MM-DD` (or install Python's `tzdata` package). The hosted Linux workflow has the time-zone data it needs.
 
 The article and X limits are one calendar day, and the stats source-check limit is four days to allow for weekends. The X result is based on a committed marker, not a live X API query. If X posting is intentionally paused, its check will continue to fail until the monitor is updated to reflect that decision.
 

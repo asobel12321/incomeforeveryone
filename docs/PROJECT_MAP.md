@@ -9,7 +9,7 @@ This is a Hugo site with Netlify deployment configuration.
 - `assets/` - Hugo asset pipeline inputs.
 - `content/` - Site content.
 - `data/` - Hugo data files.
-- `data/labor_stats.json` - Curated public labor indicators used by `/labor-stats/`; keep fields stable for a future agent API.
+- `data/labor_stats.json` - Curated public labor indicators used by `/labor-stats/` and `/api/labor-stats/`; keep the public schema stable.
 - `data/labor_stats_access.json` - Public vs paid labor stats boundary, candidate pricing, x402 metadata, and listing prep fields.
 - `data/labor_stats_history.json` - Compact premium-candidate history payload generated from recent FRED observations.
 - `docs/labor-stats-x402.md` - x402 paid-access plan, runtime notes, pricing, and listing readiness checklist.
