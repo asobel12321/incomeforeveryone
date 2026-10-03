@@ -26,6 +26,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT = ROOT / "video-preview"
 SPEECH_MODEL = "gpt-4o-mini-tts"
 SPEECH_VOICE = "marin"
+KOKORO_VOICE = "am_michael"
 SPEECH_STYLE = (
     "Warm, grounded educational narrator. Speak conversationally at a measured pace, "
     "with brief pauses between ideas. Give numbers and worker impact gentle emphasis. "
@@ -76,6 +77,32 @@ def synthesize_speech(script: str, destination: Path, *, model: str, voice: str,
         raise RuntimeError(f"Speech API returned HTTP {exc.code}") from exc
 
 
+def synthesize_kokoro(script: str, destination: Path, *, model_dir: Path,
+                      voice: str = KOKORO_VOICE) -> None:
+    """Render narration locally with the Kokoro ONNX model."""
+    try:
+        import soundfile as sf
+        from kokoro_onnx import Kokoro
+        from onnxruntime import InferenceSession, SessionOptions
+    except ImportError as exc:
+        raise RuntimeError("Kokoro narration requires kokoro-onnx and soundfile") from exc
+    model = model_dir / "kokoro-v1.0.int8.onnx"
+    voices = model_dir / "voices-v1.0.bin"
+    for path in (model, voices):
+        if not path.is_file():
+            raise FileNotFoundError(f"Missing Kokoro model file: {path}")
+    options = SessionOptions()
+    options.intra_op_num_threads = 2
+    options.inter_op_num_threads = 1
+    session = InferenceSession(str(model), sess_options=options, providers=["CPUExecutionProvider"])
+    samples, sample_rate = Kokoro.from_session(session, str(voices)).create(
+        script, voice=voice, speed=1.0, lang="en-us",
+    )
+    if not len(samples):
+        raise RuntimeError("Kokoro generated empty narration")
+    sf.write(destination, samples, sample_rate)
+
+
 def probe_duration(audio: Path) -> float:
     result = subprocess.run(
         ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "json", str(audio)],
@@ -111,7 +138,8 @@ def ass_escape(value: str) -> str:
     return value.replace("\\", "\\\\").replace("{", "(").replace("}", ")").replace("\n", r"\N")
 
 
-def wrap_words(value: str, width: int, max_lines: int | None = None) -> str:
+def wrap_words(value: str, width: int, max_lines: int | None = None,
+               *, truncate: bool = False) -> str:
     lines: list[str] = []
     current = ""
     for word in value.split():
@@ -124,8 +152,25 @@ def wrap_words(value: str, width: int, max_lines: int | None = None) -> str:
     if current:
         lines.append(current)
     if max_lines and len(lines) > max_lines:
-        raise ValueError("Article title is too long for the video layout")
+        if not truncate:
+            raise ValueError("Text is too long for the video layout")
+        lines = lines[:max_lines]
+        lines[-1] = lines[-1].rstrip(" ,;:") + "…"
     return r"\N".join(ass_escape(line) for line in lines)
+
+
+def closing_card(sentence: str) -> str:
+    """Keep a complete final clause when the spoken takeaway is too long for its card."""
+    if len(wrap_words(sentence, 28).split(r"\N")) <= 5:
+        return wrap_words(sentence, 28, 5)
+    clauses = re.split(r",\s+", sentence)
+    for index in range(1, len(clauses)):
+        candidate = ", ".join(clauses[index:]).strip()
+        candidate = re.sub(r"^(?:but|and)\s+", "", candidate, flags=re.I)
+        candidate = candidate[:1].upper() + candidate[1:]
+        if len(wrap_words(candidate, 28).split(r"\N")) <= 5:
+            return wrap_words(candidate, 28, 5)
+    return wrap_words(sentence, 28, 5, truncate=True)
 
 
 def caption_chunks(script: str, words_per_chunk: int = 9) -> list[str]:
@@ -179,9 +224,10 @@ def transcribe_word_timing(audio: Path, script: str) -> list[tuple[str, float, f
     body = bytearray()
     for name, value in fields:
         body.extend(f"--{boundary}\r\nContent-Disposition: form-data; name=\"{name}\"\r\n\r\n{value}\r\n".encode())
+    content_type = "audio/wav" if audio.suffix.lower() == ".wav" else "audio/mpeg"
     body.extend(
         f"--{boundary}\r\nContent-Disposition: form-data; name=\"file\"; "
-        f"filename=\"{audio.name}\"\r\nContent-Type: audio/mpeg\r\n\r\n".encode()
+        f"filename=\"{audio.name}\"\r\nContent-Type: {content_type}\r\n\r\n".encode()
     )
     body.extend(audio.read_bytes())
     body.extend(f"\r\n--{boundary}--\r\n".encode())
@@ -303,7 +349,7 @@ def make_ass(title: str, post_date: str, script: str, duration: float, *, ai_voi
         )
         events.append(
             f"Dialogue: 0,{ass_time(duration - outro)},{ass_time(duration)},SceneTitle,,0,0,0,,"
-            r"{\move(1180,670,70,670,0,700)\fad(150,250)}" + wrap_words(last_sentence, 28, 5)
+            r"{\move(1180,670,70,670,0,700)\fad(150,250)}" + closing_card(last_sentence)
         )
     else:
         events.append(
@@ -377,6 +423,9 @@ def main() -> int:
     parser.add_argument("--voice-style", default=SPEECH_STYLE,
                         help="Delivery instructions for AI narration")
     parser.add_argument("--speech-model", default=SPEECH_MODEL)
+    parser.add_argument("--speech-provider", choices=("openai", "kokoro"), default="openai")
+    parser.add_argument("--kokoro-model-dir", type=Path, default=Path(os.environ.get("KOKORO_MODEL_DIR", ".")))
+    parser.add_argument("--kokoro-voice", default=KOKORO_VOICE)
     args = parser.parse_args()
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", args.date):
         parser.error("Date must be YYYY-MM-DD")
@@ -393,6 +442,10 @@ def main() -> int:
             raise FileNotFoundError(audio)
     elif args.silent:
         audio = None
+    elif args.speech_provider == "kokoro":
+        audio = work_dir / "narration.wav"
+        synthesize_kokoro(script, audio, model_dir=args.kokoro_model_dir.resolve(),
+                          voice=args.kokoro_voice)
     else:
         audio = work_dir / "narration.mp3"
         synthesize_speech(script, audio, model=args.speech_model, voice=args.voice,
@@ -408,7 +461,7 @@ def main() -> int:
         try:
             words = transcribe_word_timing(audio, script)
             caption_cues = timed_caption_chunks(words, duration)
-        except (OSError, ValueError, KeyError, TypeError, urllib.error.URLError) as exc:
+        except (OSError, ValueError, KeyError, TypeError, RuntimeError, urllib.error.URLError) as exc:
             print(f"warning: audio-aligned captions unavailable ({exc}); using estimated timing", file=sys.stderr)
     (work_dir / "captions.ass").write_text(
         make_ass(title, post_date, script, duration, ai_voice=bool(audio and not args.audio),

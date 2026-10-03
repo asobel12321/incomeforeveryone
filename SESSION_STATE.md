@@ -1,5 +1,14 @@
 # Session State
 
+## Michael Voice for Daily X Video - October 3, 2026
+
+- Objective: use the preferred Kokoro Michael voice for the daily X video, while retaining automatic article/video posting.
+- Branch/status: focused managed worktree `kokoro-michael` based on merged `main` at `ef948ec`; the shared `codex/repair-publishing` checkout and its unrelated changes remain untouched.
+- Changed files: `scripts/render_short_video.py`, `scripts/test_render_short_video.py`, `.github/workflows/daily-x-post.yml`, `README.md`, `docs/PROJECT_MAP.md`, and this handoff.
+- Behavior: the X workflow downloads and SHA-256 verifies cached Kokoro ONNX weights, renders the `am_michael` voice locally, then uses the existing audio processing, captions, video upload, and same-post article link. OpenAI word timestamp transcription remains optional with estimated timing fallback; local OpenAI narration remains available. Long closing takeaways are abbreviated only on the visual card so they cannot fail video rendering.
+- Verification: 18 focused video/script/X tests passed; today's article overlay generated successfully after the long-takeaway fix; workflow YAML parsed and `git diff --check` passed. An 88-word Michael sample took 382 seconds on local Windows CPU and ran 38.6 seconds. The actual 121-word October 3 script took 572 seconds and produced a 59.4-second WAV. The complete 59-second, 1080x1920 H.264/AAC video rendered successfully; its closing card was visually checked. No live X post was made during development.
+- Known issues/next: the October 3 scheduled X run failed before posting because its closing takeaway exceeded the previous five-line limit. After this change reaches main, rerun the October 3 workflow manually if the X post marker is still absent. The first GitHub Linux run must confirm dependency installation, speech runtime, upload permissions, and X account credits.
+
 ## Daily Video Motion and Audio Polish - October 3, 2026
 
 - Objective: improve daily X videos without a new paid video service, and audition a free local narration option.

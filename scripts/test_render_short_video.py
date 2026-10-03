@@ -3,12 +3,14 @@
 import tempfile
 import unittest
 import json
+import sys
+from types import SimpleNamespace
 from unittest.mock import patch
 from pathlib import Path
 
 from render_short_video import (
     emphasized_caption, make_ass, read_article, render_video, story_cards, synthesize_speech, timed_caption_chunks,
-    transcribe_word_timing,
+    transcribe_word_timing, synthesize_kokoro,
 )
 
 
@@ -89,6 +91,20 @@ class RenderShortVideoTests(unittest.TestCase):
         self.assertIn("FactRule", subtitles)
         self.assertIn(r"{\c&H00A3E4C2&}29,000", emphasized_caption("Employers added 29,000 jobs"))
 
+    def test_long_closing_takeaway_fits_video(self):
+        script = (
+            "The takeaway is that AI may not be causing a broad collapse yet, but it is already "
+            "changing how jobs disappear, which matters for workers' bargaining power and income security."
+        )
+        subtitles = make_ass(
+            "Labor brief", "2026-10-03", script, 50.0, ai_voice=True,
+            stories=["One", "Two", "Three"],
+        )
+        self.assertIn("WHY IT MATTERS", subtitles)
+        self.assertIn("It is already changing how", subtitles)
+        self.assertIn("income", subtitles)
+        self.assertIn("security.", subtitles)
+
     def test_audio_level_filter_only_for_recorded_voice(self):
         with tempfile.TemporaryDirectory() as directory:
             work_dir = Path(directory)
@@ -127,6 +143,55 @@ class RenderShortVideoTests(unittest.TestCase):
         request = urlopen.call_args.args[0]
         self.assertIn(b'timestamp_granularities[]', request.data)
         self.assertIn(b'whisper-1', request.data)
+
+    def test_wav_transcription_uses_wav_content_type(self):
+        class Response:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *args):
+                return False
+
+            def read(self):
+                return json.dumps({"words": [{"word": "Workers", "start": 0.0, "end": 0.5}]}).encode()
+
+        with tempfile.TemporaryDirectory() as directory:
+            audio = Path(directory) / "narration.wav"
+            audio.write_bytes(b"wav")
+            with patch.dict("os.environ", {"OPENAI_API_KEY": "test-key"}):
+                with patch("render_short_video.urllib.request.urlopen", return_value=Response()) as urlopen:
+                    transcribe_word_timing(audio, "Workers")
+        self.assertIn(b"Content-Type: audio/wav", urlopen.call_args.args[0].data)
+
+    def test_kokoro_uses_michael_and_writes_wav(self):
+        with tempfile.TemporaryDirectory() as directory:
+            model_dir = Path(directory)
+            for name in ("kokoro-v1.0.int8.onnx", "voices-v1.0.bin"):
+                (model_dir / name).write_bytes(b"model")
+            calls = {}
+
+            class FakeKokoro:
+                @staticmethod
+                def from_session(session, voices):
+                    calls["voices"] = voices
+                    return SimpleNamespace(create=lambda script, **kwargs: (
+                        calls.update({"script": script, **kwargs}) or [0.1, 0.2], 24000
+                    ))
+
+            class FakeOptions:
+                pass
+
+            modules = {
+                "soundfile": SimpleNamespace(write=lambda *args: calls.update({"output": args})),
+                "kokoro_onnx": SimpleNamespace(Kokoro=FakeKokoro),
+                "onnxruntime": SimpleNamespace(InferenceSession=lambda *args, **kwargs: object(),
+                                                SessionOptions=FakeOptions),
+            }
+            with patch.dict(sys.modules, modules):
+                synthesize_kokoro("Workers benefit.", model_dir / "narration.wav", model_dir=model_dir)
+        self.assertEqual(calls["voice"], "am_michael")
+        self.assertEqual(calls["lang"], "en-us")
+        self.assertEqual(calls["output"][2], 24000)
 
     def test_speech_request_uses_delivery_style(self):
         class Response:
