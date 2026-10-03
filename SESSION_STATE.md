@@ -10,7 +10,7 @@ Finalize public article APIs and a JSON feed for agent discovery.
 
 ## Current Status
 
-October 3, 2026: the implementation is validated locally and ready for commit and deploy verification.
+October 3, 2026: commit `727537b` is pushed on PR #13. The Netlify deploy preview is ready and the new routes have been verified there. Merge and production verification remain.
 
 ## Files Changed
 
@@ -30,15 +30,17 @@ Current `main` includes the October 3 article, which becomes the latest API resu
 
 ## Known Issues
 
-No deployed response has been verified yet. The worktree lacks its own PaperMod theme files, so future local builds should pass `--themesDir C:\Users\asobe\Projects\Active\incomeforeveryone\themes` or initialize the theme.
+Production responses have not been verified yet. The worktree lacks its own PaperMod theme files, so future local builds should pass `--themesDir C:\Users\asobe\Projects\Active\incomeforeveryone\themes` or initialize the theme.
 
 ## Verification Run
 
 `hugo --themesDir C:\Users\asobe\Projects\Active\incomeforeveryone\themes --destination $env:TEMP\ife-agent-feed-check` passed with 135 pages. Parsed generated JSON; latest article matched the first of 20 articles and feed items; the draft was absent; HTML contained the JSON Feed discovery link; both OpenAPI copies matched and included the new paths. `git diff --check` passed with only line-ending conversion warnings.
 
+Netlify PR #13 deploy preview returned `200` for `/api/latest/`, `/api/articles/`, `/feed.json`, and `/openapi.json`. The JSON routes had `application/json; charset=utf-8`; the feed had `application/feed+json; charset=utf-8`. The article API and JSON Feed each contained 20 items, the feed's first item matched the latest route, the OpenAPI contained the route, and the homepage advertised the feed.
+
 ## Next Steps
 
-Commit and push this focused branch, deploy and inspect the response content types and payloads, then merge if checks pass.
+Merge PR #13 after checks pass, confirm the production routes and content types, and update this handoff with the merge/deploy result.
 
 ## Prior Session Notes
 
