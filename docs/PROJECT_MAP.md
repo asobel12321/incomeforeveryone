@@ -30,7 +30,7 @@ This is a Hugo site with Netlify deployment configuration.
 - `scripts/check_publication_health.py` - Read-only deployed article/stats and committed X marker freshness checks.
 - `scripts/prepare_newsletter.py` - Prepares local HTML and plain-text AI Jobs Brief editions from published daily articles; it does not send mail.
 - `scripts/generate_video_script.py` - Adds a 75–130 word spoken script to the finished daily article before publication.
-- `scripts/render_short_video.py` - Creates a 9:16 MP4 with AI narration, animated story headlines, takeaway, and captions; local previews stay under ignored `video-preview/`.
+- `scripts/render_short_video.py` - Creates a 9:16 MP4 with AI narration, source-labeled fact cards, takeaway, and audio-aligned captions (estimated timing fallback); local previews stay under ignored `video-preview/`.
 - `scripts/post_daily_x_headline.py` - Uploads the rendered MP4 to X, waits for processing, publishes one post with the video and article URL, and records the post and media IDs.
 - `scripts/test_publication_health.py` - Focused tests for stale/future dates, source-check freshness, marker validity, and aggregate reporting.
 - `static/` - Static files copied into the site output.
@@ -63,6 +63,7 @@ This is a Hugo site with Netlify deployment configuration.
 - The labor stats page and public `/api/labor-stats/` JSON route are static Hugo output. The API response includes access metadata for the x402-gated history endpoint.
 - Article pages render a compact source-quality box after the post body. New posts should fill `source_quality.primary_sources`, `source_quality.official_data`, and `source_quality.uncertainty`; older posts use conservative defaults.
 - The article workflow adds `video_script` front matter to each new daily post. Article pages display it. The daily X workflow is the only scheduled renderer; it uploads the video and publishes it with the article URL. Rendering or media failure stops the X post.
+- The X renderer requests word timestamps for AI narration using `whisper-1`, currently the OpenAI transcription model supporting that output. It falls back to estimated captions on error or a mismatched transcript. Replace this path before the model's announced February 26, 2027 removal.
 - The candidate premium route `/api/labor-stats/history` is routed to a Netlify Function because x402 requires request-time `402 Payment Required` behavior and payment verification before fulfillment.
 - The premium route can return `data/labor_stats_history.json` only after x402 verification/settlement succeeds, or in explicit local/dev bypass mode. Production remains disabled until Netlify x402 environment configuration is set.
 - The premium route supports one optional facilitator auth header via Netlify env vars for production facilitators that require API-key or bearer-token auth.

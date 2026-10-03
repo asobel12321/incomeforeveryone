@@ -54,7 +54,7 @@ It runs every day at `13:30 UTC`, which is `9:30 AM America/New_York` during day
 5. Commits and pushes the new post.
 6. Lets Netlify publish from the pushed commit.
 
-Article pages show the roughly 30–60 second script. It uses only the finished article as source material. The X workflow renders the script into a branded vertical MP4 with AI narration, timed captions, three story headlines, and a closing takeaway. Video rendering happens only in the X workflow, once per unposted date. The on-video label discloses AI-generated narration as described in [OpenAI's text-to-speech guidance](https://developers.openai.com/api/docs/guides/text-to-speech). Review the daily output for factual accuracy and narration quality.
+Article pages show the roughly 30–60 second script. It uses only the finished article as source material. The X workflow renders the script into a branded vertical MP4 with AI narration, captions aligned to the rendered audio, three story headlines with animated fact/source cards, and a closing takeaway. Each card uses the published article's story summary and linked source host; it does not generate new facts or charts. Video rendering happens only in the X workflow, once per unposted date. The on-video label discloses AI-generated narration as described in [OpenAI's text-to-speech guidance](https://developers.openai.com/api/docs/guides/text-to-speech). Review the daily output for factual accuracy and narration quality.
 
 To add a script to an older article without changing its body:
 
@@ -67,6 +67,8 @@ To render a local preview without posting:
 ```powershell
 python scripts/render_short_video.py --date YYYY-MM-DD
 ```
+
+AI renders request word timestamps for the finished narration from OpenAI transcription. If that request fails or the transcript differs substantially from the script, captions fall back to estimated timing and the renderer prints a warning. This adds one short transcription request per new X video. [OpenAI's transcription guide](https://developers.openai.com/api/docs/guides/speech-to-text) currently requires `whisper-1` for word timestamps; [its deprecation notice](https://developers.openai.com/api/docs/deprecations) lists February 26, 2027 as its removal date, so replace this timing path before then. Local `--audio` and `--silent` drafts use estimated caption timing without a transcription request.
 
 Required GitHub setup:
 
