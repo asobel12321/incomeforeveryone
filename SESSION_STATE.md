@@ -10,7 +10,7 @@ Review unfinished launch work and correct the current operating documentation.
 
 ## Current Status
 
-October 3, 2026: PR #13 is merged as `0be8672`. Production article APIs, JSON feed, newsletter page/feed, and labor snapshot respond successfully. Today's article and X video runs succeeded; the later X run skipped the already posted date. Newsletter signup and sender are configured, but no email campaign has been configured or sent. Paid history emits a `402` challenge; successful payment settlement and fulfillment remain unverified.
+October 3, 2026: PR #13 is merged as `0be8672`. Draft [PR #14](https://github.com/asobel12321/incomeforeveryone/pull/14) records the launch status corrections; its Netlify preview and header/redirect checks passed. Production article APIs, JSON feed, newsletter page/feed, and labor snapshot respond successfully. Today's article and X video runs succeeded; the later X run skipped the already posted date. Newsletter signup and sender are configured, but no email campaign has been configured or sent. Paid history emits a `402` challenge; successful payment settlement and fulfillment remain unverified.
 
 ## Files Changed
 
@@ -36,7 +36,7 @@ Brevo's RSS campaign integration is available but not installed; no controlled c
 
 `git fetch origin main` updated `origin/main` to `0be8672`. Live `/api/latest/`, `/feed.json`, `/newsletter/`, `/ai-jobs-brief.xml`, and `/openapi.json` returned `200`; `/api/labor-stats/history` returned `402`. The feed's newest item and latest article API both point to `/posts/2026-10-03/`. The public labor snapshot reports `2026-10-02`. GitHub Actions show October 3 article and X video runs successful; the later X run skipped the already posted date. No payment or email was sent.
 
-`git diff --check` passed. `hugo --noBuildLock --themesDir C:\Users\asobe\Projects\Active\incomeforeveryone\themes --destination C:\Users\asobe\AppData\Local\Temp\ife-finalize-operations-hugo-20261003` passed with 135 pages. The first Hugo attempt failed only because this managed worktree could not create its build-lock file; `--noBuildLock` resolved that environment constraint. `python scripts\prepare_newsletter.py --date 2026-10-03 --output-dir C:\Users\asobe\Projects\Active\incomeforeveryone\newsletter-preview\2026-10-03` generated ignored HTML and text drafts from current `main`; all three newsletter tests passed. The draft was not sent. Brevo's account UI showed the RSS campaign in All Integrations and no installed integrations under My Integrations.
+`git diff --check` passed. `hugo --noBuildLock --themesDir C:\Users\asobe\Projects\Active\incomeforeveryone\themes --destination C:\Users\asobe\AppData\Local\Temp\ife-finalize-operations-hugo-20261003` passed with 135 pages. The first Hugo attempt failed only because this managed worktree could not create its build-lock file; `--noBuildLock` resolved that environment constraint. `python scripts\prepare_newsletter.py --date 2026-10-03 --output-dir C:\Users\asobe\Projects\Active\incomeforeveryone\newsletter-preview\2026-10-03` generated ignored HTML and text drafts from current `main`; all three newsletter tests passed. The draft was not sent. Brevo's account UI showed the RSS campaign in All Integrations and no installed integrations under My Integrations. Draft PR #14's Netlify preview, header rules, and redirect rules passed.
 
 ## Next Steps
 
