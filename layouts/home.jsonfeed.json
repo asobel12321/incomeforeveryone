@@ -1,0 +1,14 @@
+{{- $posts := where site.RegularPages "Section" "posts" -}}
+{{- $items := slice -}}
+{{- range first 20 $posts.ByDate.Reverse -}}
+  {{- $items = $items | append (partial "api/article.json" .) -}}
+{{- end -}}
+{{- dict
+  "version" "https://jsonfeed.org/version/1.1"
+  "title" site.Title
+  "home_page_url" site.BaseURL
+  "feed_url" ("feed.json" | absURL)
+  "description" site.Params.description
+  "language" site.Language.LanguageCode
+  "items" $items
+  | jsonify -}}

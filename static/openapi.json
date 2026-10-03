@@ -1,9 +1,9 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Income For Everyone Labor Stats API",
-    "version": "2026-07-21",
-    "description": "Public labor-market snapshot and x402-paid recent monthly observations for agents tracking employment, wages, and labor slack.",
+    "title": "Income For Everyone API",
+    "version": "2026-10-03",
+    "description": "Public articles and labor-market snapshot, plus x402-paid recent monthly observations.",
     "contact": {
       "url": "https://incomeforeveryone.org/about/"
     },
@@ -15,6 +15,48 @@
     }
   ],
   "paths": {
+    "/api/latest/": {
+      "get": {
+        "operationId": "getLatestArticle",
+        "summary": "Latest published article with full HTML content",
+        "tags": ["Articles"],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Latest published article.",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/LatestArticle"}}}
+          }
+        }
+      }
+    },
+    "/api/articles/": {
+      "get": {
+        "operationId": "getRecentArticles",
+        "summary": "Twenty newest published articles with full HTML content",
+        "tags": ["Articles"],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Twenty newest published articles, newest first.",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/RecentArticles"}}}
+          }
+        }
+      }
+    },
+    "/feed.json": {
+      "get": {
+        "operationId": "getJsonFeed",
+        "summary": "JSON Feed 1.1 of twenty newest published articles",
+        "tags": ["Articles"],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Public article feed.",
+            "content": {"application/feed+json": {"schema": {"$ref": "#/components/schemas/ArticleFeed"}}}
+          }
+        }
+      }
+    },
     "/api/labor-stats": {
       "get": {
         "operationId": "getLaborStatsSnapshotAlias",
@@ -104,6 +146,50 @@
   },
   "components": {
     "schemas": {
+      "Article": {
+        "type": "object",
+        "required": ["id", "url", "title", "date_published", "summary", "content_html"],
+        "properties": {
+          "id": {"type": "string", "format": "uri"},
+          "url": {"type": "string", "format": "uri"},
+          "title": {"type": "string"},
+          "date_published": {"type": "string", "format": "date-time"},
+          "summary": {"type": "string"},
+          "content_html": {"type": "string"}
+        }
+      },
+      "LatestArticle": {
+        "type": "object",
+        "required": ["schema_version", "endpoint", "article"],
+        "properties": {
+          "schema_version": {"type": "string", "const": "1"},
+          "endpoint": {"type": "string", "const": "/api/latest/"},
+          "article": {"$ref": "#/components/schemas/Article"}
+        }
+      },
+      "RecentArticles": {
+        "type": "object",
+        "required": ["schema_version", "endpoint", "limit", "articles"],
+        "properties": {
+          "schema_version": {"type": "string", "const": "1"},
+          "endpoint": {"type": "string", "const": "/api/articles/"},
+          "limit": {"type": "integer", "const": 20},
+          "articles": {"type": "array", "items": {"$ref": "#/components/schemas/Article"}}
+        }
+      },
+      "ArticleFeed": {
+        "type": "object",
+        "required": ["version", "title", "items"],
+        "properties": {
+          "version": {"type": "string", "const": "https://jsonfeed.org/version/1.1"},
+          "title": {"type": "string"},
+          "home_page_url": {"type": "string", "format": "uri"},
+          "feed_url": {"type": "string", "format": "uri"},
+          "description": {"type": "string"},
+          "language": {"type": "string"},
+          "items": {"type": "array", "items": {"$ref": "#/components/schemas/Article"}}
+        }
+      },
       "LaborStatsSnapshot": {
         "type": "object",
         "required": [

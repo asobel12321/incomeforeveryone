@@ -4,7 +4,7 @@ title = "Income For Everyone"
 theme = "PaperMod"
 
 [outputs]
-  home = ["HTML", "RSS", "AIJOBSBRIEF"]
+  home = ["HTML", "RSS", "AIJOBSBRIEF", "JSONFEED"]
   section = ["HTML", "RSS"]
   taxonomy = ["HTML", "RSS"]
   term = ["HTML", "RSS"]
@@ -12,6 +12,14 @@ theme = "PaperMod"
 [outputFormats.AIJOBSBRIEF]
   mediaType = "application/rss+xml"
   baseName = "ai-jobs-brief"
+  notAlternative = true
+
+[mediaTypes."application/feed+json"]
+  suffixes = ["json"]
+
+[outputFormats.JSONFEED]
+  mediaType = "application/feed+json"
+  baseName = "feed"
   notAlternative = true
 
 [pagination]
