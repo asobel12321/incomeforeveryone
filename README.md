@@ -54,7 +54,7 @@ It runs every day at `13:30 UTC`, which is `9:30 AM America/New_York` during day
 5. Commits and pushes the new post.
 6. Lets Netlify publish from the pushed commit.
 
-Article pages show the roughly 30–60 second script. It uses only the finished article as source material. The X workflow renders the script into a branded vertical MP4 with AI narration, captions aligned to the rendered audio, three story headlines with animated fact/source cards, and a closing takeaway. Each card uses the published article's story summary and linked source host; it does not generate new facts or charts. The video now adds a scene fact divider, a running progress line, and color emphasis on spoken figures. FFmpeg applies a high-pass filter and loudness normalization to narrated audio for steadier listening levels. Video rendering happens only in the X workflow, once per unposted date. The on-video label discloses AI-generated narration as described in [OpenAI's text-to-speech guidance](https://developers.openai.com/api/docs/guides/text-to-speech). Review the daily output for factual accuracy and narration quality.
+Article pages show the roughly 30–60 second script. It uses only the finished article as source material. The X workflow renders the script into a branded vertical MP4 with AI narration, captions aligned to the rendered audio, three story headlines with animated fact/source cards, and a closing takeaway. Each card uses the published article's story summary and linked source host; it does not generate new facts or charts. The video now adds a scene fact divider, a running progress line, and color emphasis on spoken figures. A long closing takeaway uses a shorter concluding clause on its display card; the narration and captions still contain the full script. FFmpeg applies a high-pass filter and loudness normalization to narrated audio for steadier listening levels. Video rendering happens only in the X workflow, once per unposted date. The on-video label discloses AI-generated narration as described in [OpenAI's text-to-speech guidance](https://developers.openai.com/api/docs/guides/text-to-speech). Review the daily output for factual accuracy and narration quality.
 
 To add a script to an older article without changing its body:
 
@@ -62,11 +62,13 @@ To add a script to an older article without changing its body:
 python scripts/generate_video_script.py --date YYYY-MM-DD
 ```
 
-To render a local preview without posting:
+To render a local preview without posting, the default OpenAI voice remains available:
 
 ```powershell
 python scripts/render_short_video.py --date YYYY-MM-DD
 ```
+
+The daily X workflow uses the local Kokoro `am_michael` voice. It installs `kokoro-onnx==0.6.1`, `onnxruntime==1.30.0`, and `soundfile==0.14.0`, caches the official [Kokoro ONNX model files](https://github.com/thewh1teagle/kokoro-onnx/releases/tag/model-files-v1.1), and checks their SHA-256 hashes before rendering. For a local Michael preview, download `kokoro-v1.0.int8.onnx` and `voices-v1.0.bin` from that release into one directory and run `python scripts/render_short_video.py --date YYYY-MM-DD --speech-provider kokoro --kokoro-model-dir PATH` after installing those packages. Kokoro narration has no per-video speech API charge; the OpenAI word-timestamp transcription request remains.
 
 AI renders request word timestamps for the finished narration from OpenAI transcription. If that request fails or the transcript differs substantially from the script, captions fall back to estimated timing and the renderer prints a warning. This adds one short transcription request per new X video. [OpenAI's transcription guide](https://developers.openai.com/api/docs/guides/speech-to-text) currently requires `whisper-1` for word timestamps; [its deprecation notice](https://developers.openai.com/api/docs/deprecations) lists February 26, 2027 as its removal date, so replace this timing path before then. Local `--audio` and `--silent` drafts use estimated caption timing without a transcription request.
 
@@ -102,17 +104,17 @@ The repo also includes `.github/workflows/daily-x-post.yml` for the `AILayoffAle
 Netlify triggers it every day at `15:30 UTC`, which gives the daily article workflow and Netlify deploy more time to finish after the `14:00 UTC` article backup trigger. The workflow:
 
 1. Waits for `content/posts/YYYY-MM-DD.md` with its generated `video_script`.
-2. Renders a narrated 30–60 second MP4 using `OPENAI_API_KEY` and FFmpeg.
+2. Renders a narrated 30–60 second MP4 using Kokoro's Michael voice and FFmpeg; `OPENAI_API_KEY` supplies word-timestamp captions.
 3. Builds an X post with the article URL, uploads the MP4 through X's chunked media API, and waits for processing to succeed.
 4. Publishes one post containing both the article link and video. Rendering or upload failure stops publication.
 5. Writes `data/x-posted/YYYY-MM-DD.json` with the post and media IDs and commits it so reruns skip duplicate posts.
 
-A GitHub-native backup runs at `15:45 UTC` with the same concurrency group and date markers. Both paths require the `OPENAI_API_KEY` secret, available OpenAI speech usage, and available X API credits. HTTP 402 `credits depleted` requires account billing action; changing authentication secrets does not fix it. X account video limits or media-upload permissions may also reject the post.
+A GitHub-native backup runs at `15:45 UTC` with the same concurrency group and date markers. Both paths require available X API credits. Caption alignment uses the `OPENAI_API_KEY` secret; if transcription fails, the renderer falls back to estimated timing. HTTP 402 `credits depleted` requires account billing action; changing authentication secrets does not fix it. X account video limits or media-upload permissions may also reject the post.
 
 Required GitHub setup:
 
 1. Go to `Settings` -> `Secrets and variables` -> `Actions`.
-2. Add `OPENAI_API_KEY` for narration. The runner installs FFmpeg if needed.
+2. Add `OPENAI_API_KEY` for audio-aligned captions. The runner installs FFmpeg and the Kokoro speech dependencies if needed.
 3. Recommended: add OAuth 1.0a repository secrets `X_API_KEY`, `X_API_SECRET`, `X_ACCESS_TOKEN`, and `X_ACCESS_TOKEN_SECRET` from the `AILayoffAlerts` X developer app. These do not rotate daily.
 4. Optional fallback: add OAuth 2.0 repository secrets `X_CLIENT_ID`, `X_CLIENT_SECRET`, and `X_REFRESH_TOKEN`. X can rotate refresh tokens after use, so update `X_REFRESH_TOKEN` whenever X returns a replacement.
 5. Optional fallback: add repository secret `X_USER_BEARER_TOKEN` if you want to test with a short-lived OAuth 2.0 access token.
