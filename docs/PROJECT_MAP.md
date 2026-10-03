@@ -30,7 +30,7 @@ This is a Hugo site with Netlify deployment configuration.
 - `scripts/check_publication_health.py` - Read-only deployed article/stats and committed X marker freshness checks.
 - `scripts/prepare_newsletter.py` - Prepares local HTML and plain-text AI Jobs Brief editions from published daily articles; it does not send mail.
 - `scripts/generate_video_script.py` - Adds a 75–130 word spoken script to the finished daily article before publication.
-- `scripts/render_short_video.py` - Creates a 9:16 MP4 with AI narration, source-labeled fact cards, takeaway, and audio-aligned captions (estimated timing fallback); local previews stay under ignored `video-preview/`.
+- `scripts/render_short_video.py` - Creates a 9:16 MP4 with AI narration, source-labeled fact cards, progress motion, emphasized caption figures, audio leveling, takeaway, and audio-aligned captions (estimated timing fallback); local previews stay under ignored `video-preview/`.
 - `scripts/post_daily_x_headline.py` - Uploads the rendered MP4 to X, waits for processing, publishes one post with the video and article URL, and records the post and media IDs.
 - `scripts/test_publication_health.py` - Focused tests for stale/future dates, source-check freshness, marker validity, and aggregate reporting.
 - `static/` - Static files copied into the site output.

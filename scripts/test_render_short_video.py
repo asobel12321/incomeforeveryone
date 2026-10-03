@@ -7,7 +7,7 @@ from unittest.mock import patch
 from pathlib import Path
 
 from render_short_video import (
-    make_ass, read_article, story_cards, synthesize_speech, timed_caption_chunks,
+    emphasized_caption, make_ass, read_article, render_video, story_cards, synthesize_speech, timed_caption_chunks,
     transcribe_word_timing,
 )
 
@@ -77,6 +77,31 @@ class RenderShortVideoTests(unittest.TestCase):
         subtitles = make_ass("Labor brief", "2026-10-02", SCRIPT, 38.0, ai_voice=True,
                              caption_cues=[("Workers are", 2.0, 3.0)])
         self.assertIn("Dialogue: 1,0:00:02.00,0:00:03.00,Caption", subtitles)
+
+    def test_motion_and_number_emphasis(self):
+        subtitles = make_ass(
+            "Labor brief", "2026-10-02", "Employers added 29,000 jobs.", 38.0,
+            ai_voice=True, stories=["One", "Two", "Three"],
+            cards=[("29,000 jobs|Employers added 29,000 jobs", "example.org")] * 3,
+        )
+        self.assertIn("ProgressTrack", subtitles)
+        self.assertIn(r"\t(0,38000,\fscx100)", subtitles)
+        self.assertIn("FactRule", subtitles)
+        self.assertIn(r"{\c&H00A3E4C2&}29,000", emphasized_caption("Employers added 29,000 jobs"))
+
+    def test_audio_level_filter_only_for_recorded_voice(self):
+        with tempfile.TemporaryDirectory() as directory:
+            work_dir = Path(directory)
+            audio = work_dir / "voice.wav"
+            audio.write_bytes(b"test")
+            with patch("render_short_video.subprocess.run") as run:
+                render_video(work_dir, 3.0, audio)
+            command = run.call_args.args[0]
+            self.assertIn("-af", command)
+            self.assertIn("loudnorm=I=-16:TP=-1.5:LRA=11", command[command.index("-af") + 1])
+            with patch("render_short_video.subprocess.run") as run:
+                render_video(work_dir, 3.0, None)
+            self.assertNotIn("-af", run.call_args.args[0])
 
     def test_transcription_requests_word_timestamps(self):
         class Response:
