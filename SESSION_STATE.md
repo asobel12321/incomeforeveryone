@@ -1,5 +1,14 @@
 # Session State
 
+## Michael Runner Command Repair - October 3, 2026
+
+- Objective: repair the daily X workflow commands after the first GitHub Linux retry failed before rendering or posting.
+- Branch/status: `codex/kokoro-runner-fix` based on merged `main` at `d9aa041` in the focused Kokoro worktree.
+- Changed files: `.github/workflows/daily-x-post.yml` and this handoff.
+- Behavior: removed stray `+` command arguments from both Kokoro model downloads and the renderer invocation; each command is now a single shell line.
+- Verification: workflow YAML parsed; both curl commands were tokenized and checked to contain exactly one URL and output path; the render command contains the Kokoro provider and no stray plus argument. The October 3 retry failed in setup before any video or X upload.
+- Known issues/next: merge this repair, rerun the October 3 workflow, and verify the post marker and X post. The first live Linux Kokoro synthesis is still unverified.
+
 ## Michael Voice for Daily X Video - October 3, 2026
 
 - Objective: use the preferred Kokoro Michael voice for the daily X video, while retaining automatic article/video posting.
