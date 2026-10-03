@@ -7,13 +7,17 @@ Requirements:
 - Use only current, verifiable news or official/research sources.
 - Include exactly 3 key stories.
 - The title must lead with the most important concrete news angle. Do not start with "AI & Labor Watch" or any recurring series label.
+- Compare with the latest published posts before writing. Lead with a genuinely new development, and use a different opening and conclusion from recent editions.
+- Give each story a concrete new fact, date, or development. If revisiting an earlier story, say exactly what changed. Do not present an old announcement as new or pad a quiet day with repeated layoff stories.
+- Use a fresh source article for each story; do not reuse a URL from the latest briefs.
+- Vary sentence structure naturally. Avoid stock lines about "AI-driven restructuring" or a "mixed labor market," and connect a story to UBI only when its evidence supports that specific implication.
 - Each story must include:
   - a bold headline
   - 1-2 sentences explaining the labor/automation/UBI relevance
   - one Markdown link with the real article title and URL
-- Include a short "What This Tells Us" section.
+- Include a short "What This Tells Us" section with a conclusion specific to today's evidence.
 - Do not include ChatGPT citation markers, footnotes, `contentReference`, `oaicite`, source placeholders, or invisible reference tokens.
-- Do not invent URLs, pilots, numbers, or dates.
+- Do not invent URLs, pilots, numbers, or dates. Do not add hashtags to the article body.
 - Add source-quality front matter that summarizes the article's evidence:
   - `primary_sources`: a short phrase naming primary or direct sources used, or "None; secondary reporting only"
   - `official_data`: a short phrase naming official data used, or "None"
@@ -68,8 +72,4 @@ Opening paragraph.
 ### What This Tells Us
 
 Short synthesis paragraph.
-
----
-
-#UBI #Automation #LaborCrisis #FutureOfWork #DignityForAll
 ```
