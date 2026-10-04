@@ -49,18 +49,15 @@
 {{- $paginator := .Paginate $pages }}
 
 {{- if and .IsHome site.Params.homeInfoParams (eq $paginator.PageNumber 1) }}
-{{- partial "home_info.html" . }}
-<section class="dispatch-heading" aria-labelledby="latest-dispatches">
-  <p>Latest coverage</p>
-  <h2 id="latest-dispatches">Daily briefs</h2>
-  <span>Evidence, context, and policy implications from the newest labor-market signals.</span>
-</section>
+{{- partial "home_info.html" (dict "latest" (first 1 $paginator.Pages)) }}
 {{- end }}
 
 {{- $term := .Data.Term }}
 {{- range $index, $page := $paginator.Pages }}
 
 {{- $class := "post-entry dispatch-card" }}
+{{- $isLatest := and $.IsHome (eq $paginator.PageNumber 1) (eq $index 0) }}
+{{- if $isLatest }}{{ $class = printf "%s latest-brief" $class }}{{ end }}
 
 {{- $user_preferred := or site.Params.disableSpecial1stPost site.Params.homeInfoParams }}
 {{- if (and $.IsHome (eq $paginator.PageNumber 1) (eq $index 0) (not $user_preferred)) }}
@@ -72,7 +69,7 @@
 <article class="{{ $class }}">
   {{- $isHidden := (.Param "cover.hiddenInList") | default (.Param "cover.hidden") | default false }}
   {{- partial "cover.html" (dict "cxt" . "IsSingle" false "isHidden" $isHidden) }}
-  <div class="entry-eyebrow">Daily brief</div>
+  <div class="entry-eyebrow">{{ if $isLatest }}Latest brief{{ else }}Daily brief{{ end }}</div>
   <header class="entry-header">
     <h2 class="entry-hint-parent">
       {{- .Title }}

@@ -140,7 +140,8 @@ a:hover {
 .publication-hero {
   position: relative;
   overflow: hidden;
-  padding: 34px 0 38px;
+  padding: 12px 0 24px;
+  margin: 0 0 24px;
 }
 
 .publication-hero::after {
@@ -171,25 +172,25 @@ a:hover {
 .home-info .entry-header h1 {
   max-width: 810px;
   color: var(--primary);
-  font-size: clamp(2.45rem, 5vw, 4.9rem);
-  line-height: 0.98;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  line-height: 1.12;
   font-weight: 850;
 }
 
 .first-entry .entry-content,
 .home-info .entry-content {
   max-width: 760px;
-  margin-top: 20px;
+  margin-top: 12px;
   color: var(--secondary);
-  font-size: 1.12rem;
-  line-height: 1.7;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 26px;
+  margin-top: 18px;
 }
 
 .hero-button {
@@ -510,6 +511,14 @@ a:hover {
   font-size: 0.7rem;
 }
 
+.latest-brief {
+  border-top: 3px solid var(--accent);
+}
+
+.latest-brief .entry-eyebrow {
+  color: var(--accent-strong);
+}
+
 .entry-header h2 {
   color: var(--primary);
   font-size: 1.38rem;
@@ -789,7 +798,9 @@ a:hover {
   }
 
   .publication-hero {
-    padding-top: 20px;
+    margin-top: 0;
+    padding-top: 0;
+    padding-bottom: 20px;
   }
 
   .publication-hero::after {
@@ -798,7 +809,7 @@ a:hover {
 
   .first-entry .entry-header h1,
   .home-info .entry-header h1 {
-    font-size: clamp(2.2rem, 12vw, 3.2rem);
+    font-size: clamp(1.8rem, 7vw, 2.3rem);
   }
 
   .dispatch-heading {

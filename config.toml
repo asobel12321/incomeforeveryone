@@ -40,8 +40,8 @@ theme = "PaperMod"
   newsletterSignupURL = "https://db30afbf.sibforms.com/serve/MUIFACwt01p-doJUQuyiUSiTnxZv0XjVAfPXF4DIaQtM95AKyex0Xyx1BSqW4bc5T2iUCE9FXihi0-B46VUhi3cVb7nTA0j9OUMktabqbzdmtVocZHmP_d_4EtRI9Uf9H7h-7Dx_l7f4GHGw75yvoj0U3VrRWXpiG1dfvu3VIeEwLzJxHpJpyJJ1mi8-j9KxDAdHhjvEYno2d2Jojg=="
 
 [params.homeInfoParams]
-  Title = "Tracking the labor shock behind the AI boom"
-  Content = "Income For Everyone is a daily record of how AI and automation are changing work, weakening job security, and moving Universal Basic Income from theory toward practical policy."
+  Title = "How AI is changing work"
+  Content = "Daily briefs on jobs, automation, and income security."
 
 [params.assets]
   favicon = "/favicon.svg"

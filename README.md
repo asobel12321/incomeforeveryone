@@ -2,6 +2,8 @@
 
 Hugo/PaperMod site for publishing daily AI labor and automation posts.
 
+The homepage uses a compact introduction with two actions: open the latest visible brief directly or subscribe through the newsletter page. Its first article is highlighted as the latest brief; older homepage pages retain the regular article list.
+
 ## Current Workflow
 
 1. Ask ChatGPT for a daily AI labor displacement / UBI news roundup.
