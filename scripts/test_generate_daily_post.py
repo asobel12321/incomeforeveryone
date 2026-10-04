@@ -1,6 +1,7 @@
 """Checks that daily generation uses recent coverage and rejects repeated wording."""
 
 import sys
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -14,6 +15,7 @@ def post(day: str, title: str, lead: str, *, draft: bool = False) -> str:
 title: "{title}"
 date: {day}
 draft: {str(draft).lower()}
+description: "Supporting context about hiring and worker security."
 source_quality:
   primary_sources: "Official release"
   official_data: "BLS"
@@ -44,6 +46,37 @@ A specific conclusion.
 
 
 class DailyPostTests(unittest.TestCase):
+    def test_headline_and_subtitle_validation(self):
+        candidate = post("2026-10-03", "One concrete development", "A lead.")
+        daily.validate_post(candidate, "2026-10-03")
+        daily.validate_post(candidate.replace('"One concrete development"', json.dumps('Employers debate "AI-first" hiring')), "2026-10-03")
+        invalid = [
+            (candidate.replace("One concrete development", "x" * 81), "Headline"),
+            (candidate.replace('"One concrete development"', json.dumps('"AI" ' + 'x' * 81)), "Headline"),
+            (candidate.replace('description: "Supporting context about hiring and worker security."\n', ''), "subtitle"),
+            (candidate.replace("Supporting context about hiring and worker security.", "x" * 181), "subtitle"),
+            (candidate.replace("Supporting context about hiring and worker security.", "One concrete development"), "repeat"),
+        ]
+        for markdown, error in invalid:
+            with self.subTest(error=error), self.assertRaisesRegex(RuntimeError, error):
+                daily.validate_post(markdown, "2026-10-03")
+
+    def test_invalid_headline_retries_and_never_saves_invalid_output(self):
+        good = post("2026-10-03", "A focused headline", "A lead.")
+        bad = good.replace("A focused headline", "x" * 81)
+        for responses, succeeds in (([bad, good], True), ([bad, bad], False)):
+            with self.subTest(succeeds=succeeds), tempfile.TemporaryDirectory() as folder:
+                root = Path(folder)
+                with patch.object(daily, "POST_DIR", root), patch.object(daily, "call_openai", side_effect=responses) as api, patch.object(sys, "argv", ["generate_daily_post.py", "--date", "2026-10-03"]):
+                    if succeeds:
+                        self.assertEqual(daily.main(), 0)
+                        self.assertEqual((root / "2026-10-03.md").read_text(encoding="utf-8"), good)
+                    else:
+                        with self.assertRaisesRegex(RuntimeError, "Headline"):
+                            daily.main()
+                        self.assertFalse((root / "2026-10-03.md").exists())
+                    self.assertEqual(api.call_count, 2)
+
     def test_recent_posts_excludes_future_and_draft_posts(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)

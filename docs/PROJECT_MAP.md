@@ -18,6 +18,7 @@ This is a Hugo site with Netlify deployment configuration.
 - `i18n/` - Localization files.
 - `layouts/` - Hugo templates and layout overrides.
 - `layouts/partials/home_info.html` and `layouts/_default/list.html` - Compact homepage introduction, direct latest-brief/subscribe actions, and first-page latest-brief highlight; appearance is in `assets/css/extended/income-for-everyone.css`.
+- Article `description` front matter supplies a short subtitle below the title on article pages and replaces the automatic excerpt in listing cards. Older posts fall back to their summary. Daily generation validates a maximum 80-character title and required 180-character-or-shorter subtitle, with one retry before failing without saving.
 - `layouts/partials/source_quality.html` - Article trust box that displays source-quality badges from optional post front matter.
 - `layouts/api/labor-stats.html` - Static JSON response template for `/api/labor-stats/`.
 - `layouts/api/latest.html`, `layouts/api/articles.html`, and `layouts/partials/api/article.json` - Shared article serialization for the public JSON routes.

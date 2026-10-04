@@ -1,5 +1,6 @@
 ---
-title: "Special Issue: Bill Gates Is Asking Us to Prepare for AI Job Loss"
+title: "Bill Gates Calls for Preparing for AI Job Loss"
+description: "Special issue: his proposals on human-reserved work and AI taxation open a discussion about income security and UBI."
 date: 2026-10-01
 draft: false
 ---

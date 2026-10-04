@@ -7,6 +7,8 @@ Requirements:
 - Use only current, verifiable news or official/research sources.
 - Include exactly 3 key stories.
 - The title must lead with the most important concrete news angle. Do not start with "AI & Labor Watch" or any recurring series label.
+- Write one focused headline, ideally 6-10 words and no more than 80 characters. Do not combine all three stories or append "and more".
+- Add a `description` subtitle: one sentence of supporting context, no more than 180 characters. Use facts already in the article, do not repeat the title, and escape any internal double quotes.
 - Compare with the latest published posts before writing. Lead with a genuinely new development, and use a different opening and conclusion from recent editions.
 - Give each story a concrete new fact, date, or development. If revisiting an earlier story, say exactly what changed. Do not present an old announcement as new or pad a quiet day with repeated layoff stories.
 - Use a fresh source article for each story; do not reuse a URL from the latest briefs.
@@ -29,6 +31,7 @@ Requirements:
 title: "Specific News-Led Title"
 date: YYYY-MM-DD
 draft: false
+description: "One short sentence adding supporting context to the headline."
 source_quality:
   primary_sources: "Short evidence note"
   official_data: "Short official-data note"
@@ -43,6 +46,7 @@ Use this full post structure:
 title: "Specific News-Led Title"
 date: YYYY-MM-DD
 draft: false
+description: "One short sentence adding supporting context to the headline."
 source_quality:
   primary_sources: "Reuters/AP/company filings"
   official_data: "BLS JOLTS and jobless claims"

@@ -71,9 +71,29 @@ def validate_post(markdown: str, post_date: str) -> None:
         if not re.search(pattern, markdown, flags=re.M):
             raise RuntimeError(f"Generated post failed validation pattern: {pattern}")
 
-    title_match = re.search(r'^title:\s*"([^"]+)"\s*$', markdown, flags=re.M)
-    if title_match and title_match.group(1).lower().startswith("ai & labor watch"):
+    front_matter_match = re.search(r'\A---\s*\n(.*?)\n---[ \t]*(?:\n|\Z)', markdown, flags=re.S)
+    if not front_matter_match:
+        raise RuntimeError("Generated post must have a closed front matter block.")
+    front_matter = front_matter_match.group(1)
+    title_match = re.search(r'^title:[ \t]*("[^\n]+")\s*$', front_matter, flags=re.M)
+    try:
+        title = json.loads(title_match.group(1)) if title_match else ""
+    except json.JSONDecodeError as exc:
+        raise RuntimeError("Headline must be a double-quoted string with escaped internal quotes.") from exc
+    if title.lower().startswith("ai & labor watch"):
         raise RuntimeError("Generated post title must lead with the news, not 'AI & Labor Watch'.")
+
+    if not title.strip() or len(title) > 80:
+        raise RuntimeError("Headline must be at most 80 characters; move supporting context to the description subtitle.")
+    description = re.search(r'^description:\s*("[^\n]+")\s*$', front_matter, flags=re.M)
+    try:
+        subtitle = json.loads(description.group(1)) if description else ""
+    except json.JSONDecodeError as exc:
+        raise RuntimeError("Description subtitle must be a double-quoted string with escaped internal quotes.") from exc
+    if not isinstance(subtitle, str) or not subtitle.strip() or len(subtitle) > 180:
+        raise RuntimeError("Description subtitle is required and must be at most 180 characters.")
+    if subtitle.strip().casefold() == title.strip().casefold():
+        raise RuntimeError("Description subtitle must add context rather than repeat the headline.")
 
     forbidden = [
         ":contentReference",
@@ -173,6 +193,8 @@ Requirements:
 - Use only current, verifiable news, official data, company announcements, or credible research.
 - Prefer primary reporting and official sources such as Reuters, AP, Bloomberg, BLS, company filings, government agencies, major newspapers, and peer-reviewed or institutional research.
 - The title must lead with the most important concrete news angle. Do not start the title with "AI & Labor Watch" or any recurring series label.
+- Write one focused headline, ideally 6-10 words and no more than 80 characters. Do not combine the three stories into a roundup headline or add "and more".
+- Add a description subtitle: one short sentence, no more than 180 characters, supplying supporting context from the article. Do not repeat the headline or add unsupported claims. Use a double-quoted string with escaped internal quotes.
 - Compare against the recent posts below. Choose a genuinely new development as the lead and write a distinct opening and conclusion. Do not recycle their headline phrasing or present an old company announcement as today's news.
 - Give each story a concrete new fact, date, or development. When an earlier story has a meaningful update, state exactly what changed. If the news is thin, use a fresh official release or research finding instead of padding with old layoff stories.
 - Do not reuse the same source article URL from a recent brief; find a fresh report or official release that documents the new development.
@@ -196,6 +218,7 @@ Use this exact structure:
 title: "Specific News-Led Title"
 date: {post_date}
 draft: false
+description: "One short sentence adding supporting context to the headline."
 source_quality:
   primary_sources: "Reuters/AP/company filings"
   official_data: "BLS JOLTS and jobless claims"
@@ -286,12 +309,15 @@ def main() -> int:
     prompt = build_prompt(args.date, recent)
     for attempt in range(2):
         markdown = clean_markdown(call_openai(prompt, args.model))
-        validate_post(markdown, args.date)
-        issue = repetition_issue(markdown, recent) or reused_source_issue(markdown, recent)
+        try:
+            validate_post(markdown, args.date)
+            issue = repetition_issue(markdown, recent) or reused_source_issue(markdown, recent)
+        except RuntimeError as exc:
+            issue = str(exc)
         if not issue:
             break
         if attempt:
-            raise RuntimeError(f"Generated post still repeats recent coverage: {issue}")
+            raise RuntimeError(f"Generated post still fails validation: {issue}")
         prompt += f"\n\nRewrite the entire post with new reporting and wording. {issue}"
 
     POST_DIR.mkdir(parents=True, exist_ok=True)
