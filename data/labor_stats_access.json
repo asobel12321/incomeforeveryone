@@ -47,7 +47,7 @@
       "public-data",
       "analytics"
     ],
-    "openapi_draft": "docs/labor-stats-x402-openapi-draft.json",
+    "openapi_draft": "static/openapi.json",
     "guidance": "Use the public snapshot for latest headline values. Use paid history for up to 13 monthly observations per indicator, inclusive from/to date filters, monthly changes, and source metadata. Revisions is reserved and currently empty."
   }
 }

@@ -1,222 +1,58 @@
 # Income For Everyone
 
-Hugo/PaperMod site for publishing daily AI labor and automation posts.
+Hugo/PaperMod publication covering AI, work, and income security. Netlify builds `main` with Hugo 0.145.0 and serves `public/` at https://incomeforeveryone.org/.
 
-The homepage uses a compact introduction with two actions: open the latest visible brief directly or subscribe through the newsletter page. Its first article is highlighted as the latest brief; older homepage pages retain the regular article list.
-
-Briefs use one focused headline (`title`, at most 80 characters) and a short supporting subtitle (`description`, at most 180 characters). Article headers and listing cards display the subtitle; older posts without one retain their existing summary. The daily generator and manual writing prompt require this format. Invalid generated headlines or subtitles get one retry and are never saved if still invalid. The eight articles on the homepage at the time of this change were updated without changing their URLs or body text.
-
-## Current Workflow
-
-1. Ask ChatGPT for a daily AI labor displacement / UBI news roundup.
-2. Paste the Markdown into a dated file in `content/posts/`, such as `content/posts/2025-04-19.md`.
-3. Run `hugo` locally to check/build the site.
-4. Commit and push to `origin/main`.
-5. Netlify builds the site with `hugo` and publishes `public/` to `https://incomeforeveryone.org/`.
-
-The active source repo is `C:\Users\asobe\Projects\Active\incomeforeveryone`.
-
-## Faster Daily Workflow
-
-1. Generate the post with the prompt in `prompts/daily-labor-watch.md`.
-2. Copy the full Markdown response.
-3. Run:
+## Working on the site
 
 ```powershell
-.\scripts\new-daily-post.ps1
+git submodule update --init --recursive
+npm.cmd ci
+hugo --destination "$env:TEMP/ife-hugo-check"
+python -m unittest discover -s scripts -p 'test_*.py'
 ```
 
-The script reads the clipboard, removes ChatGPT citation artifacts like `:contentReference[...]`, writes `content/posts/YYYY-MM-DD.md`, and runs `hugo`.
+Make focused changes on a `codex/` branch, review its PR/Netlify preview, then merge when release is authorized. Generated output, media previews, dependencies, and credentials are not source. Never commit `public/`.
 
-To backdate or override the title:
+Use [the project map](docs/PROJECT_MAP.md) to find code, [the backlog](docs/BACKLOG.md) for remaining work, and `SESSION_STATE.md` for the current handoff. Parked prototypes are not active tasks.
 
-```powershell
-.\scripts\new-daily-post.ps1 -Date 2026-06-03 -Title "Automation Layoffs Put White-Collar Work on Alert"
-```
+## Publishing
 
-Then publish:
+| Channel | Operating behavior |
+| --- | --- |
+| Daily article | Netlify dispatch at 13:30 UTC, backup at 14:00; GitHub backup at 14:15. Generates the article and video script, validates Hugo, commits, and lets Netlify deploy. |
+| Daily X video | Netlify dispatch at 15:30 UTC; GitHub backup at 15:45. Kokoro Michael narration, captioned MP4, and article link in one post. Date markers prevent duplicates. |
+| Labor data | Weekdays at 14:20 UTC through GitHub Actions; public FRED feeds refresh snapshot/history. |
+| Publication health | Daily at 21:45 UTC; checks deployed articles/data and committed X markers. Reports failures without publishing or repairing. |
+| Newsletter | Brevo, Wednesdays at 1 PM America/New_York; newest full daily brief. See [newsletter operations](docs/AI_JOBS_BRIEF.md). |
 
-```powershell
-git add content/posts
-git commit -m "Add June 3"
-git push
-```
+UTC schedules do not follow New York daylight-saving changes. GitHub schedule delivery may be delayed. The workflow files and `netlify.toml` are authoritative for schedules.
 
-## Fully Automatic Workflow
+Daily posts use `content/posts/YYYY-MM-DD.md`, one focused title (maximum 80 characters), and a supporting `description` subtitle (maximum 180). They contain three sourced stories and a specific synthesis. The generator checks formatting, repeated wording, and reused source URLs against recent briefs, retries once, and fails without saving invalid output. These checks do not verify claims. The [manual prompt](prompts/daily-labor-watch.md) follows the same format. Existing articles without subtitles keep their summary fallback.
 
-This repo includes a GitHub Actions workflow at `.github/workflows/daily-labor-watch.yml`.
-Netlify scheduled functions trigger that workflow because GitHub scheduled Actions proved unreliable for this repo.
+To import reviewed Markdown from the clipboard, use `scripts/new-daily-post.ps1` (or `-InputFile`, `-Date`, `-Title`). It refuses an existing dated post. Review evidence and URLs before publishing; do not silently overwrite an existing article.
 
-A GitHub-native backup runs at `14:15 UTC` independently of the Netlify dispatch token. Both schedulers use the same concurrency group and skip an article that already exists for the date. GitHub schedules may be delayed; keep the Netlify schedules as the primary path when its credential is valid.
-
-It runs every day at `13:30 UTC`, which is `9:30 AM America/New_York` during daylight saving time, with a `14:00 UTC` backup trigger. The workflow:
-
-1. Calls the OpenAI Responses API with web search.
-2. Creates `content/posts/YYYY-MM-DD.md`.
-3. Generates a 75–130 word `video_script` from the finished article and saves it in front matter.
-4. Runs `hugo` into a runner temporary directory so tracked `public/` files cannot block the commit/rebase/push step.
-5. Commits and pushes the new post.
-6. Lets Netlify publish from the pushed commit.
-
-Before generating a new article, the script includes the seven most recent published daily briefs as background. It asks for a new development and distinct wording, then checks the title, opening, story headlines, conclusion, and cited article URLs against those briefs. If a draft is too similar or reuses a recent URL, it retries once; a second repeat fails without saving a post. The draft also needs three distinct source URLs. Future articles omit the old fixed hashtag footer. These checks catch close wording and source reuse, not unsupported claims or every recycled idea, so factual review is still needed.
-
-Article pages show the roughly 30–60 second script. It uses only the finished article as source material. The X workflow renders the script into a branded vertical MP4 with AI narration, captions aligned to the rendered audio, three story headlines with animated fact/source cards, and a closing takeaway. Each card uses the published article's story summary and linked source host; it does not generate new facts or charts. The video now adds a scene fact divider, a running progress line, and color emphasis on spoken figures. A long closing takeaway uses a shorter concluding clause on its display card; the narration and captions still contain the full script. FFmpeg applies a high-pass filter and loudness normalization to narrated audio for steadier listening levels. Video rendering happens only in the X workflow, once per unposted date. The on-video label discloses AI-generated narration as described in [OpenAI's text-to-speech guidance](https://developers.openai.com/api/docs/guides/text-to-speech). Review the daily output for factual accuracy and narration quality.
-
-To add a script to an older article without changing its body:
+## Local tools
 
 ```powershell
 python scripts/generate_video_script.py --date YYYY-MM-DD
-```
-
-To render a local preview without posting, the default OpenAI voice remains available:
-
-```powershell
-python scripts/render_short_video.py --date YYYY-MM-DD
-```
-
-The daily X workflow uses the local Kokoro `am_michael` voice. It installs `kokoro-onnx==0.6.1`, `onnxruntime==1.30.0`, and `soundfile==0.14.0`, caches the official [Kokoro ONNX model files](https://github.com/thewh1teagle/kokoro-onnx/releases/tag/model-files-v1.1), and checks their SHA-256 hashes before rendering. For a local Michael preview, download `kokoro-v1.0.int8.onnx` and `voices-v1.0.bin` from that release into one directory and run `python scripts/render_short_video.py --date YYYY-MM-DD --speech-provider kokoro --kokoro-model-dir PATH` after installing those packages. Kokoro narration has no per-video speech API charge; the OpenAI word-timestamp transcription request remains.
-
-AI renders request word timestamps for the finished narration from OpenAI transcription. If that request fails or the transcript differs substantially from the script, captions fall back to estimated timing and the renderer prints a warning. This adds one short transcription request per new X video. [OpenAI's transcription guide](https://developers.openai.com/api/docs/guides/speech-to-text) currently requires `whisper-1` for word timestamps; [its deprecation notice](https://developers.openai.com/api/docs/deprecations) lists February 26, 2027 as its removal date, so replace this timing path before then. Local `--audio` and `--silent` drafts use estimated caption timing without a transcription request.
-
-Required GitHub setup:
-
-1. Go to the GitHub repo: `Settings` -> `Secrets and variables` -> `Actions`.
-2. Add repository secret `OPENAI_API_KEY`.
-3. Optional: add repository variable `OPENAI_MODEL`. The default is `gpt-5.4-mini`.
-4. Confirm `Settings` -> `Actions` -> `General` -> `Workflow permissions` allows `Read and write permissions`.
-5. Create a fine-grained GitHub personal access token for this repository with Actions write access.
-6. In Netlify, add environment variable `GITHUB_WORKFLOW_TOKEN` with that token.
-
-You can also run it manually from GitHub Actions with an optional `YYYY-MM-DD` date.
-
-## AI Jobs Brief Newsletter
-
-`/newsletter/` is live and links to the Brevo-hosted signup form configured in `params.newsletterSignupURL`. The site does not collect addresses. The form requires explicit newsletter consent and adds subscribers without a confirmation email; an owner signup reached the dedicated list. The RSS feed is live. The Brevo RSS integration is active for automatic Wednesday sends at 1:00 PM America/New_York. A controlled template test reached the owner's address; no subscriber campaign has been sent yet.
-
-Prepare a reviewable plain-text and HTML edition from one published daily article:
-
-```powershell
-python scripts/prepare_newsletter.py --date 2026-08-07 --output-dir newsletter-preview
-```
-
-The script reads only `content/posts/YYYY-MM-DD.md`, requires the standard three-story format and `draft: false`, and writes two local files under the ignored `newsletter-preview/` directory. It makes no API calls and sends nothing. Review the claims, source links, and subject before using either file with an email provider. Special issues with different filenames are excluded.
-
-`/ai-jobs-brief.xml` is a separate provider-ready RSS feed containing only the newest dated daily articles and their full content. It does not change the regular `/posts/index.xml` feed. See `docs/AI_JOBS_BRIEF.md` for the $0 Brevo launch path, feed setup, consent, and daily send limit.
-
-## Daily X Post
-
-The repo also includes `.github/workflows/daily-x-post.yml` for the `AILayoffAlerts` X account.
-
-Netlify triggers it every day at `15:30 UTC`, which gives the daily article workflow and Netlify deploy more time to finish after the `14:00 UTC` article backup trigger. The workflow:
-
-1. Waits for `content/posts/YYYY-MM-DD.md` with its generated `video_script`.
-2. Renders a narrated 30–60 second MP4 using Kokoro's Michael voice and FFmpeg; `OPENAI_API_KEY` supplies word-timestamp captions.
-3. Builds an X post with the article URL, uploads the MP4 through X's chunked media API, and waits for processing to succeed.
-4. Publishes one post containing both the article link and video. Rendering or upload failure stops publication.
-5. Writes `data/x-posted/YYYY-MM-DD.json` with the post and media IDs and commits it so reruns skip duplicate posts.
-
-A GitHub-native backup runs at `15:45 UTC` with the same concurrency group and date markers. Both paths require available X API credits. Caption alignment uses the `OPENAI_API_KEY` secret; if transcription fails, the renderer falls back to estimated timing. HTTP 402 `credits depleted` requires account billing action; changing authentication secrets does not fix it. X account video limits or media-upload permissions may also reject the post.
-
-Required GitHub setup:
-
-1. Go to `Settings` -> `Secrets and variables` -> `Actions`.
-2. Add `OPENAI_API_KEY` for audio-aligned captions. The runner installs FFmpeg and the Kokoro speech dependencies if needed.
-3. Recommended: add OAuth 1.0a repository secrets `X_API_KEY`, `X_API_SECRET`, `X_ACCESS_TOKEN`, and `X_ACCESS_TOKEN_SECRET` from the `AILayoffAlerts` X developer app. These do not rotate daily.
-4. Optional fallback: add OAuth 2.0 repository secrets `X_CLIENT_ID`, `X_CLIENT_SECRET`, and `X_REFRESH_TOKEN`. X can rotate refresh tokens after use, so update `X_REFRESH_TOKEN` whenever X returns a replacement.
-5. Optional fallback: add repository secret `X_USER_BEARER_TOKEN` if you want to test with a short-lived OAuth 2.0 access token.
-6. Optional: add repository variable `X_POST_CTA`.
-7. Optional: add repository variable `X_POST_HASHTAGS`. Keep it to one or two tags, such as `AILayoffs FutureOfWork`.
-
-You can test without posting from a local checkout:
-
-```powershell
+python scripts/prepare_newsletter.py --date YYYY-MM-DD --output-dir newsletter-preview
+python scripts/render_short_video.py --date YYYY-MM-DD --speech-provider kokoro --kokoro-model-dir PATH
 python scripts/post_daily_x_headline.py --date YYYY-MM-DD --dry-run
+python scripts/check_publication_health.py --today YYYY-MM-DD
 ```
 
-You can run a real post manually from GitHub Actions by opening `Daily X headline post` and entering a date.
+Newsletter preparation writes review files and sends nothing. MP4 rendering belongs to the X workflow, not the article workflow. Local rendering needs FFmpeg; Kokoro additionally needs the packages and verified model files named in the X workflow. The default local voice provider remains OpenAI; `--audio` or `--silent` avoids generated narration. OpenAI transcription aligns captions when available, with estimated timing as fallback. On Windows without IANA timezone data, use the explicit New York date for the health check.
 
-## Publication Health
+## Services and credentials
 
-`.github/workflows/publication-health.yml` checks the deployed daily article feed and article URL, deployed public labor-stats API source-check dates, and the latest committed X publication marker. It runs every day at `21:45 UTC`, after the article and X schedules, and can also be run manually. It uses no API credentials and never posts to X. A failed check appears as a failed GitHub Actions run with all three results in its job summary.
+GitHub Actions uses `OPENAI_API_KEY` (optional `OPENAI_MODEL` override) and the configured X credentials. OAuth 1.0a uses `X_API_KEY`, `X_API_SECRET`, `X_ACCESS_TOKEN`, and `X_ACCESS_TOKEN_SECRET`; the X script also supports configured OAuth 2.0 fallbacks. X requires available account credits. Netlify dispatch uses `GITHUB_WORKFLOW_TOKEN` with repository Actions-write access. Workflow commits need repository contents-write permission. Keep every value outside this repo; never rotate credentials as a response to an unrelated content or billing failure.
 
-Run the same read-only check locally:
+The newsletter uses the configured provider-hosted signup URL and collects no addresses on this site. Paid API configuration and checks are in [the x402 runbook](docs/labor-stats-x402.md).
 
-```powershell
-python scripts/check_publication_health.py
-```
+## Public interfaces
 
-On Windows Python installs without IANA time-zone data, pass the current New York date with `--today YYYY-MM-DD` (or install Python's `tzdata` package). The hosted Linux workflow has the time-zone data it needs.
-
-The article and X limits are one calendar day, and the stats source-check limit is four days to allow for weekends. The X result is based on a committed marker, not a live X API query. If X posting is intentionally paused, its check will continue to fail until the monitor is updated to reflect that decision.
-
-## Public Article Feeds
-
-- `/api/latest/` returns the newest published post as JSON, including its summary, publication date, canonical URL, and full HTML content.
-- `/api/articles/` returns the 20 newest published posts in the same shape, newest first. Drafts are excluded by Hugo.
-- `/feed.json` publishes those 20 posts as [JSON Feed 1.1](https://www.jsonfeed.org/version/1.1/) with the recommended `application/feed+json` content type. The existing `/index.xml`, `/posts/index.xml`, and `/ai-jobs-brief.xml` RSS feeds remain available.
-- All three outputs are public, static Hugo files. They update on each successful site build and do not require payment or API keys. `/openapi.json` describes the two article API routes and the JSON feed.
-
-## Labor Stats Section
-
-The `/labor-stats/` page displays a curated snapshot of public U.S. labor-market indicators. The page is backed by `data/labor_stats.json`, which keeps stable indicator IDs, units, periods, source URLs, and release metadata so the same structure can later support an agent-readable API endpoint.
-
-Current source policy:
-
-- Prefer BLS/FRED public series and official release pages.
-- Include release dates, series IDs, units, and source URLs for every indicator.
-- Treat the displayed values as revisable public data, not a permanent historical record.
-
-Refresh locally:
-
-```powershell
-python scripts/refresh_labor_stats.py
-hugo
-```
-
-The `.github/workflows/refresh-labor-stats.yml` workflow refreshes public FRED-backed series on weekdays and commits the snapshot and history when their contents change, including source-check dates. It does not require secrets. Its Hugo validation writes outside tracked `public/`, allowing a clean rebase before pushing.
-The same refresh writes `data/labor_stats_history.json`, containing up to 13 recent monthly observations per indicator. Upcoming release dates are omitted because the refresher does not maintain a release calendar; the dashboard links directly to the official BLS schedule.
-
-Agent-readable access:
-
-- `/api/labor-stats/` renders the same public data as JSON for agents and lightweight integrations.
-- The snapshot endpoint is public and ungated. Its response includes metadata for the x402-paid history endpoint.
-- Paid-access prep lives in `data/labor_stats_access.json` and `docs/labor-stats-x402.md`.
-- `/openapi.json` publishes the agent discovery contract for the public snapshot and paid history route.
-- Paid route: `/api/labor-stats/history`, with recent monthly observations, monthly changes, and source metadata. Inclusive `from` and `to` filters accept `YYYY-MM-DD` dates. Invalid, duplicate, unsupported, reversed, or empty ranges return 400 before payment. Each delta compares the last two returned observations; series with fewer than two have no delta. `observation_count_per_indicator` is the maximum returned count across series, which may have different coverage.
-- Revision vintages are not tracked. The `revisions` array is reserved and currently empty; this service does not reconstruct previously published values.
-- `netlify/functions/labor-stats-history.mjs` uses the x402 SDK for request-time payment challenge, verification, and settlement. It stays disabled until Netlify x402 configuration is explicitly set.
-- Local/dev bypass: set `NETLIFY_DEV=true` or `X402_LABOR_STATS_DEV_BYPASS=true` outside production to inspect the history response without payment. Both flags are blocked when `CONTEXT=production`.
-- Production defaults target Base mainnet USDC: `X402_NETWORK=eip155:8453`, `X402_ASSET=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`, and `X402_AMOUNT_ATOMIC=10000` (`$0.01` USDC). Set `X402_PAY_TO`, `X402_FACILITATOR_URL`, and `X402_LABOR_STATS_ENABLED=true` in Netlify before launch.
-- If the chosen production facilitator requires an API key or bearer token, set `X402_FACILITATOR_AUTH_HEADER_NAME` and `X402_FACILITATOR_AUTH_HEADER_VALUE` in Netlify. Do not commit facilitator credentials to the repository.
-
-Paid-route checks:
-
-```powershell
-npm.cmd run check:functions
-npm.cmd run check:x402
-```
-
-The x402 check covers disabled mode, local/dev bypass, production bypass rejection, date filtering, invalid ranges before payment, and method rejection without network access. To also verify a real testnet `PAYMENT-REQUIRED` challenge against the public x402 facilitator:
-
-```powershell
-$env:CHECK_X402_TESTNET_CHALLENGE='true'; npm.cmd run check:x402; Remove-Item Env:CHECK_X402_TESTNET_CHALLENGE
-```
-
-## Quality Rules
-
-- Prefer primary reporting and official data: Reuters, AP, Bloomberg, BLS, company filings, government agencies, major newspapers, and credible research.
-- Articles can set `source_quality` front matter for the public trust box:
-
-```yaml
-source_quality:
-  primary_sources: "Reuters/AP/company filings"
-  official_data: "BLS JOLTS and jobless claims"
-  uncertainty: "Medium"
-```
-
-Use `Low`, `Medium`, or `High` uncertainty. Older posts without this metadata display conservative default notes.
-- Do not publish placeholder links like `[Link here]` or `[Read more]` without a descriptive title.
-- Do not publish ChatGPT citation artifacts, `oaicite`, or invisible zero-width references.
-- Lead post titles with the concrete news angle, not a repeated series label like `AI & Labor Watch`.
-- Keep each post to three strong stories, with one short synthesis section.
-- Verify URLs before publishing when a claim sounds specific or surprising.
+- `/labor-stats/` and `/api/labor-stats/`: latest sourced labor snapshot.
+- `/api/labor-stats/history`: x402-paid recent monthly observations and date filters.
+- `/api/latest/`, `/api/articles/`, `/feed.json`: latest article, newest 20 articles, and JSON Feed.
+- `/ai-jobs-brief.xml`: newest 30 daily articles with full HTML; special issues excluded.
+- `/openapi.json`: deployed contract; edit its single source at `static/openapi.json`.

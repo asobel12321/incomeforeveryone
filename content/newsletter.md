@@ -1,5 +1,5 @@
 ---
 title: "AI Jobs Brief"
-description: "A daily email on AI, jobs, labor data, and income security."
+description: "A weekly email on AI, jobs, labor data, and income security, delivered Wednesdays."
 layout: "newsletter"
 ---
