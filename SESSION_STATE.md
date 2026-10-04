@@ -1,31 +1,31 @@
 # Current handoff
 
 ## Objective
-Clean the active project context and correct newsletter cadence. Keep parked work recoverable without treating it as active scope.
+Simplify visual rhythm: reserve strong emphasis for headlines and important numbers; use whitespace and dividers elsewhere.
 
 ## Branch
-Release baseline: `main`. Cleanup branch: `codex/project-cleanup`; use Git status for the active branch. Old shared edits are archived, not pending release.
+`codex/visual-rhythm`, based on main after cleanup PR #20. Parked work remains opt-in via `docs/PARKED_WORK.md`.
 
 ## Current status
-Cleanup implemented and locally verified. GitHub tracks its release from `codex/project-cleanup`. Authoritative remaining work is in `docs/BACKLOG.md`.
+Implemented and locally reviewed. Deployment authorized; release tracked in PR #21. Netlify preview, header and redirect checks passed. Check PR/deployment metadata for release completion.
 
 ## Files changed
-Shortened AGENTS/README/project map/newsletter/x402 documentation; added backlog and parked-work index; removed completed audit/checklist, duplicate OpenAPI draft and starter files; untracked generated `public/`; fixed weekly newsletter copy and OpenAPI source pointer.
+`assets/css/extended/income-for-everyone.css`, `layouts/_default/list.html`, `docs/BACKLOG.md`, and this handoff.
 
 ## Accomplishments
-Preserved the old shared checkout in `codex/archive-shared-20261004`; committed the premium prototype locally as `codex/parked-premium-labor-data` (`2c26580`). Weekly dashboard remains preserved on `codex/layoff-hiring-signal` (`a6f7fed`). No prototype was published.
+Briefs and labor indicators use dividers instead of framed shadowed cards. Labels, sources, dates, tags and navigation use quieter typography. Article introductions and source notes no longer have colored frames. Headlines and indicator values retain emphasis. Mobile subtitles display in full; keyboard focus remains visible.
 
 ## Things tried
-Reconciled from current main instead of replaying obsolete local copies. Historical material is in Git refs, not the routine agent reading path.
+Reviewed homepage, article, source notes, newsletter and dashboard in the local browser, including 390px mobile layouts.
 
 ## Things learned
-Newsletter delivery is weekly, while article publication is daily. Production x402 setup is complete; normal-client paid fulfillment is a verification gap, not an unstarted setup project.
+PaperMod's two-line summary clamp also truncated explicit subtitles; the dispatch override now allows full text.
 
 ## Known issues
-Production headline verification remains blocked by the prior browser approval failure. First newsletter campaign and next generated brief still need review. See the backlog; do not reload old transcripts to reconstruct it.
+Production browser verification remains unresolved from the previous release. Other active work is in `docs/BACKLOG.md`.
 
 ## Verification run
-Hugo passed (135 pages); function checks, offline x402 checks, all 35 Python tests, and Git whitespace checks passed. Built newsletter HTML contains Wednesday delivery copy. Production browser verification remains unconfirmed.
+Final Hugo build passed (135 pages); Git whitespace check passed. Desktop/mobile local visual checks passed; article and dashboard had no horizontal overflow at 390px.
 
 ## Next steps
-Work from current main after the cleanup release. Keep this file short and replace stale status rather than appending history. Choose next work from the backlog; parked code requires an explicit resume decision.
+Complete PR #21 release and return the checkout to current main. Remaining product work is in docs/BACKLOG.md; keep future handoffs short.

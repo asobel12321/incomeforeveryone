@@ -12,7 +12,7 @@ Updated October 4, 2026. This is the only active task list. Items here are not a
 ## Product improvements, when prioritized
 
 - Replace unsupported default source-review claims with honest metadata states; add editorial ownership, AI-assistance disclosure, and corrections information.
-- Continue the agreed design review: simplify competing visual emphasis; remove the production video-script text from the reader flow; show dashboard values before technical metadata.
+- Continue the agreed design review: remove the production video-script text from the reader flow; show dashboard values before technical metadata. Visual emphasis was simplified in PR #21.
 - Review live X narration/caption quality and plan speech/transcription dependency migrations. Recheck provider dates before selecting replacements.
 
 ## Not active
