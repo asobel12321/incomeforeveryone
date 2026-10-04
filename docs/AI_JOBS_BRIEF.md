@@ -1,26 +1,26 @@
-# AI Jobs Brief Launch
+# AI Jobs Brief operations
 
-## Current Assets
+## Current configuration
 
-- `/newsletter/` introduces the email edition and links to a provider-hosted signup form; the site itself collects no addresses.
-- A Brevo Free account and dedicated `AI Jobs Brief` list exist. The hosted signup form shows the revised title, description, and required consent. At the owner's request, it adds subscribers without a confirmation email. An owner signup reached the list; the form link and newsletter page are live.
-- `/ai-jobs-brief.xml` is a dedicated RSS feed of the 30 newest published posts whose filenames are exactly `YYYY-MM-DD.md`. Special issues, drafts, and other pages are excluded. Each item has a stable article URL, `guid`, publication date, description, and full HTML content.
-- `scripts/prepare_newsletter.py` creates local plain-text and HTML editions for manual review. It has no sending capability.
-- The Brevo sender `newsletter@incomeforeveryone.org` is verified and the domain is authenticated. The `AI Jobs Brief RSS` integration is **active** with the live feed and dedicated list, set to send automatically on Wednesdays at 1:00 PM America/New_York. Its template repeats one article and uses the full HTML feed content. No subscriber campaign has been sent yet.
+- Delivery: Wednesdays at 1 PM America/New_York through the active Brevo `AI Jobs Brief RSS` integration.
+- Content: newest full daily article from the feed window, not a multi-article weekly digest. Repeatable block limit is one; template uses `{{ item.CONTENT_ENCODED | safe }}`.
+- Feed: `/ai-jobs-brief.xml`, newest 30 dated daily articles. Drafts and special-issue filenames are excluded.
+- Audience: dedicated `AI Jobs Brief` list. The hosted form requires consent and adds subscribers without confirmation email, as requested by the owner. The site collects no addresses.
+- Sender: verified `newsletter@incomeforeveryone.org`; authenticated domain. Subject: `AI Jobs Brief | Weekly AI and Labor Update`.
+- Footer: Income for Everyone, 100 Broad St, New York, NY 10004, with provider unsubscribe link.
 
-## Free Launch With Brevo
+This configuration was verified October 3, 2026. An owner signup and controlled template delivery succeeded. The RSS preview showed full article content and source links; the standalone template test did not populate RSS. The first scheduled subscriber campaign is October 7 if new feed items exist. Its end-to-end content and unsubscribe behavior remain to be checked.
 
-Brevo's Free plan is $0 with no time limit and includes up to 300 email sends per day. A weekly issue can reach at most 300 recipients on its send day under that cap; Brevo does not deliver the remainder automatically as part of that send. The free plan adds Brevo branding. The local edition generator remains a manual fallback.
+## Maintenance
 
-1. Use the existing Brevo Free account and verified sender. Keep DNS and account credentials out of this repository.
-2. The `AI Jobs Brief Signup` hosted form and `params.newsletterSignupURL` are live; an owner-controlled signup reached the dedicated list without a confirmation email. The site itself does not collect email addresses.
-3. The production feed at `https://incomeforeveryone.org/ai-jobs-brief.xml` is loaded in the active integration. The Brevo template has a repeatable block limit of **1**, uses `{{ item.CONTENT_ENCODED | safe }}`, and omits the stock logo and unused RSS image. This currently selects the newest article when the Wednesday integration runs. Its RSS preview renders the October 3 article with the full three-story brief, three source links, a canonical article link, and an unsubscribe link in desktop and mobile views.
-4. The integration selects only the `AI Jobs Brief` list and uses the verified newsletter sender, subject `AI Jobs Brief | Weekly AI and Labor Update`, and a Wednesday 1:00 PM New York schedule. The template footer now identifies `Income for Everyone` at `100 Broad St, New York, NY 10004`. The template sender and subject match the integration settings.
-5. A controlled template test reached the owner address from `newsletter@incomeforeveryone.org`, signed by `incomeforeveryone.org`, with the weekly subject, address, and an unsubscribe link. The template test contained no RSS article because it did not run in the integration's RSS context; the rendered RSS preview verifies article content. The first scheduled send is Wednesday, October 7, 2026, at 1:00 PM New York time if new feed items are available. Check that first live campaign. Stop or redesign the campaign before the active list exceeds 300 if every subscriber must receive each issue that day.
+Check the first real campaign for full content, correct sender/subject, source and article links, mobile layout, and working unsubscribe. Do not send tests or change recipients without appropriate user authorization. Do not reactivate the superseded daily schedule.
 
-Brevo documents [free-plan limits](https://help.brevo.com/hc/en-us/articles/208580669-FAQs-What-are-the-limits-of-the-Free-plan), [signup confirmation choices](https://help.brevo.com/hc/en-us/articles/208771869-Create-a-sign-up-form-in-Brevo), [RSS campaign setup](https://help.brevo.com/hc/en-us/articles/360013130059-RSS-Campaign-integration-Automatically-share-your-blog-posts-with-your-subscribers), and [RSS template fields](https://help.brevo.com/hc/en-us/articles/360016993299-Understanding-the-format-of-the-RSS-default-template).
+The setup used Brevo Free's 300-send/day allowance; recheck the account limit before audience growth exceeds it. Sender, schedule, list, and template live in Brevo, not the repository. The signup link is `params.newsletterSignupURL` in `config.toml`.
 
-## Site Checks
+For a local unsent review edition:
 
-1. Check that `/newsletter/` and `/ai-jobs-brief.xml` remain available and that the feed's newest item is the intended daily article.
-2. Check the first integration-generated Wednesday campaign for the actual sender, subject, full article, mobile layout, source links, canonical article link, and unsubscribe behavior. The template test did not exercise RSS population or unsubscribe navigation.
+```powershell
+python scripts/prepare_newsletter.py --date YYYY-MM-DD --output-dir newsletter-preview
+```
+
+This tool sends nothing. It accepts published daily articles with the expected three-story structure.
