@@ -1,31 +1,31 @@
 # Current handoff
 
 ## Objective
-Simplify visual rhythm: reserve strong emphasis for headlines and important numbers; use whitespace and dividers elsewhere.
+Fine-tune formatting after the deployed visual-rhythm update (PR #21).
 
 ## Branch
-`codex/visual-rhythm`, based on main after cleanup PR #20. Parked work remains opt-in via `docs/PARKED_WORK.md`.
+`codex/formatting-polish`, based on current main. Parked work remains opt-in via `docs/PARKED_WORK.md`.
 
 ## Current status
-Implemented and locally reviewed. Deployment authorized; release tracked in PR #21. Netlify preview, header and redirect checks passed. Check PR/deployment metadata for release completion.
+Formatting fixes implemented and locally reviewed. Deployment authorized; release tracked in PR #22. Netlify preview, header and redirect checks passed; PR and Netlify metadata track publication.
 
 ## Files changed
-`assets/css/extended/income-for-everyone.css`, `layouts/_default/list.html`, `docs/BACKLOG.md`, and this handoff.
+Publication CSS, article and newsletter templates, and this handoff.
 
 ## Accomplishments
-Briefs and labor indicators use dividers instead of framed shadowed cards. Labels, sources, dates, tags and navigation use quieter typography. Article introductions and source notes no longer have colored frames. Headlines and indicator values retain emphasis. Mobile subtitles display in full; keyboard focus remains visible.
+Added newsletter paragraph/button spacing and removed its nested main element. Mobile navigation wraps without hiding links. Reduced mobile headline size. Standard lists and inline links remain native; only dated daily briefs use story dividers/headings. Added source-paragraph spacing and aligned dashboard values at tablet widths. Special issues have the correct label; About no longer says Daily brief. Removed theme clipping from the homepage heading and increased its line height.
 
 ## Things tried
-Reviewed homepage, article, source notes, newsletter and dashboard in the local browser, including 390px mobile layouts.
+Reviewed local layouts at 320px, 390px, 768px and desktop widths. Checked seven page types for overflow and main landmark count.
 
 ## Things learned
-PaperMod's two-line summary clamp also truncated explicit subtitles; the dispatch override now allows full text.
+Global list-item styles were affecting ordinary article lists; dated briefs need a scoped class.
 
 ## Known issues
-Production browser verification remains unresolved from the previous release. Other active work is in `docs/BACKLOG.md`.
+Production rendering verification remains unresolved from earlier work. Other product tasks are in `docs/BACKLOG.md`.
 
 ## Verification run
-Final Hugo build passed (135 pages); Git whitespace check passed. Desktop/mobile local visual checks passed; article and dashboard had no horizontal overflow at 390px.
+Hugo passed (136 pages) and whitespace checks passed. At 320px, all seven reviewed pages had no horizontal overflow, visible navigation, and one main landmark. Labor values align across paired cards at 768px. Heading fix passed Hugo (136 pages) and desktop/320px visual checks.
 
 ## Next steps
-Complete PR #21 release and return the checkout to current main. Remaining product work is in docs/BACKLOG.md; keep future handoffs short.
+After PR #22 is published, work from current main. Remaining product tasks are in docs/BACKLOG.md. Keep this handoff short.
