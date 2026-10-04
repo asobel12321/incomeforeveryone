@@ -605,9 +605,7 @@ a:hover {
   position: relative;
   margin-top: 16px;
   padding: 14px 16px 14px 42px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.7);
+  border-top: 1px solid var(--border);
 }
 
 .post-content li::before {
@@ -631,11 +629,13 @@ a:hover {
   font-weight: 750;
 }
 
-.post-content p:last-child {
-  color: var(--secondary);
-  font-size: 0.95rem;
-  font-weight: 700;
-  word-spacing: 0.1em;
+/* Daily stories use a leading bold phrase as their heading, in both
+   tight lists and lists whose items contain a paragraph. */
+.article-content li > strong:first-child,
+.article-content li > p:first-child > strong:first-child {
+  display: block;
+  margin-bottom: 8px;
+  line-height: 1.4;
 }
 
 .article-trust {
