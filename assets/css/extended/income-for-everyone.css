@@ -82,6 +82,10 @@ a:hover {
   padding-top: 16px;
 }
 
+.newsletter-body p {
+  margin: 0 0 18px;
+}
+
 .newsletter-privacy {
   color: var(--secondary);
   font-size: 0.84rem;
@@ -338,6 +342,7 @@ a:hover {
 
 .labor-indicator-card {
   display: grid;
+  align-content: start;
   gap: 14px;
   padding: 24px 0;
   border-top: 1px solid var(--border);
@@ -400,6 +405,7 @@ a:hover {
 
 .labor-indicator-source dd,
 .labor-data-contract dd {
+  overflow-wrap: anywhere;
   margin: 0;
   color: var(--content);
   font-size: 0.9rem;
@@ -584,26 +590,27 @@ a:hover {
 }
 
 .post-content ul {
-  padding-left: 0;
-  list-style: none;
+  padding-inline-start: 22px;
+  list-style: disc;
 }
 
 .post-content li {
-  position: relative;
+  margin-top: 10px;
+}
+
+.daily-brief-content > ul {
+  padding-inline-start: 0;
+  list-style: none;
+}
+
+.daily-brief-content > ul > li {
   margin-top: 16px;
-  padding: 14px 16px 14px 42px;
+  padding: 18px 0;
   border-top: 1px solid var(--border);
 }
 
-.post-content li::before {
-  position: absolute;
-  top: 21px;
-  left: 18px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent);
-  content: "";
+.daily-brief-content > ul > li > p + p {
+  margin-top: 12px;
 }
 
 .post-content strong {
@@ -611,15 +618,13 @@ a:hover {
 }
 
 .post-content li a {
-  display: inline-block;
-  margin-top: 8px;
   font-weight: 400;
 }
 
 /* Daily stories use a leading bold phrase as their heading, in both
    tight lists and lists whose items contain a paragraph. */
-.article-content li > strong:first-child,
-.article-content li > p:first-child > strong:first-child {
+.daily-brief-content > ul > li > strong:first-child,
+.daily-brief-content > ul > li > p:first-child > strong:first-child {
   display: block;
   margin-bottom: 8px;
   line-height: 1.4;
@@ -778,6 +783,21 @@ a:focus-visible {
   margin: 4px 0;
 }
 
+@media (min-width: 701px) and (max-width: 900px) {
+  .labor-indicator-topline {
+    display: block;
+  }
+
+  .labor-indicator-topline p {
+    min-height: 2.8em;
+  }
+
+  .labor-indicator-topline span {
+    display: block;
+    margin-top: 6px;
+  }
+}
+
 @media (max-width: 700px) {
   body {
     font-size: 16px;
@@ -785,6 +805,19 @@ a:focus-visible {
 
   .main {
     padding-top: 22px;
+  }
+
+  #menu {
+    flex-wrap: wrap;
+    gap: 0 12px;
+    overflow: visible;
+    white-space: normal;
+    padding-bottom: 8px;
+    line-height: 44px;
+  }
+
+  #menu li + li {
+    margin-inline-start: 0;
   }
 
   .first-entry,
@@ -850,18 +883,7 @@ a:focus-visible {
   }
 
   .post-title {
-    font-size: clamp(2rem, 11vw, 2.75rem);
-  }
-
-  .post-content li {
-    padding-right: 14px;
-  }
-
-  .post-content li {
-    padding-left: 34px;
-  }
-
-  .post-content li::before {
-    left: 14px;
+    font-size: clamp(1.85rem, 8vw, 2.5rem);
+    line-height: 1.12;
   }
 }

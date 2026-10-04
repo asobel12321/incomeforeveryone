@@ -1,9 +1,12 @@
 {{- define "main" }}
+{{- $isDailyBrief := and (eq .Section "posts") (findRE `^\d{4}-\d{2}-\d{2}$` .File.BaseFileName) }}
 
 <article class="post-single article-shell">
   <header class="post-header article-header">
     {{ partial "breadcrumbs.html" . }}
-    <p class="article-kicker">Daily brief</p>
+    {{- if eq .Section "posts" }}
+    <p class="article-kicker">{{ if $isDailyBrief }}Daily brief{{ else }}Special issue{{ end }}</p>
+    {{- end }}
     <h1 class="post-title entry-hint-parent">
       {{ .Title }}
       {{- if .Draft }}
@@ -36,7 +39,7 @@
   {{- end }}
 
   {{- if .Content }}
-  <div class="post-content article-content">
+  <div class="post-content article-content{{ if $isDailyBrief }} daily-brief-content{{ end }}">
     {{- if not (.Param "disableAnchoredHeadings") }}
     {{- partial "anchored_headings.html" .Content -}}
     {{- else }}{{ .Content }}{{ end }}
