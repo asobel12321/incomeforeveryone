@@ -7,7 +7,7 @@ Simplify visual rhythm: reserve strong emphasis for headlines and important numb
 `codex/visual-rhythm`, based on main after cleanup PR #20. Parked work remains opt-in via `docs/PARKED_WORK.md`.
 
 ## Current status
-Implemented and reviewed in the local browser. Release tracking is in the PR for this branch; merge/deployment has not been requested for this change.
+Implemented and locally reviewed. Deployment authorized; release tracked in PR #21. Netlify preview, header and redirect checks passed. Check PR/deployment metadata for release completion.
 
 ## Files changed
 `assets/css/extended/income-for-everyone.css`, `layouts/_default/list.html`, `docs/BACKLOG.md`, and this handoff.
@@ -28,4 +28,4 @@ Production browser verification remains unresolved from the previous release. Ot
 Final Hugo build passed (135 pages); Git whitespace check passed. Desktop/mobile local visual checks passed; article and dashboard had no horizontal overflow at 390px.
 
 ## Next steps
-Review the PR/Netlify preview and merge when release is requested. Keep future handoffs short.
+Complete PR #21 release and return the checkout to current main. Remaining product work is in docs/BACKLOG.md; keep future handoffs short.
