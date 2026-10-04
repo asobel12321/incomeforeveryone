@@ -4,6 +4,8 @@ Hugo/PaperMod site for publishing daily AI labor and automation posts.
 
 The homepage uses a compact introduction with two actions: open the latest visible brief directly or subscribe through the newsletter page. Its first article is highlighted as the latest brief; older homepage pages retain the regular article list.
 
+Briefs use one focused headline (`title`, at most 80 characters) and a short supporting subtitle (`description`, at most 180 characters). Article headers and listing cards display the subtitle; older posts without one retain their existing summary. The daily generator and manual writing prompt require this format. Invalid generated headlines or subtitles get one retry and are never saved if still invalid. The eight articles on the homepage at the time of this change were updated without changing their URLs or body text.
+
 ## Current Workflow
 
 1. Ask ChatGPT for a daily AI labor displacement / UBI news roundup.

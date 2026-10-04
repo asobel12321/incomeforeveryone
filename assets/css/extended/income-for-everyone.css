@@ -570,6 +570,14 @@ a:hover {
   line-height: 1.6;
 }
 
+.article-header .post-description {
+  max-width: 700px;
+  margin: 14px 0;
+  color: var(--secondary);
+  font-size: 1.04rem;
+  line-height: 1.55;
+}
+
 .post-content {
   color: var(--content);
   font-size: 1.04rem;
