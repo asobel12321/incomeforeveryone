@@ -7,7 +7,7 @@ Fine-tune formatting after the deployed visual-rhythm update (PR #21).
 `codex/formatting-polish`, based on current main. Parked work remains opt-in via `docs/PARKED_WORK.md`.
 
 ## Current status
-Formatting fixes implemented and locally reviewed. Release is tracked in the PR for this branch; not yet merged.
+Formatting fixes implemented and locally reviewed. Deployment authorized; release tracked in PR #22. Netlify preview, header and redirect checks passed; PR and Netlify metadata track publication.
 
 ## Files changed
 Publication CSS, article and newsletter templates, and this handoff.
@@ -28,4 +28,4 @@ Production rendering verification remains unresolved from earlier work. Other pr
 Hugo passed (136 pages) and whitespace checks passed. At 320px, all seven reviewed pages had no horizontal overflow, visible navigation, and one main landmark. Labor values align across paired cards at 768px. Heading fix passed Hugo (136 pages) and desktop/320px visual checks.
 
 ## Next steps
-Review the PR/Netlify preview and merge when release is requested. Keep this handoff short.
+After PR #22 is published, work from current main. Remaining product tasks are in docs/BACKLOG.md. Keep this handoff short.
