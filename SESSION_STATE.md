@@ -1,31 +1,31 @@
-# Current handoff
+# Session State
 
 ## Objective
-Fine-tune formatting after the deployed visual-rhythm update (PR #21).
+Repair daily publication failures observed October 5-6.
 
 ## Branch
-`codex/formatting-polish`, based on current main. Parked work remains opt-in via `docs/PARKED_WORK.md`.
+`codex/publishing-reliability`, based on `origin/main`; release PR #23.
 
-## Current status
-Formatting fixes implemented and locally reviewed. Deployment authorized; release tracked in PR #22. Netlify preview, header and redirect checks passed; PR and Netlify metadata track publication.
+## Current Status
+Repair tested locally and in an artifact-only GitHub run; release verification in progress.
 
-## Files changed
-Publication CSS, article and newsletter templates, and this handoff.
+## Files Changed
+Daily generation script/tests, article and health workflows, README, and this handoff.
 
 ## Accomplishments
-Added newsletter paragraph/button spacing and removed its nested main element. Mobile navigation wraps without hiding links. Reduced mobile headline size. Standard lists and inline links remain native; only dated daily briefs use story dividers/headings. Added source-paragraph spacing and aligned dashboard values at tablet widths. Special issues have the correct label; About no longer says Daily brief. Removed theme clipping from the homepage heading and increased its line height.
+Separate research from drafting; exclude prior URLs before selection, require completed search and recent source dates, constrain draft links, and retain blocking validation. Add bounded retries and safe branch previews. Resolve edition date once. Evening health flags the first missed edition and reads current main markers.
 
-## Things tried
-Reviewed local layouts at 320px, 390px, 768px and desktop widths. Checked seven page types for overflow and main landmark count.
+## Things Tried
+Live preview 37627916148 passed article generation, video-script generation, and Hugo. Preview artifact source links were reviewed. Netlify PR preview, headers, and redirects passed.
 
-## Things learned
-Global list-item styles were affecting ordinary article lists; dated briefs need a scoped class.
+## Things Learned
+October 5-6 article runs rejected reused sources; X timed out waiting for missing articles. Prompt-only exclusions still failed live, so research selection now precedes drafting. Labor refresh remained healthy.
 
-## Known issues
-Production rendering verification remains unresolved from earlier work. Other product tasks are in `docs/BACKLOG.md`.
+## Known Issues
+Production latest article and X marker were October 4 at initial inspection. Newsletter feed works; first scheduled Brevo delivery October 7 remains unverified. Automated research checks do not independently verify claims or dates.
 
-## Verification run
-Hugo passed (136 pages) and whitespace checks passed. At 320px, all seven reviewed pages had no horizontal overflow, visible navigation, and one main landmark. Labor values align across paired cards at 768px. Heading fix passed Hugo (136 pages) and desktop/320px visual checks.
+## Verification Run
+Python compilation passed; 39 Python tests passed; Hugo passed (136 pages); whitespace checks passed. Live preview passed. Production labor-data freshness and full-content newsletter feed passed read-only checks.
 
-## Next steps
-After PR #22 is published, work from current main. Remaining product tasks are in docs/BACKLOG.md. Keep this handoff short.
+## Next Steps
+Release PR #23, verify current article deployment and normal X run. Do not backdate invented editions. Verify first Brevo campaign separately without sending tests or changing recipients.
