@@ -46,6 +46,26 @@ A specific conclusion.
 
 
 class DailyPostTests(unittest.TestCase):
+    def setUp(self):
+        self.research = patch.object(daily, "research_sources", return_value=[
+            {"url": f"https://{domain}/{path}"}
+            for domain in ("news.example.org", "reports.example.org")
+            for path in ("one", "two", "three")
+        ])
+        self.research.start()
+        self.addCleanup(self.research.stop)
+
+    def test_research_filters_reused_old_and_duplicate_sources(self):
+        self.research.stop()
+        sources = [
+            {"title": "Report", "url": f"https://reports.example.org/{i}", "published": "2026-10-02", "summary": "A new finding."}
+            for i in range(3)
+        ]
+        bad = [dict(sources[0], published="2025-01-01"), sources[1], sources[1]]
+        with tempfile.TemporaryDirectory() as folder, patch.object(daily, "POST_DIR", Path(folder)), patch.object(daily, "call_openai", side_effect=[json.dumps(bad), json.dumps(sources)]) as api:
+            self.assertEqual(daily.research_sources("2026-10-03", [], "model"), sources)
+            self.assertEqual(api.call_count, 2)
+
     def test_headline_and_subtitle_validation(self):
         candidate = post("2026-10-03", "One concrete development", "A lead.")
         daily.validate_post(candidate, "2026-10-03")

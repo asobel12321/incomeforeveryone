@@ -11,7 +11,7 @@ import re
 import sys
 import urllib.error
 import urllib.request
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
@@ -175,6 +175,53 @@ def reused_source_issue(markdown: str, recent: list[tuple[str, str, str, list[st
     return None
 
 
+def research_sources(post_date: str, recent: list, model: str) -> list[dict]:
+    """Select fresh sources before drafting, keeping exclusions fail-closed."""
+    earliest = date.fromisoformat(post_date) - timedelta(days=7)
+    excluded = sorted({
+        normalize_url(url)
+        for day, *_ in recent
+        for url in re.findall(r"\]\((https?://[^)\s]+)\)", (POST_DIR / f"{day}.md").read_text(encoding="utf-8"))
+    })
+    prompt = f"""Research three distinct developments about AI, employment, automation, or income security for {post_date}.
+Use web search to find and open reporting or official releases published between {earliest} and {post_date} inclusive.
+Search multiple topics and publishers. Verify the publication date on each page. Prefer primary sources.
+Exclude these previously used URLs (including query variants): {json.dumps(excluded)}.
+Use dated official release URLs, not rolling latest-release pages. Never invent a source or date.
+Return only a JSON array of 3-6 objects with string fields: title, url, published (YYYY-MM-DD), summary.
+Each summary must state the concrete new development and distinguish evidence from interpretation.
+If fewer than three eligible sources can be verified, return only those found; do not pad with old sources.
+"""
+    for attempt in range(GENERATION_ATTEMPTS):
+        response = call_openai(prompt, model)
+        try:
+            sources = json.loads(re.sub(r"\A\s*```(?:json)?\s*|\s*```\s*\Z", "", response))
+            if not isinstance(sources, list):
+                raise ValueError("Research must return a JSON array.")
+            accepted = []
+            seen = set(excluded)
+            for source in sources:
+                if not isinstance(source, dict) or not all(isinstance(source.get(key), str) and source[key].strip() for key in ("title", "url", "published", "summary")):
+                    continue
+                parsed = urlsplit(source["url"])
+                key = normalize_url(source["url"])
+                if parsed.scheme not in {"http", "https"} or not parsed.netloc or key in seen:
+                    continue
+                if not earliest <= date.fromisoformat(source["published"]) <= date.fromisoformat(post_date):
+                    continue
+                accepted.append(source)
+                seen.add(key)
+            if len(accepted) >= 3:
+                return accepted[:6]
+            raise ValueError(f"Only {len(accepted)} distinct, recent, unused sources were found; need at least three.")
+        except (ValueError, TypeError) as exc:
+            print(f"Research attempt {attempt + 1}/{GENERATION_ATTEMPTS} rejected: {exc}", file=sys.stderr)
+            if attempt == GENERATION_ATTEMPTS - 1:
+                raise RuntimeError(f"Source research failed: {exc}") from exc
+            prompt += f"\nPrevious research was rejected: {exc}. Search different publishers and topics.\nPrevious result:\n{response}"
+    raise RuntimeError("Source research exhausted.")
+
+
 def build_prompt(post_date: str, recent: list[tuple[str, str, str, list[str], str]] | None = None, post_dir: Path | None = None) -> str:
     parsed = datetime.strptime(post_date, "%Y-%m-%d")
     display_date = f"{parsed.strftime('%B')} {parsed.day}, {parsed.year}"
@@ -327,12 +374,18 @@ def main() -> int:
         return 0
 
     recent = recent_posts(args.date)
+    sources = research_sources(args.date, recent, args.model)
+    selected_urls = {normalize_url(source["url"]) for source in sources}
     prompt = build_prompt(args.date, recent)
+    prompt += f"\n\nResearch selected for this edition:\n{json.dumps(sources, ensure_ascii=False)}\nWrite using only these sources and their exact URLs. Do not add other links or facts. The research stage already performed web search."
     for attempt in range(GENERATION_ATTEMPTS):
-        markdown = clean_markdown(call_openai(prompt, args.model))
+        markdown = clean_markdown(call_openai(prompt, args.model, web_search=False))
         try:
             validate_post(markdown, args.date)
             issue = repetition_issue(markdown, recent) or reused_source_issue(markdown, recent)
+            urls = {normalize_url(url) for url in re.findall(r"\]\((https?://[^)\s]+)\)", markdown)}
+            if urls - selected_urls:
+                issue = "The draft cites URLs outside the selected research. Use only the supplied source URLs."
         except RuntimeError as exc:
             issue = str(exc)
         if not issue:
