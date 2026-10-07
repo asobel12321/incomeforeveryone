@@ -22,12 +22,14 @@ Use [the project map](docs/PROJECT_MAP.md) to find code, [the backlog](docs/BACK
 | Daily article | Netlify dispatch at 13:30 UTC, backup at 14:00; GitHub backup at 14:15. Generates the article and video script, validates Hugo, commits, and lets Netlify deploy. |
 | Daily X video | Netlify dispatch at 15:30 UTC; GitHub backup at 15:45. Kokoro Michael narration, captioned MP4, and article link in one post. Date markers prevent duplicates. |
 | Labor data | Weekdays at 14:20 UTC through GitHub Actions; public FRED feeds refresh snapshot/history. |
-| Publication health | Daily at 21:45 UTC; checks deployed articles/data and committed X markers. Reports failures without publishing or repairing. |
+| Publication health | Daily at 21:45 UTC; requires the current New York edition and X marker, and checks deployed data freshness. Reports failures without publishing or repairing. |
 | Newsletter | Brevo, Wednesdays at 1 PM America/New_York; newest full daily brief. See [newsletter operations](docs/AI_JOBS_BRIEF.md). |
 
 UTC schedules do not follow New York daylight-saving changes. GitHub schedule delivery may be delayed. The workflow files and `netlify.toml` are authoritative for schedules.
 
-Daily posts use `content/posts/YYYY-MM-DD.md`, one focused title (maximum 80 characters), and a supporting `description` subtitle (maximum 180). They contain three sourced stories and a specific synthesis. The generator checks formatting, repeated wording, and reused source URLs against recent briefs, retries once, and fails without saving invalid output. These checks do not verify claims. The [manual prompt](prompts/daily-labor-watch.md) follows the same format. Existing articles without subtitles keep their summary fallback.
+Daily posts use `content/posts/YYYY-MM-DD.md`, one focused title (maximum 80 characters), and a supporting `description` subtitle (maximum 180). They contain three sourced stories and a specific synthesis. The generator requires completed web search, supplies the previous seven editions' excluded source URLs, and requests dated official releases instead of rolling pages. It checks formatting, repeated wording, and reused source URLs, allows three attempts with rejected-draft feedback, and fails without saving invalid output. These checks do not verify claims. The [manual prompt](prompts/daily-labor-watch.md) follows the same format. Existing articles without subtitles keep their summary fallback.
+
+For generation repairs, dispatch `daily-labor-watch.yml` on the repair branch with `preview=true` and an explicit missing date. It runs article generation, video-script generation, and Hugo, then saves a Markdown artifact. Only non-preview runs on `main` commit articles. The edition date is resolved once per run. After releasing a repair, rerun the article workflow for the intended date; confirm deployment before recovering its X publication. Do not fabricate historical editions or bypass source validation to clear a failed run.
 
 To import reviewed Markdown from the clipboard, use `scripts/new-daily-post.ps1` (or `-InputFile`, `-Date`, `-Title`). It refuses an existing dated post. Review evidence and URLs before publishing; do not silently overwrite an existing article.
 

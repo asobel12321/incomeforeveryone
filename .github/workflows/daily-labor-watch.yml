@@ -11,6 +11,11 @@ on:
         type: string
   workflow_dispatch:
     inputs:
+      preview:
+        description: "Generate and build an unsent preview artifact without committing."
+        required: false
+        type: boolean
+        default: false
       date:
         description: "Post date as YYYY-MM-DD. Defaults to today in New York."
         required: false
@@ -31,7 +36,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.ref }}
           submodules: recursive
 
       - name: Set up Python
@@ -45,32 +50,33 @@ jobs:
           hugo-version: "0.145.0"
           extended: true
 
+      - name: Resolve edition date
+        env:
+          REQUESTED_DATE: ${{ inputs.date }}
+        run: |
+          edition_date="${REQUESTED_DATE:-$(TZ=America/New_York date +%F)}"
+          python -c 'import datetime, re, sys; value = sys.argv[1]; assert re.fullmatch(r"\d{4}-\d{2}-\d{2}", value); datetime.date.fromisoformat(value)' "$edition_date"
+          echo "EDITION_DATE=$edition_date" >> "$GITHUB_ENV"
+
       - name: Generate daily post
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5.4-mini' }}
         run: |
-          if [ -n "${{ inputs.date || '' }}" ]; then
-            python scripts/generate_daily_post.py --date "${{ inputs.date }}"
-          else
-            python scripts/generate_daily_post.py
-          fi
+          python scripts/generate_daily_post.py --date "$EDITION_DATE"
 
       - name: Generate short video script
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5.4-mini' }}
         run: |
-          if [ -n "${{ inputs.date || '' }}" ]; then
-            python scripts/generate_video_script.py --date "${{ inputs.date }}" --model "$OPENAI_MODEL"
-          else
-            python scripts/generate_video_script.py --model "$OPENAI_MODEL"
-          fi
+          python scripts/generate_video_script.py --date "$EDITION_DATE" --model "$OPENAI_MODEL"
 
       - name: Build site
         run: hugo --destination "$RUNNER_TEMP/hugo-validation"
 
       - name: Commit and push post
+        if: github.ref == 'refs/heads/main' && !inputs.preview
         run: |
           if [ -z "$(git status --porcelain -- content/posts)" ]; then
             echo "No new post to commit."
@@ -83,3 +89,11 @@ jobs:
           git commit -m "Add daily AI labor watch"
           git pull --rebase origin main
           git push
+
+      - name: Save generated preview
+        if: inputs.preview || github.ref != 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-preview-${{ env.EDITION_DATE }}
+          path: content/posts/${{ env.EDITION_DATE }}.md
+          if-no-files-found: error

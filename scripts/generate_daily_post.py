@@ -22,6 +22,7 @@ POST_DIR = REPO_ROOT / "content" / "posts"
 DEFAULT_MODEL = "gpt-5.4-mini"
 TIMEZONE = "America/New_York"
 RECENT_POST_COUNT = 7
+GENERATION_ATTEMPTS = 3
 
 
 def clean_markdown(text: str) -> str:
@@ -174,7 +175,7 @@ def reused_source_issue(markdown: str, recent: list[tuple[str, str, str, list[st
     return None
 
 
-def build_prompt(post_date: str, recent: list[tuple[str, str, str, list[str], str]] | None = None) -> str:
+def build_prompt(post_date: str, recent: list[tuple[str, str, str, list[str], str]] | None = None, post_dir: Path | None = None) -> str:
     parsed = datetime.strptime(post_date, "%Y-%m-%d")
     display_date = f"{parsed.strftime('%B')} {parsed.day}, {parsed.year}"
     recent = recent or []
@@ -182,6 +183,13 @@ def build_prompt(post_date: str, recent: list[tuple[str, str, str, list[str], st
         f"- {day}: {title}; lead: {lead[:260]}; stories: {' | '.join(stories)}; conclusion: {synthesis[:180]}"
         for day, title, lead, stories, synthesis in recent
     ) or "No earlier daily posts are available."
+    post_dir = post_dir or POST_DIR
+    excluded_urls = sorted({
+        normalize_url(url)
+        for day, *_ in recent
+        for url in re.findall(r"\]\((https?://[^)\s]+)\)", (post_dir / f"{day}.md").read_text(encoding="utf-8"))
+    })
+    excluded_context = "\n".join(f"- {url}" for url in excluded_urls) or "None."
 
     return f"""Write today's post for https://incomeforeveryone.org/.
 
@@ -198,6 +206,8 @@ Requirements:
 - Compare against the recent posts below. Choose a genuinely new development as the lead and write a distinct opening and conclusion. Do not recycle their headline phrasing or present an old company announcement as today's news.
 - Give each story a concrete new fact, date, or development. When an earlier story has a meaningful update, state exactly what changed. If the news is thin, use a fresh official release or research finding instead of padding with old layoff stories.
 - Do not reuse the same source article URL from a recent brief; find a fresh report or official release that documents the new development.
+- Search for reporting published in the last 72 hours first, then widen to the last seven days if needed. Verify publication dates; do not present older research as a new release.
+- For official data, link to the dated release archive rather than a rolling latest-release page. Do not change tracking parameters or URL spelling to evade the exclusions below.
 - Vary sentence structure and vocabulary naturally. Avoid stock openings such as "AI-driven restructuring is spreading" and "the labor market remains mixed." Do not repeat the same generic UBI conclusion in every story; explain the specific worker or policy implication only when the evidence supports it.
 - Include exactly 3 key stories.
 - Each story must include a bold headline, 1-2 sentences of labor/automation/UBI relevance, and one Markdown link with the real article title and URL.
@@ -211,6 +221,9 @@ Requirements:
 
 Recent published posts to avoid repeating (background only, not evidence for today's claims):
 {recent_context}
+
+Previously used source URLs (excluded from this edition, including query-string variants):
+{excluded_context}
 
 Use this exact structure:
 
@@ -262,7 +275,7 @@ def call_openai(prompt: str, model: str, *, web_search: bool = True) -> str:
     }
     if web_search:
         body["tools"] = [{"type": "web_search", "search_context_size": "medium"}]
-        body["tool_choice"] = "auto"
+        body["tool_choice"] = "required"
 
     req = urllib.request.Request(
         "https://api.openai.com/v1/responses",
@@ -276,7 +289,15 @@ def call_openai(prompt: str, model: str, *, web_search: bool = True) -> str:
 
     try:
         with urllib.request.urlopen(req, timeout=180) as response:
-            return extract_response_text(json.loads(response.read().decode("utf-8")))
+            payload = json.loads(response.read().decode("utf-8"))
+            if payload.get("status") != "completed":
+                raise RuntimeError("OpenAI response did not complete; refusing partial output.")
+            if web_search and not any(
+                item.get("type") == "web_search_call" and item.get("status") == "completed"
+                for item in payload.get("output", [])
+            ):
+                raise RuntimeError("OpenAI response contains no completed web search.")
+            return extract_response_text(payload)
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode("utf-8", errors="replace")
         raise RuntimeError(f"OpenAI API error {exc.code}: {detail}") from exc
@@ -307,7 +328,7 @@ def main() -> int:
 
     recent = recent_posts(args.date)
     prompt = build_prompt(args.date, recent)
-    for attempt in range(2):
+    for attempt in range(GENERATION_ATTEMPTS):
         markdown = clean_markdown(call_openai(prompt, args.model))
         try:
             validate_post(markdown, args.date)
@@ -316,9 +337,10 @@ def main() -> int:
             issue = str(exc)
         if not issue:
             break
-        if attempt:
+        print(f"Generation attempt {attempt + 1}/{GENERATION_ATTEMPTS} rejected: {issue}", file=sys.stderr)
+        if attempt == GENERATION_ATTEMPTS - 1:
             raise RuntimeError(f"Generated post still fails validation: {issue}")
-        prompt += f"\n\nRewrite the entire post with new reporting and wording. {issue}"
+        prompt += f"\n\nRewrite the entire post with new reporting and wording. {issue}\nRejected draft (for correction only, not evidence):\n{markdown}"
 
     POST_DIR.mkdir(parents=True, exist_ok=True)
     post_path.write_text(markdown, encoding="utf-8", newline="\n")

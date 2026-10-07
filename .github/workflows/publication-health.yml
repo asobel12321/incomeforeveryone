@@ -28,4 +28,4 @@ jobs:
           python-version: "3.12"
 
       - name: Check deployed content and X publication record
-        run: python scripts/check_publication_health.py
+        run: python scripts/check_publication_health.py --article-max-days 0 --x-max-days 0
