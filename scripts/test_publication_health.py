@@ -28,6 +28,16 @@ def stats(*checked):
 
 
 class PublicationHealthTests(unittest.TestCase):
+    def test_evening_check_rejects_first_missed_edition(self):
+        with tempfile.TemporaryDirectory() as folder:
+            markers = Path(folder)
+            (markers / "2026-09-30.json").write_text(json.dumps({"date": "2026-09-30", "tweetId": "123"}), encoding="utf-8")
+            with patch.object(health, "fetch_bytes", return_value=feed("2026-09-30")):
+                with self.assertRaisesRegex(ValueError, "stale"):
+                    health.check_articles(BASE, TODAY, 0)
+            with self.assertRaisesRegex(ValueError, "stale"):
+                health.check_x(markers, TODAY, 0)
+
     def test_fresh_article_checks_deployed_page(self):
         urls = []
 
