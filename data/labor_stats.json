@@ -107,17 +107,17 @@
     {
       "name": "BLS Employment Situation",
       "url": "https://www.bls.gov/news.release/empsit.nr0.htm",
-      "last_checked": "2026-10-08"
+      "last_checked": "2026-10-09"
     },
     {
       "name": "BLS Job Openings and Labor Turnover Survey",
       "url": "https://www.bls.gov/news.release/jolts.nr0.htm",
-      "last_checked": "2026-10-08"
+      "last_checked": "2026-10-09"
     },
     {
       "name": "FRED labor-market series pages",
       "url": "https://fred.stlouisfed.org/",
-      "last_checked": "2026-10-08"
+      "last_checked": "2026-10-09"
     }
   ],
   "future_api": {
