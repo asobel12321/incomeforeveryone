@@ -28,3 +28,5 @@ Release validation and preview results are recorded in `SESSION_STATE.md` and th
 ## Release verification
 
 PR #24 passed GitHub validation (48 tests) and Netlify checks. Deployed PR preview passed all four health checks, including the repaired newsletter. Artifact-only generation run `39011727220` passed article generation, video-script generation, Hugo, and all generated-interface checks; publishing commit was skipped. The preview contains a policy listing page whose publication date and underlying evidence need editorial confirmation; workflow success does not independently verify that evidence.
+
+PR #24 merged as `13ab483` October 17 at 03:24 America/New_York. Released-main CI passed; production health subsequently passed all four checks, including valid full-content newsletter XML. The latest October 16 edition and X marker were expected before the October 17 schedule. No recovery sends, payments, or backdated editions were performed.
