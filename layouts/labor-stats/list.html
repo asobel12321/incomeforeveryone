@@ -20,21 +20,6 @@
     {{- end }}
   </header>
 
-  <div class="labor-stats-meta" aria-label="Dataset status">
-    <div>
-      <span>Coverage</span>
-      <strong>{{ $stats.coverage }}</strong>
-    </div>
-    <div>
-      <span>Snapshot date</span>
-      <strong>{{ time.Format "January 2, 2006" $stats.as_of }}</strong>
-    </div>
-    <div>
-      <span>Release calendar</span>
-      <strong><a href="https://www.bls.gov/schedule/">BLS release schedule</a></strong>
-    </div>
-  </div>
-
   <section class="labor-indicator-grid" aria-label="Labor market indicators">
     {{- range $stats.indicators }}
     <article class="labor-indicator-card labor-status-{{ .status }}">
@@ -60,6 +45,21 @@
     </article>
     {{- end }}
   </section>
+
+  <div class="labor-stats-meta" aria-label="Dataset status">
+    <div>
+      <span>Coverage</span>
+      <strong>{{ $stats.coverage }}</strong>
+    </div>
+    <div>
+      <span>Snapshot date</span>
+      <strong>{{ time.Format "January 2, 2006" $stats.as_of }}</strong>
+    </div>
+    <div>
+      <span>Release calendar</span>
+      <strong><a href="https://www.bls.gov/schedule/">BLS release schedule</a></strong>
+    </div>
+  </div>
 
   <section class="labor-data-contract" aria-labelledby="labor-data-contract-title">
     <div>

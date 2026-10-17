@@ -26,3 +26,9 @@ python scripts/prepare_newsletter.py --date YYYY-MM-DD --output-dir newsletter-p
 ```
 
 This tool sends nothing. It accepts published daily articles with the expected three-story structure.
+
+## Delivery audit — October 17, 2026
+
+Brevo campaign #6 was sent October 7 at 13:03 America/New_York: 2 delivered (100%), 1 reported open. The owner inbox contains the rendered full October 7 article, three source links, sender newsletter@incomeforeveryone.org, and resolved provider unsubscribe/mirror links; SPF, DKIM, and DMARC passed. No unsubscribe was executed. Campaign-list records and the owner inbox show no October 14 campaign.
+
+The AI Jobs Brief RSS integration remains Active with the correct feed URL and Wednesday 13:00 schedule. The malformed feed was present after October 8, but no provider error record has established why October 14 was skipped. The feed repair is deployed. Verify the next scheduled campaign before declaring weekly delivery fully recovered; do not resend missed editions or change recipients to clear the gap.
