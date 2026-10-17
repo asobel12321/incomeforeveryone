@@ -6,7 +6,7 @@ Scope: current `origin/main`, GitHub logs, generation, Hugo output, Netlify disp
 
 | Layer | Evidence | Repair |
 | --- | --- | --- |
-| Research | October 15/16 primary runs found 1–2 eligible sources per attempt but discarded accepted candidates. October 13 both early runs failed. | Accumulate candidates, request additional unused sources, skip individual malformed dates, retain the three-source minimum. |
+| Research | October 15/16 primary runs found 1–2 eligible sources per attempt but discarded accepted candidates. October 13 both early runs failed. | Accumulate candidates across up to five topic-focused searches, request additional unused sources, skip individual malformed dates, retain the three-source minimum. |
 | Draft validation | Three URLs anywhere satisfied the old check, even without three sourced stories. | Require exactly three story blocks, each with one distinct source link. |
 | Headlines | Generation allows escaped quotes; X/video readers rejected them. | Decode titles consistently in comparison, video, and X. |
 | X coordination | October 13 primary timed out awaiting an article; delayed backup recovered. No deployed-page check existed. | Preserve schedule redundancy; require deployed HTML, validate dates through environment variables, restrict posting to main, fail explicitly on missing articles. |
@@ -24,3 +24,7 @@ Scope: current `origin/main`, GitHub logs, generation, Hugo output, Netlify disp
 - Brevo records, inbox delivery, actual X playback, independent editorial verification, and ordinary-client paid settlement remain verification gaps. Missing evidence is not proof of failure.
 
 Release validation and preview results are recorded in `SESSION_STATE.md` and the repair PR.
+
+## Release verification
+
+PR #24 passed GitHub validation (48 tests) and Netlify checks. Deployed PR preview passed all four health checks, including the repaired newsletter. Artifact-only generation run `39011727220` passed article generation, video-script generation, Hugo, and all generated-interface checks; publishing commit was skipped. The preview contains a policy listing page whose publication date and underlying evidence need editorial confirmation; workflow success does not independently verify that evidence.
