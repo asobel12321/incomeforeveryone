@@ -23,6 +23,7 @@ DEFAULT_MODEL = "gpt-5.4-mini"
 TIMEZONE = "America/New_York"
 RECENT_POST_COUNT = 7
 GENERATION_ATTEMPTS = 3
+RESEARCH_ATTEMPTS = 5
 
 
 def clean_markdown(text: str) -> str:
@@ -196,44 +197,57 @@ def research_sources(post_date: str, recent: list, model: str) -> list[dict]:
         for day, *_ in recent
         for url in re.findall(r"\]\((https?://[^)\s]+)\)", (POST_DIR / f"{day}.md").read_text(encoding="utf-8"))
     })
-    prompt = f"""Research three distinct developments about AI, employment, automation, or income security for {post_date}.
+    prompt = f"""Find a pool of 6-10 candidate developments about AI, employment, automation, or income security for {post_date}, so three eligible stories can be selected.
 Use web search to find and open reporting or official releases published between {earliest} and {post_date} inclusive.
 Search multiple topics and publishers. Verify the publication date on each page. Prefer primary sources.
 Exclude these previously used URLs (including query variants): {json.dumps(excluded)}.
 Use dated official release URLs, not rolling latest-release pages. Never invent a source or date.
-Return only a JSON array of 3-6 objects with string fields: title, url, published (YYYY-MM-DD), summary.
+Search beyond large-company layoffs: labor-agency releases, hiring surveys, worker protections, education and training, workplace adoption, robotics, social insurance, and income-support policy. Include international developments. Search multiple queries; open dated reports to establish publication dates.
+Return only a JSON array of up to 10 objects with string fields: title, url, published (YYYY-MM-DD), summary.
 Each summary must state the concrete new development and distinguish evidence from interpretation.
 If fewer than three eligible sources can be verified, return only those found; do not pad with old sources.
 """
     accepted = []
     seen = set(excluded)
-    for attempt in range(GENERATION_ATTEMPTS):
-        response = call_openai(prompt, model)
+    search_focus = (
+        "Search broadly across employers, labor data, and policy.",
+        "Focus additional searches on dated government labor releases and new institutional research.",
+        "Focus additional searches on worker protections, training, and workplace AI adoption outside the United States.",
+        "Focus additional searches on income support, social insurance, robotics, and hiring surveys.",
+        "Search publishers and institutions not yet represented in accepted sources; find concrete dated updates.",
+    )
+    for attempt in range(RESEARCH_ATTEMPTS):
+        response = call_openai(prompt + "\n" + search_focus[attempt], model)
         try:
             sources = json.loads(re.sub(r"\A\s*```(?:json)?\s*|\s*```\s*\Z", "", response))
             if not isinstance(sources, list):
                 raise ValueError("Research must return a JSON array.")
+            rejected = []
             for source in sources:
                 if not isinstance(source, dict) or not all(isinstance(source.get(key), str) and source[key].strip() for key in ("title", "url", "published", "summary")):
+                    rejected.append("Candidate has missing or invalid fields.")
                     continue
                 parsed = urlsplit(source["url"])
                 key = normalize_url(source["url"])
                 if parsed.scheme not in {"http", "https"} or not parsed.netloc or key in seen:
+                    rejected.append(f"Invalid or already used URL: {source['url']}")
                     continue
                 try:
                     published = date.fromisoformat(source["published"])
                 except ValueError:
+                    rejected.append(f"Invalid publication date: {source['url']}")
                     continue
                 if not earliest <= published <= date.fromisoformat(post_date):
+                    rejected.append(f"Outside date window: {source['url']} ({source['published']})")
                     continue
                 accepted.append(source)
                 seen.add(key)
             if len(accepted) >= 3:
                 return accepted[:6]
-            raise ValueError(f"Only {len(accepted)} distinct, recent, unused sources were found; need at least three.")
+            raise ValueError(f"Only {len(accepted)} distinct, recent, unused sources were found; need at least three. Rejections: {json.dumps(rejected)}")
         except (ValueError, TypeError) as exc:
-            print(f"Research attempt {attempt + 1}/{GENERATION_ATTEMPTS} rejected: {exc}", file=sys.stderr)
-            if attempt == GENERATION_ATTEMPTS - 1:
+            print(f"Research attempt {attempt + 1}/{RESEARCH_ATTEMPTS} rejected: {exc}", file=sys.stderr)
+            if attempt == RESEARCH_ATTEMPTS - 1:
                 raise RuntimeError(f"Source research failed: {exc}") from exc
             prompt += f"\nResearch is incomplete: {exc}. Retain these accepted sources: {json.dumps(accepted)}. Search different publishers and topics for additional sources, excluding these already accepted URLs: {json.dumps(sorted(seen))}."
     raise RuntimeError("Source research exhausted.")
