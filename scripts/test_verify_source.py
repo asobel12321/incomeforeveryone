@@ -6,6 +6,20 @@ import verify_source as source
 
 
 class SourceVerificationTests(unittest.TestCase):
+    def test_labelled_visible_dates_itemprop_and_press_release_date(self):
+        for html in ('<time class="published" datetime="2026-10-13">Oct. 13, 2026</time>',
+                     '<span class="published-date">October 13, 2026</span>',
+                     '<!-- ITEMDATE: 2026-10-13 09:00:00 EDT -->',
+                     '<meta itemprop="datePublished" content="2026-10-13">'):
+            with self.subTest(html=html):
+                parser = source.PublicationDates()
+                parser.feed(html)
+                self.assertEqual(parser.dates, {"2026-10-13"})
+
+    def test_modified_visible_date_is_not_publication(self):
+        parser = source.PublicationDates()
+        parser.feed('<time class="entry-date updated" datetime="2026-10-16">October 16, 2026</time>')
+        self.assertEqual(parser.dates, set())
     def test_publication_metadata_excludes_modification_and_listing_dates(self):
         parser = source.PublicationDates()
         parser.feed('''<meta property="article:modified_time" content="2026-10-16">
