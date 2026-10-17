@@ -15,6 +15,7 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
+from verify_source import verify_publication_date
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -201,7 +202,7 @@ def research_sources(post_date: str, recent: list, model: str) -> list[dict]:
 Use web search to find and open reporting or official releases published between {earliest} and {post_date} inclusive.
 Search multiple topics and publishers. Verify the publication date on each page. Prefer primary sources.
 Exclude these previously used URLs (including query variants): {json.dumps(excluded)}.
-Use dated official release URLs, not rolling latest-release pages. Never invent a source or date.
+Use direct dated HTML article/report/release pages with machine-readable publication dates (article:published_time or article JSON-LD datePublished). Do not use rolling pages, search results, policy landing pages, indexes, or PDF downloads. Sources will be fetched independently and their publication metadata must match the reported date. Never invent a source or date.
 Search beyond large-company layoffs: labor-agency releases, hiring surveys, worker protections, education and training, workplace adoption, robotics, social insurance, and income-support policy. Include international developments. Search multiple queries; open dated reports to establish publication dates.
 Return only a JSON array of up to 10 objects with string fields: title, url, published (YYYY-MM-DD), summary.
 Each summary must state the concrete new development and distinguish evidence from interpretation.
@@ -209,6 +210,7 @@ If fewer than three eligible sources can be verified, return only those found; d
 """
     accepted = []
     seen = set(excluded)
+    failed = set()
     search_focus = (
         "Search broadly across employers, labor data, and policy.",
         "Focus additional searches on dated government labor releases and new institutional research.",
@@ -223,13 +225,13 @@ If fewer than three eligible sources can be verified, return only those found; d
             if not isinstance(sources, list):
                 raise ValueError("Research must return a JSON array.")
             rejected = []
-            for source in sources:
+            for source in sources[:10]:
                 if not isinstance(source, dict) or not all(isinstance(source.get(key), str) and source[key].strip() for key in ("title", "url", "published", "summary")):
                     rejected.append("Candidate has missing or invalid fields.")
                     continue
                 parsed = urlsplit(source["url"])
                 key = normalize_url(source["url"])
-                if parsed.scheme not in {"http", "https"} or not parsed.netloc or key in seen:
+                if parsed.scheme != "https" or not parsed.netloc or key in seen or (key, source["published"]) in failed:
                     rejected.append(f"Invalid or already used URL: {source['url']}")
                     continue
                 try:
@@ -239,6 +241,12 @@ If fewer than three eligible sources can be verified, return only those found; d
                     continue
                 if not earliest <= published <= date.fromisoformat(post_date):
                     rejected.append(f"Outside date window: {source['url']} ({source['published']})")
+                    continue
+                try:
+                    verify_publication_date(source["url"], source["published"])
+                except (OSError, ValueError) as exc:
+                    failed.add((key, source["published"]))
+                    rejected.append(f"Unverified source {source['url']}: {exc}")
                     continue
                 accepted.append(source)
                 seen.add(key)

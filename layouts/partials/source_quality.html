@@ -1,7 +1,7 @@
 {{- $quality := .Params.source_quality -}}
-{{- $primarySources := "Cited links reviewed; direct sources used when available." -}}
-{{- $officialData := "Official data used when cited in the article." -}}
-{{- $uncertainty := "Medium" -}}
+{{- $primarySources := "Not recorded for this article." -}}
+{{- $officialData := "Not recorded for this article." -}}
+{{- $uncertainty := "Not assessed" -}}
 {{- with $quality -}}
   {{- with index . "primary_sources" -}}{{- $primarySources = . -}}{{- end -}}
   {{- with index . "official_data" -}}{{- $officialData = . -}}{{- end -}}
@@ -24,5 +24,5 @@
       <dd>{{ $uncertainty }}</dd>
     </div>
   </dl>
-  <p>Posts are brief, cited snapshots of public reporting and official data, focused on how automation changes bargaining power, job security, and the case for UBI.</p>
+  <p>Daily briefs use AI for research and drafting. These source notes do not certify human review. <a href="{{ "about/" | relURL }}">Editorial approach and corrections</a>.</p>
 </aside>

@@ -47,6 +47,9 @@ A specific conclusion.
 
 class DailyPostTests(unittest.TestCase):
     def setUp(self):
+        verification = patch.object(daily, "verify_publication_date")
+        verification.start()
+        self.addCleanup(verification.stop)
         self.research = patch.object(daily, "research_sources", return_value=[
             {"url": f"https://{domain}/{path}"}
             for domain in ("news.example.org", "reports.example.org")
@@ -101,6 +104,14 @@ class DailyPostTests(unittest.TestCase):
         with patch.object(daily, "call_openai", return_value=json.dumps([source])):
             with self.assertRaisesRegex(RuntimeError, "Only 1 distinct"):
                 daily.research_sources("2026-10-03", [], "model")
+
+    def test_research_rejects_sources_whose_page_date_cannot_be_verified(self):
+        self.research.stop()
+        sources = [{"title": "Report", "url": f"https://reports.example.org/{i}", "published": "2026-10-02", "summary": "A finding."} for i in range(3)]
+        with patch.object(daily, "call_openai", return_value=json.dumps(sources)), patch.object(daily, "verify_publication_date", side_effect=ValueError("No publication metadata")) as verify:
+            with self.assertRaisesRegex(RuntimeError, "Only 0 distinct"):
+                daily.research_sources("2026-10-03", [], "model")
+        self.assertEqual(verify.call_count, 3)
 
     def test_each_of_three_stories_requires_its_own_source(self):
         candidate = post("2026-10-03", "A headline", "A lead.")
