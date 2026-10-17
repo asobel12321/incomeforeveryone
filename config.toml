@@ -1,6 +1,7 @@
 baseURL = "https://incomeforeveryone.org/"
 languageCode = "en-us"
 title = "Income For Everyone"
+enableRobotsTXT = true
 theme = "PaperMod"
 
 [outputs]

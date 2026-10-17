@@ -1,19 +1,19 @@
 # Session State
 
 ## Objective
-Close remaining editorial/source checks and verify newsletter/X delivery; defer paid fulfillment per owner instruction.
+Run end-to-end health checks after the releases; repair the missing crawler endpoint; keep paid checks deferred.
 
 ## Branch
-`codex/remaining-workflow-gaps`, PR #26, based on released main `c786fa6` (PRs #24/#25 merged).
+`codex/site-discovery-health`, based on released main `9e50b7c` (PR #26 merged).
 
 ## Current Status
-PR #26 contains the completed repair; GitHub records its release status. CI, Netlify preview, and revised unsent source-check generation passed. Paid fulfillment is deferred by the owner.
+Released site and all four publication health checks pass before the October 17 schedule. The audit found robots.txt returned 404; Hugo crawler output is now enabled and required by generated-output validation. Associated PR records deployment verification. Paid fulfillment remains deferred.
 
 ## Files Changed
-Source-date verifier, generator/tests, source-quality and article/dashboard templates, About, README, newsletter operations, backlog, and this handoff.
+Current health repair: config.toml, generated-output validator, README, and this handoff. Prior PR #26 contains the source and editorial repairs.
 
 ## Accomplishments
-Fetch publisher pages and verify publication-date evidence; reject missing/conflicting/mismatched dates and inaccessible pages. Remove unsupported default review claims, disclose AI assistance and corrections, hide production narration text, show indicator values before metadata.
+Enable existing PaperMod robots.txt output with the production sitemap link; require robots.txt and sitemap.xml during builds. Verify released disclosure/layout and data/feed availability.
 
 ## Things Tried
 Initial strict metadata preview found only two sources and failed closed; added labelled visible dates and press-release ITEMDATE support. Real Workday October 13 date check passed. Browser/Gmail inspection required no sends or recipient changes.
@@ -25,7 +25,7 @@ Brevo October 7 campaign #6 delivered to 2 recipients; owner inbox contains the 
 Brevo October 14 skip cause unproven; check next Wednesday delivery. Audio has not been independently listened to. Publisher date verification does not establish factual accuracy. Paid fulfillment is assumed for now at the owner's request, not verified; no wallet balance or payment accessed.
 
 ## Verification Run
-56 Python tests and compilation passed; Hugo and all 13 generated XML/JSON interfaces passed. PR checks and Netlify preview passed. Unsent live generation 39033398307 passed article and video-script generation, Hugo, and interface validation, with publishing commit skipped. Its ILO, Conference Board, and World Bank source dates passed the independent page checks.
+Fresh health run: 56 Python tests, compilation, all function syntax, offline x402 checks, Hugo and 13 XML/JSON interfaces passed. Temporary labor refresh and --check passed. Crawler repair Hugo build passed (146 pages); generated robots.txt allows crawling and links sitemap.xml. PR checks and Netlify preview passed. Unsent live generation 39033398307 passed article and video-script generation, Hugo, and interface validation, with publishing commit skipped. Its ILO, Conference Board, and World Bank source dates passed the independent page checks.
 
 ## Next Steps
-Observe the next scheduled article/X run and next Wednesday Brevo campaign. Use PR #26 for release/deployment verification details. No recovery sends, payments, or fabricated/backdated editions.
+Observe the October 17 scheduled article (09:30 New York; backups 10:00 and GitHub 10:15) and X (11:30; backup 11:45) after they are due. Labor refresh runs weekdays; October 17 is Saturday. Verify the next Wednesday Brevo campaign. Use the associated health PR for crawler deployment verification. No recovery sends, payments, or fabricated/backdated editions.

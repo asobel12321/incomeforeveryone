@@ -60,6 +60,8 @@ The newsletter uses the configured provider-hosted signup URL and collects no ad
 
 ## Public interfaces
 
+Hugo generates `/robots.txt` with the sitemap link; generated-output checks require both crawler instructions and `/sitemap.xml`.
+
 - `/labor-stats/` and `/api/labor-stats/`: latest sourced labor snapshot.
 - `/api/labor-stats/history`: x402-paid recent monthly observations and date filters.
 - `/api/latest/`, `/api/articles/`, `/feed.json`: latest article, newest 20 articles, and JSON Feed.
