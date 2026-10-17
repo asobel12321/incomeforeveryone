@@ -4,7 +4,7 @@ Updated October 17, 2026. This is the only active task list. Items here are not 
 
 ## Finish verification
 
-- Release the workflow audit repair and confirm production newsletter XML parses. The October 17 audit reproduced invalid XML despite HTTP 200; local escaping repair passes generated-interface parsing.
+- Observe the next scheduled article/X publication after PR #24. The repair is deployed and production newsletter XML plus all four health checks passed October 17 before the daily schedule.
 - Inspect Brevo subscriber campaigns for October 7/14: import/delivery status, RSS content, source links, sender, mobile layout, unsubscribe behavior. Setup and controlled template delivery are already complete; no provider delivery was verified in this audit.
 - Review subsequent briefs for editorial accuracy and variety. Automated checks do not independently establish source dates or claims.
 - Re-test ordinary x402 client payment and filtered fulfillment with an explicitly authorized small payment. July records show a paid success only after stripping the optional Bazaar extension; normal-client compatibility is unresolved.
