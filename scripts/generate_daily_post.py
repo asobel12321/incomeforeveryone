@@ -113,6 +113,19 @@ def validate_post(markdown: str, post_date: str) -> None:
     if len({normalize_url(url) for url in urls}) < 3:
         raise RuntimeError("Generated post must include at least 3 distinct Markdown URLs.")
 
+    stories_match = re.search(r"^### Key Stories\s*\n(.*?)^### What This Tells Us", markdown, flags=re.M | re.S)
+    stories = re.split(r"(?m)^- \*\*", stories_match.group(1))[1:] if stories_match else []
+    if len(stories) != 3:
+        raise RuntimeError("Generated post must include exactly 3 key stories.")
+    story_urls = []
+    for story in stories:
+        links = re.findall(r"\]\((https?://[^)\s]+)\)", story)
+        if len(links) != 1:
+            raise RuntimeError("Each key story must include exactly one source link.")
+        story_urls.append(normalize_url(links[0]))
+    if len(set(story_urls)) != 3:
+        raise RuntimeError("Key stories must cite distinct sources.")
+
 
 def normalize_url(url: str) -> str:
     parsed = urlsplit(url)
@@ -120,12 +133,12 @@ def normalize_url(url: str) -> str:
 
 
 def article_parts(markdown: str) -> tuple[str, str, list[str], str]:
-    title = re.search(r'^title:\s*"([^"]+)"', markdown, flags=re.M)
+    title = re.search(r'^title:[ \t]*("[^\n]+")\s*$', markdown, flags=re.M)
     body = re.sub(r"\A---\s*\n.*?\n---\s*\n", "", markdown, count=1, flags=re.S)
     lead = body.split("\n\n", 1)[0].strip()
     stories = re.findall(r"^- \*\*(.+?)\*\*", body, flags=re.M)
     synthesis = re.search(r"^### What This Tells Us\s*\n(.*?)(?:\n---|\Z)", body, flags=re.M | re.S)
-    return (title.group(1) if title else "", lead, stories[:3], synthesis.group(1).strip() if synthesis else "")
+    return (json.loads(title.group(1)) if title else "", lead, stories[:3], synthesis.group(1).strip() if synthesis else "")
 
 
 def recent_posts(post_date: str, post_dir: Path | None = None) -> list[tuple[str, str, str, list[str], str]]:
@@ -192,14 +205,14 @@ Return only a JSON array of 3-6 objects with string fields: title, url, publishe
 Each summary must state the concrete new development and distinguish evidence from interpretation.
 If fewer than three eligible sources can be verified, return only those found; do not pad with old sources.
 """
+    accepted = []
+    seen = set(excluded)
     for attempt in range(GENERATION_ATTEMPTS):
         response = call_openai(prompt, model)
         try:
             sources = json.loads(re.sub(r"\A\s*```(?:json)?\s*|\s*```\s*\Z", "", response))
             if not isinstance(sources, list):
                 raise ValueError("Research must return a JSON array.")
-            accepted = []
-            seen = set(excluded)
             for source in sources:
                 if not isinstance(source, dict) or not all(isinstance(source.get(key), str) and source[key].strip() for key in ("title", "url", "published", "summary")):
                     continue
@@ -207,7 +220,11 @@ If fewer than three eligible sources can be verified, return only those found; d
                 key = normalize_url(source["url"])
                 if parsed.scheme not in {"http", "https"} or not parsed.netloc or key in seen:
                     continue
-                if not earliest <= date.fromisoformat(source["published"]) <= date.fromisoformat(post_date):
+                try:
+                    published = date.fromisoformat(source["published"])
+                except ValueError:
+                    continue
+                if not earliest <= published <= date.fromisoformat(post_date):
                     continue
                 accepted.append(source)
                 seen.add(key)
@@ -218,7 +235,7 @@ If fewer than three eligible sources can be verified, return only those found; d
             print(f"Research attempt {attempt + 1}/{GENERATION_ATTEMPTS} rejected: {exc}", file=sys.stderr)
             if attempt == GENERATION_ATTEMPTS - 1:
                 raise RuntimeError(f"Source research failed: {exc}") from exc
-            prompt += f"\nPrevious research was rejected: {exc}. Search different publishers and topics.\nPrevious result:\n{response}"
+            prompt += f"\nResearch is incomplete: {exc}. Retain these accepted sources: {json.dumps(accepted)}. Search different publishers and topics for additional sources, excluding these already accepted URLs: {json.dumps(sorted(seen))}."
     raise RuntimeError("Source research exhausted.")
 
 

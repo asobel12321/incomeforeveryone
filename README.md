@@ -9,6 +9,7 @@ git submodule update --init --recursive
 npm.cmd ci
 hugo --destination "$env:TEMP/ife-hugo-check"
 python -m unittest discover -s scripts -p 'test_*.py'
+python scripts/check_site_output.py --site-dir "$env:TEMP/ife-hugo-check"
 ```
 
 Make focused changes on a `codex/` branch, review its PR/Netlify preview, then merge when release is authorized. Generated output, media previews, dependencies, and credentials are not source. Never commit `public/`.
@@ -26,6 +27,12 @@ Use [the project map](docs/PROJECT_MAP.md) to find code, [the backlog](docs/BACK
 | Newsletter | Brevo, Wednesdays at 1 PM America/New_York; newest full daily brief. See [newsletter operations](docs/AI_JOBS_BRIEF.md). |
 
 UTC schedules do not follow New York daylight-saving changes. GitHub schedule delivery may be delayed. The workflow files and `netlify.toml` are authoritative for schedules.
+
+Pull requests run Python tests, all Netlify function syntax checks, offline x402 checks, Hugo, and generated XML/JSON parsing. Article and data-refresh jobs also parse feeds/APIs before committing. Publication health checks newsletter XML, full article content, and freshness. An HTTP 200 or successful Hugo build alone does not prove a feed is valid XML.
+
+Research retains eligible sources across its three attempts and searches for additional unused sources when fewer than three have accumulated. Each of the three stories must contain its own distinct source link. Quoted headlines are supported through article, video, and X processing.
+
+X runs only from `main`, validates the edition date, and waits up to ten minutes for the deployed article before rendering/posting. A missing article fails explicitly. Publication receipts are committed after failures when available and saved as workflow artifacts. If posting succeeds but the marker push fails, recover the receipt into `data/x-posted/` before rerunning; an artifact alone does not prevent another post. Netlify dispatch requests time out after 15 seconds.
 
 Daily posts use `content/posts/YYYY-MM-DD.md`, one focused title (maximum 80 characters), and a supporting `description` subtitle (maximum 180). They contain three sourced stories and a specific synthesis. A separate research stage requires completed web search, supplies the previous seven editions' excluded URLs, and selects at least three unused sources with reported publication dates in the preceding seven days. It requests dated official releases instead of rolling pages. Drafting is restricted to selected sources. Research and drafting each allow up to three attempts; formatting, repeated wording, and reused URLs remain blocking checks. Invalid output is never saved. These automated checks do not independently verify claims or source dates. The [manual prompt](prompts/daily-labor-watch.md) follows the same article format. Existing articles without subtitles keep their summary fallback.
 

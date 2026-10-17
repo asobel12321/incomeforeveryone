@@ -63,7 +63,7 @@ class DailyPostTests(unittest.TestCase):
         ]
         bad = [dict(sources[0], published="2025-01-01"), sources[1], sources[1]]
         with tempfile.TemporaryDirectory() as folder, patch.object(daily, "POST_DIR", Path(folder)), patch.object(daily, "call_openai", side_effect=[json.dumps(bad), json.dumps(sources)]) as api:
-            self.assertEqual(daily.research_sources("2026-10-03", [], "model"), sources)
+            self.assertCountEqual(daily.research_sources("2026-10-03", [], "model"), sources)
             self.assertEqual(api.call_count, 2)
 
     def test_headline_and_subtitle_validation(self):
@@ -80,6 +80,37 @@ class DailyPostTests(unittest.TestCase):
         for markdown, error in invalid:
             with self.subTest(error=error), self.assertRaisesRegex(RuntimeError, error):
                 daily.validate_post(markdown, "2026-10-03")
+
+    def test_research_accumulates_valid_sources_across_attempts(self):
+        self.research.stop()
+        sources = [
+            {"title": "Report", "url": f"https://reports.example.org/{i}", "published": "2026-10-02", "summary": "A new finding."}
+            for i in range(3)
+        ]
+        malformed = dict(sources[0], published="not-a-date")
+        with patch.object(daily, "call_openai", side_effect=[
+            json.dumps([malformed, *sources[:2]]), json.dumps([sources[1], sources[2]])
+        ]) as api:
+            self.assertEqual(daily.research_sources("2026-10-03", [], "model"), sources)
+        self.assertEqual(api.call_count, 2)
+        self.assertIn("Retain these accepted sources", api.call_args.args[0])
+
+    def test_research_never_pads_insufficient_sources(self):
+        self.research.stop()
+        source = {"title": "Report", "url": "https://reports.example.org/one", "published": "2026-10-02", "summary": "A finding."}
+        with patch.object(daily, "call_openai", return_value=json.dumps([source])):
+            with self.assertRaisesRegex(RuntimeError, "Only 1 distinct"):
+                daily.research_sources("2026-10-03", [], "model")
+
+    def test_each_of_three_stories_requires_its_own_source(self):
+        candidate = post("2026-10-03", "A headline", "A lead.")
+        for invalid in (
+            candidate.replace("- **Third development**", "**Third development**"),
+            candidate.replace("- **Third development**", "- **Fourth development**\n  Extra.\n- **Third development**"),
+            candidate.replace("[Source two](https://news.example.org/two)", "No citation.") + "\n[Extra](https://news.example.org/two)",
+        ):
+            with self.subTest(markdown=invalid), self.assertRaises(RuntimeError):
+                daily.validate_post(invalid, "2026-10-03")
 
     def test_invalid_headline_retries_and_never_saves_invalid_output(self):
         good = post("2026-10-03", "A focused headline", "A lead.")

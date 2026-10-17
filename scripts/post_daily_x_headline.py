@@ -55,10 +55,10 @@ def default_post_date() -> str:
 
 def read_post_title(post_path: Path) -> str:
     markdown = post_path.read_text(encoding="utf-8")
-    match = re.search(r'^title:\s*"([^"]+)"\s*$', markdown, flags=re.M)
+    match = re.search(r'^title:[ \t]*("[^\n]+")\s*$', markdown, flags=re.M)
     if not match:
         raise RuntimeError(f"Could not find front matter title in {post_path}")
-    return match.group(1).strip()
+    return json.loads(match.group(1)).strip()
 
 
 def post_url(post_date: str) -> str:
@@ -346,8 +346,7 @@ def main() -> int:
         return 0
 
     if not post_path.exists():
-        print(f"No article found for {args.date}; skipping X post.")
-        return 0
+        raise RuntimeError(f"No article found for {args.date}; refusing X publication.")
 
     title = read_post_title(post_path)
     text = build_post(title, args.date)

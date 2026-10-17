@@ -28,6 +28,18 @@ def stats(*checked):
 
 
 class PublicationHealthTests(unittest.TestCase):
+    def test_newsletter_requires_valid_xml_and_full_content(self):
+        content = '<p>Key Stories</p>' + '<a href="https://source.org">Source</a>' * 3 + '<p>What This Tells Us</p>'
+        valid = ('<rss xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><item>'
+                 f'<link>{BASE}/posts/2026-09-30/</link><description>Quoted &amp; sourced</description>'
+                 f'<content:encoded><![CDATA[{content}]]></content:encoded></item></channel></rss>').encode()
+        with patch.object(health, "fetch_bytes", return_value=valid):
+            health.check_newsletter(BASE, TODAY, 1)
+        for bad in (valid.replace(b'&amp;', b'&ldquo;'), valid.replace(content.encode(), b'Summary only')):
+            with patch.object(health, "fetch_bytes", return_value=bad):
+                with self.assertRaises((ValueError, health.ET.ParseError)):
+                    health.check_newsletter(BASE, TODAY, 1)
+
     def test_evening_check_rejects_first_missed_edition(self):
         with tempfile.TemporaryDirectory() as folder:
             markers = Path(folder)
@@ -89,9 +101,9 @@ class PublicationHealthTests(unittest.TestCase):
     def test_all_failures_are_reported_together(self):
         with tempfile.TemporaryDirectory() as folder, patch.object(health, "fetch_bytes", side_effect=OSError("site offline")):
             results = health.run_checks(BASE, Path(folder), TODAY, 1, 4, 1)
-        self.assertEqual(len(results), 3)
+        self.assertEqual(len(results), 4)
         self.assertTrue(all(not result.ok for result in results))
-        self.assertEqual(health.render_summary(results, TODAY).count("**FAIL"), 3)
+        self.assertEqual(health.render_summary(results, TODAY).count("**FAIL"), 4)
 
 
 if __name__ == "__main__":

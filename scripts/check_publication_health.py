@@ -95,6 +95,20 @@ def check_stats(base_url: str, today: date, max_days: int) -> str:
     return check_age("Oldest deployed stats source check", min(checked), today, max_days)
 
 
+def check_newsletter(base_url: str, today: date, max_days: int) -> str:
+    feed = ET.fromstring(fetch_bytes(f"{base_url}/ai-jobs-brief.xml", {"application/xml", "text/xml", "application/rss+xml"}))
+    items = feed.findall("./channel/item")
+    if not items:
+        raise ValueError("Newsletter feed has no articles.")
+    match = re.fullmatch(rf"/posts/({DATE_PATTERN})/", urllib.parse.urlsplit(items[0].findtext("link", "")).path)
+    if not match:
+        raise ValueError("Newest newsletter item is not a daily edition.")
+    content = items[0].findtext("{http://purl.org/rss/1.0/modules/content/}encoded", "")
+    if "Key Stories" not in content or "What This Tells Us" not in content or len(re.findall(r'<a\s[^>]*href=', content)) < 3:
+        raise ValueError("Newest newsletter item lacks full article content and source links.")
+    return check_age("Newest newsletter article", parse_date(match.group(1)), today, max_days)
+
+
 def check_x(markers: Path, today: date, max_days: int) -> str:
     paths = sorted(path for path in markers.glob("*.json") if re.fullmatch(DATE_PATTERN, path.stem))
     if not paths:
@@ -111,6 +125,7 @@ def run_checks(base_url: str, markers: Path, today: date, article_days: int, sta
     checks = [
         ("Articles", lambda: check_articles(base_url, today, article_days)),
         ("Labor stats", lambda: check_stats(base_url, today, stats_days)),
+        ("Newsletter feed", lambda: check_newsletter(base_url, today, article_days)),
         ("X publication record", lambda: check_x(markers, today, x_days)),
     ]
     results = []

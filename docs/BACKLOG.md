@@ -1,12 +1,12 @@
 # Active backlog
 
-Updated October 4, 2026. This is the only active task list. Items here are not automatically authorized external sends, payments, or new product launches.
+Updated October 17, 2026. This is the only active task list. Items here are not automatically authorized external sends, payments, or new product launches.
 
 ## Finish verification
 
-- Confirm production rendering of the merged headline/subtitle release (PR #19). Its preview passed; a browser approval/usage block prevented the final live check. Do not bypass that block or redeploy just to repeat verification.
-- Inspect the first integration-generated Brevo subscriber campaign on October 7: RSS content, source links, sender, mobile layout, unsubscribe behavior. Setup and controlled template delivery are already complete.
-- Review the first newly generated brief using the variety and title/subtitle checks. Offline regression tests passed; actual editorial quality still needs review.
+- Release the workflow audit repair and confirm production newsletter XML parses. The October 17 audit reproduced invalid XML despite HTTP 200; local escaping repair passes generated-interface parsing.
+- Inspect Brevo subscriber campaigns for October 7/14: import/delivery status, RSS content, source links, sender, mobile layout, unsubscribe behavior. Setup and controlled template delivery are already complete; no provider delivery was verified in this audit.
+- Review subsequent briefs for editorial accuracy and variety. Automated checks do not independently establish source dates or claims.
 - Re-test ordinary x402 client payment and filtered fulfillment with an explicitly authorized small payment. July records show a paid success only after stripping the optional Bazaar extension; normal-client compatibility is unresolved.
 
 ## Product improvements, when prioritized
