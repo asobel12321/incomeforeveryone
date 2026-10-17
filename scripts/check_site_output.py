@@ -8,7 +8,7 @@ import xml.etree.ElementTree as ET
 
 def check_site(directory: Path) -> None:
     api_paths = [directory / "api" / route / "index.html" for route in ("latest", "articles", "labor-stats")]
-    for required in ("ai-jobs-brief.xml", "posts/index.xml", "feed.json", "api/latest/index.html", "api/articles/index.html", "api/labor-stats/index.html", "openapi.json"):
+    for required in ("robots.txt", "sitemap.xml", "ai-jobs-brief.xml", "posts/index.xml", "feed.json", "api/latest/index.html", "api/articles/index.html", "api/labor-stats/index.html", "openapi.json"):
         if not (directory / required).is_file():
             raise ValueError(f"Missing generated interface: {required}")
     paths = sorted([*directory.rglob("*.xml"), *directory.rglob("*.json"), *api_paths])
