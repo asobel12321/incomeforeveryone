@@ -41,7 +41,7 @@ def read_article(path: Path) -> tuple[str, str, str, list[str]]:
     if not match:
         raise ValueError(f"Missing YAML front matter: {path}")
     front = match.group(1)
-    title_match = re.search(r'^title:\s*"([^"]+)"\s*$', front, re.M)
+    title_match = re.search(r'^title:[ \t]*("[^\n]+")\s*$', front, re.M)
     date_match = re.search(r"^date:\s*(\d{4}-\d{2}-\d{2})\s*$", front, re.M)
     script_match = re.search(r"(?m)^video_script:\s*[>|][-+]?\s*\n((?:[ \t]+[^\n]*\n?)+)", front)
     if not title_match or not date_match or not script_match:
@@ -50,7 +50,7 @@ def read_article(path: Path) -> tuple[str, str, str, list[str]]:
     if not 75 <= len(WORD.findall(script)) <= 130:
         raise ValueError("Article video_script must contain 75–130 spoken words")
     stories = re.findall(r"(?m)^- \*\*(.+?)\*\*", article[match.end():])[:3]
-    return title_match.group(1), date_match.group(1), script, stories
+    return json.loads(title_match.group(1)), date_match.group(1), script, stories
 
 
 def synthesize_speech(script: str, destination: Path, *, model: str, voice: str,

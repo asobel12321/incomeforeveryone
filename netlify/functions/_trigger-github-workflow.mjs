@@ -27,6 +27,7 @@ async function dispatchWorkflow(workflow, label) {
     `https://api.github.com/repos/${owner}/${repo}/actions/workflows/${workflow}/dispatches`,
     {
       method: "POST",
+      signal: AbortSignal.timeout(15_000),
       headers: {
         Accept: "application/vnd.github+json",
         Authorization: `Bearer ${token.trim()}`,

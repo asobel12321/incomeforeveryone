@@ -13,6 +13,8 @@ This configuration was verified October 3, 2026. An owner signup and controlled 
 
 ## Maintenance
 
+October 17 audit: production returned HTTP 200 but the feed failed XML parsing because an October 8 summary contained HTML-only named entities (`&ldquo;`, `&lsquo;`). The repair decodes HTML entities and escapes XML text, and safely splits embedded CDATA terminators. Generated-interface validation and deployed publication health now parse this feed; the latter also requires a fresh full article with source links. This failure does not establish whether Brevo accepted or delivered the October 7/14 campaigns; inspect provider records separately.
+
 Check the first real campaign for full content, correct sender/subject, source and article links, mobile layout, and working unsubscribe. Do not send tests or change recipients without appropriate user authorization. Do not reactivate the superseded daily schedule.
 
 The setup used Brevo Free's 300-send/day allowance; recheck the account limit before audience growth exceeds it. Sender, schedule, list, and template live in Brevo, not the repository. The signup link is `params.newsletterSignupURL` in `config.toml`.

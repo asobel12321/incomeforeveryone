@@ -1,31 +1,31 @@
 # Session State
 
 ## Objective
-Repair daily publication failures observed October 5-6.
+Audit and repair generation, deployment, feeds, X, monitoring, data, and payment boundaries.
 
 ## Branch
-`codex/publishing-reliability`, based on `origin/main`; release PR #23.
+`codex/workflow-audit`, based on `origin/main` at `61a77fb`; prior PR #23 is merged.
 
 ## Current Status
-Repair tested locally and in an artifact-only GitHub run; release verification in progress.
+PR #24 is ready for release review; GitHub validation, Netlify preview, and unsent live generation passed. Production latest edition/X marker were October 16, inspected before the October 17 schedule.
 
 ## Files Changed
-Daily generation script/tests, article and health workflows, README, and this handoff.
+Generation/X/video parsers and tests; newsletter XML and health; interface/function validators; publishing and PR workflows; README and operating docs. See `docs/WORKFLOW_AUDIT.md`.
 
 ## Accomplishments
-Separate research from drafting; exclude prior URLs before selection, require completed search and recent source dates, constrain draft links, and retain blocking validation. Add bounded retries and safe branch previews. Resolve edition date once. Evening health flags the first missed edition and reads current main markers.
+Retain research across up to five topic-focused retries; enforce three sourced stories; support quoted headlines; gate X on deployment and main; retain receipts; repair newsletter XML; add PR checks.
 
 ## Things Tried
-Live preview 37627916148 passed article generation, video-script generation, and Hugo. Preview artifact source links were reviewed. Netlify PR preview, headers, and redirects passed.
+Read GitHub failures and public endpoints. Used ignored `video-preview/` temp paths because sandbox permissions prevented the default test temp directory.
 
 ## Things Learned
-October 5-6 article runs rejected reused sources; X timed out waiting for missing articles. Prompt-only exclusions still failed live, so research selection now precedes drafting. Labor refresh remained healthy.
+October 15/16 retries discarded valid candidates. October 13 X timed out before backup recovery. Newsletter HTTP 200 hid XML errors in an October 8 summary. The initial preview accumulated only two eligible sources; broader bounded searches passed in run 39011727220.
 
 ## Known Issues
-Production latest article and X marker were October 4 at initial inspection. Newsletter feed works; first scheduled Brevo delivery October 7 remains unverified. Automated research checks do not independently verify claims or dates.
+Repair is not deployed. Brevo delivery, X playback, independent editorial/source-date verification, and ordinary-client paid fulfillment remain unverified. Recover X receipt before rerunning if marker push failed.
 
 ## Verification Run
-Python compilation passed; 39 Python tests passed; Hugo passed (136 pages); whitespace checks passed. Live preview passed. Production labor-data freshness and full-content newsletter feed passed read-only checks.
+48 Python tests passed; Hugo passed (145 pages); 13 generated XML/JSON interfaces parsed. Compilation, function syntax, offline x402 checks passed. Temporary labor refresh and --check passed. Production unpaid 402 and invalid-date 400 confirmed; no payment made. GitHub CI passed; Netlify preview health passed all four checks. Live artifact-only generation 39011727220 passed article/video-script generation, Hugo, and interface validation; publishing commit was skipped.
 
 ## Next Steps
-Release PR #23, verify current article deployment and normal X run. Do not backdate invented editions. Verify first Brevo campaign separately without sending tests or changing recipients.
+Review/release PR #24, then verify deployed newsletter XML and scheduled publication. The preview includes a policy listing page; verify its date and underlying evidence before treating it as publication-ready. Inspect Brevo records separately without sending tests or changing recipients.

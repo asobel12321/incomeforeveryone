@@ -18,6 +18,14 @@ SCRIPT = " ".join(["Workers are seeing changes in hiring and job security."] * 1
 
 
 class RenderShortVideoTests(unittest.TestCase):
+    def test_title_with_escaped_quotes(self):
+        title = 'Employers debate "AI-first" hiring'
+        article = f'---\ntitle: {json.dumps(title)}\ndate: 2026-10-02\nvideo_script: >-\n  {SCRIPT}\n---\n'
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "post.md"
+            path.write_text(article, encoding="utf-8")
+            self.assertEqual(read_article(path)[0], title)
+
     def test_extracts_three_article_stories(self):
         article = (
             '---\ntitle: "Labor brief"\ndate: 2026-10-02\ndraft: false\n'

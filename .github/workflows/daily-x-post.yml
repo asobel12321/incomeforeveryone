@@ -19,7 +19,9 @@ concurrency:
 
 jobs:
   post:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    timeout-minutes: 60
 
     steps:
       - name: Check out repository
@@ -35,12 +37,12 @@ jobs:
 
       - name: Resolve post date
         id: post-date
+        env:
+          REQUESTED_DATE: ${{ inputs.date }}
         run: |
-          if [ -n "${{ inputs.date || '' }}" ]; then
-            echo "date=${{ inputs.date }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "date=$(TZ=America/New_York date +%F)" >> "$GITHUB_OUTPUT"
-          fi
+          edition_date="${REQUESTED_DATE:-$(TZ=America/New_York date +%F)}"
+          python -c 'import datetime, re, sys; value = sys.argv[1]; assert re.fullmatch(r"\d{4}-\d{2}-\d{2}", value); datetime.date.fromisoformat(value)' "$edition_date"
+          echo "date=$edition_date" >> "$GITHUB_OUTPUT"
 
       - name: Wait for generated article
         run: |
@@ -78,6 +80,12 @@ jobs:
         with:
           path: ${{ runner.temp }}/kokoro-model
           key: kokoro-v1.0-int8-model-files-v1.1
+
+      - name: Wait for deployed article
+        if: steps.publication.outputs.needed == 'true'
+        env:
+          EDITION_DATE: ${{ steps.post-date.outputs.date }}
+        run: python scripts/wait_for_deployed_article.py --date "$EDITION_DATE"
 
       - name: Prepare Michael narration
         if: steps.publication.outputs.needed == 'true'
@@ -123,6 +131,7 @@ jobs:
           python scripts/post_daily_x_headline.py --date "${{ steps.post-date.outputs.date }}" --video "$RUNNER_TEMP/x-video/${{ steps.post-date.outputs.date }}/video.mp4"
 
       - name: Commit posted marker
+        if: always() && steps.publication.outputs.needed == 'true'
         run: |
           if [ -z "$(git status --porcelain -- data/x-posted)" ]; then
             echo "No X post marker to commit."
@@ -135,3 +144,11 @@ jobs:
           git commit -m "Record daily X post"
           git pull --rebase origin main
           git push
+
+      - name: Save publication receipt
+        if: always() && steps.publication.outputs.needed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: x-publication-${{ steps.post-date.outputs.date }}
+          path: data/x-posted/${{ steps.post-date.outputs.date }}.json
+          if-no-files-found: ignore

@@ -11,12 +11,12 @@
       {{- if and (findRE `^\d{4}-\d{2}-\d{2}$` .File.BaseFileName) (lt $count 30) }}
         {{- $count = add $count 1 }}
     <item>
-      <title>{{ .Title }}</title>
+      <title>{{ .Title | htmlUnescape | htmlEscape | safeHTML }}</title>
       <link>{{ .Permalink }}</link>
       <guid isPermaLink="true">{{ .Permalink }}</guid>
       <pubDate>{{ .PublishDate.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</pubDate>
-      <description>{{ .Summary | plainify }}</description>
-      <content:encoded>{{ printf "<![CDATA[%s]]>" .Content | safeHTML }}</content:encoded>
+      <description>{{ .Summary | plainify | htmlUnescape | htmlEscape | safeHTML }}</description>
+      <content:encoded>{{ printf "<![CDATA[%s]]>" (replace .Content "]]>" "]]]]><![CDATA[>") | safeHTML }}</content:encoded>
     </item>
       {{- end }}
     {{- end }}

@@ -10,6 +10,22 @@ import post_daily_x_headline as xpost
 
 
 class DailyXVideoTests(unittest.TestCase):
+    def test_title_with_escaped_quotes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "post.md"
+            path.write_text('title: "Employers debate \\"AI-first\\" hiring"\n', encoding="utf-8")
+            self.assertEqual(xpost.read_post_title(path), 'Employers debate "AI-first" hiring')
+
+    def test_missing_article_fails_without_posting(self):
+        with tempfile.TemporaryDirectory() as directory, \
+             patch.object(xpost, "POST_DIR", Path(directory)), \
+             patch.object(xpost, "POSTED_DIR", Path(directory)), \
+             patch.object(xpost, "post_to_x") as send, \
+             patch.object(sys, "argv", ["post.py", "--date", "2026-10-02"]):
+            with self.assertRaisesRegex(RuntimeError, "No article"):
+                xpost.main()
+        send.assert_not_called()
+
     def test_upload_waits_until_video_is_ready(self):
         with tempfile.TemporaryDirectory() as directory:
             video = Path(directory) / "video.mp4"
