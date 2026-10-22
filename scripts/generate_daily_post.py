@@ -202,7 +202,8 @@ def research_sources(post_date: str, recent: list, model: str) -> list[dict]:
 Use web search to find and open reporting or official releases published between {earliest} and {post_date} inclusive.
 Search multiple topics and publishers. Verify the publication date on each page. Prefer primary sources.
 Exclude these previously used URLs (including query variants): {json.dumps(excluded)}.
-Use direct dated HTML article/report/release pages with machine-readable publication dates (article:published_time or article JSON-LD datePublished). Do not use rolling pages, search results, policy landing pages, indexes, or PDF downloads. Sources will be fetched independently and their publication metadata must match the reported date. Never invent a source or date.
+Use direct dated HTML article/report/release pages with machine-readable publication dates (article:published_time, article JSON-LD datePublished, or govuk:first-published-at). Do not use rolling pages, search results, policy landing pages, indexes, or PDF downloads. Sources will be fetched independently and their publication metadata must match the reported date. Never invent a source or date.
+Include explicit after:{earliest} before:{date.fromisoformat(post_date) + timedelta(days=1)} terms in search queries. Prefer releases from the last 72 hours. Open each page, and do not infer its publication date from a search snippet, event date, URL, or last-updated date.
 Search beyond large-company layoffs: labor-agency releases, hiring surveys, worker protections, education and training, workplace adoption, robotics, social insurance, and income-support policy. Include international developments. Search multiple queries; open dated reports to establish publication dates.
 Return only a JSON array of up to 10 objects with string fields: title, url, published (YYYY-MM-DD), summary.
 Each summary must state the concrete new development and distinguish evidence from interpretation.
@@ -210,7 +211,7 @@ If fewer than three eligible sources can be verified, return only those found; d
 """
     accepted = []
     seen = set(excluded)
-    failed = set()
+    rejected_urls = set()
     search_focus = (
         "Search broadly across employers, labor data, and policy.",
         "Focus additional searches on dated government labor releases and new institutional research.",
@@ -219,7 +220,17 @@ If fewer than three eligible sources can be verified, return only those found; d
         "Search publishers and institutions not yet represented in accepted sources; find concrete dated updates.",
     )
     for attempt in range(RESEARCH_ATTEMPTS):
-        response = call_openai(prompt + "\n" + search_focus[attempt], model)
+        attempt_prompt = prompt + "\n" + search_focus[attempt]
+        if attempt:
+            attempt_prompt += (
+                f"\nRetain these accepted sources: {json.dumps(accepted)}. "
+                f"Find {max(0, 3 - len(accepted))} additional eligible sources. "
+                f"Do not return these previously used, accepted, or rejected URLs (including query variants): "
+                f"{json.dumps(sorted(seen | rejected_urls))}. "
+                f"Search fresh queries and different publishers within {earliest} through {post_date}; "
+                "do not repeat rejected candidates or change their dates to make them eligible."
+            )
+        response = call_openai(attempt_prompt, model)
         try:
             sources = json.loads(re.sub(r"\A\s*```(?:json)?\s*|\s*```\s*\Z", "", response))
             if not isinstance(sources, list):
@@ -231,21 +242,23 @@ If fewer than three eligible sources can be verified, return only those found; d
                     continue
                 parsed = urlsplit(source["url"])
                 key = normalize_url(source["url"])
-                if parsed.scheme != "https" or not parsed.netloc or key in seen or (key, source["published"]) in failed:
+                if parsed.scheme != "https" or not parsed.netloc or key in seen or key in rejected_urls:
                     rejected.append(f"Invalid or already used URL: {source['url']}")
                     continue
                 try:
                     published = date.fromisoformat(source["published"])
                 except ValueError:
+                    rejected_urls.add(key)
                     rejected.append(f"Invalid publication date: {source['url']}")
                     continue
                 if not earliest <= published <= date.fromisoformat(post_date):
+                    rejected_urls.add(key)
                     rejected.append(f"Outside date window: {source['url']} ({source['published']})")
                     continue
                 try:
                     verify_publication_date(source["url"], source["published"])
                 except (OSError, ValueError) as exc:
-                    failed.add((key, source["published"]))
+                    rejected_urls.add(key)
                     rejected.append(f"Unverified source {source['url']}: {exc}")
                     continue
                 accepted.append(source)
@@ -257,7 +270,6 @@ If fewer than three eligible sources can be verified, return only those found; d
             print(f"Research attempt {attempt + 1}/{RESEARCH_ATTEMPTS} rejected: {exc}", file=sys.stderr)
             if attempt == RESEARCH_ATTEMPTS - 1:
                 raise RuntimeError(f"Source research failed: {exc}") from exc
-            prompt += f"\nResearch is incomplete: {exc}. Retain these accepted sources: {json.dumps(accepted)}. Search different publishers and topics for additional sources, excluding these already accepted URLs: {json.dumps(sorted(seen))}."
     raise RuntimeError("Source research exhausted.")
 
 

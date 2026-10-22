@@ -6,6 +6,18 @@ import verify_source as source
 
 
 class SourceVerificationTests(unittest.TestCase):
+    def test_govuk_first_published_date_ignores_later_updates(self):
+        parser = source.PublicationDates()
+        parser.feed('''<meta name="govuk:first-published-at" content="2026-10-21T00:01:06+01:00">
+          <meta name="govuk:updated-at" content="2026-10-22T10:00:00+01:00">
+          <meta name="govuk:public-updated-at" content="2026-10-22T10:00:00+01:00">''')
+        self.assertEqual(parser.dates, {"2026-10-21"})
+
+    def test_govuk_update_alone_does_not_establish_publication(self):
+        parser = source.PublicationDates()
+        parser.feed('<meta name="govuk:public-updated-at" content="2026-10-21T10:00:00Z">')
+        self.assertEqual(parser.dates, set())
+
     def test_labelled_visible_dates_itemprop_and_press_release_date(self):
         for html in ('<time class="published" datetime="2026-10-13">Oct. 13, 2026</time>',
                      '<span class="published-date">October 13, 2026</span>',
