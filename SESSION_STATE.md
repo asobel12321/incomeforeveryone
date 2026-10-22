@@ -7,7 +7,7 @@ Permanently repair labor refresh failure from invalid HTTP-success FRED response
 `codex/fred-response-retry`, based on `origin/main` at `f69fa41`.
 
 ## Current Status
-Repair implemented and locally verified. Automatic approval review blocked commit/push pending user confirmation of the GitHub destination and changed code. No PR or branch workflow run created.
+User authorized deployment. PR #28 is ready for release: GitHub validation and Netlify preview passed, and live branch refresh preview `39743136804` passed without committing data.
 
 ## Files Changed
 `scripts/refresh_labor_stats.py`, new refresher tests, refresh workflow, README, and this handoff.
@@ -25,7 +25,7 @@ Failed run `39655059026` (October 21) stopped at UNRATE with fewer than two obse
 Persistent upstream outages still fail explicitly after three attempts. Paid fulfillment remains deferred at owner's request. Prior unresolved newsletter skip cause and independent audio listening remain unverified.
 
 ## Verification Run
-Changed scripts compile; all 60 Python tests pass. Live six-series refresh to temporary snapshot/history and subsequent `--check` pass. Hugo builds 151 pages; generated-output validator parses 13 XML/JSON interfaces. Production data unchanged locally.
+Changed scripts compile; all 60 Python tests pass. Live six-series refresh to temporary snapshot/history and subsequent `--check` pass. Hugo builds 151 pages; generated-output validator parses 13 XML/JSON interfaces. GitHub validation `39743118916`, Netlify PR preview, and live branch refresh `39743136804` passed. Production data unchanged locally.
 
 ## Next Steps
-Obtain approval to commit/push these five files to `asobel12321/incomeforeveryone`, then complete PR checks and branch preview, release repair, and verify production refresh.
+Merge PR #28 after final checks, then dispatch and verify the production refresh on main. Persistent upstream outages remain explicit failures; do not bypass validation to clear them.
