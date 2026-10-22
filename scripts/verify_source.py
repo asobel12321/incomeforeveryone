@@ -58,7 +58,8 @@ class PublicationDates(HTMLParser):
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
         if tag == "meta" and (attrs.get("property") or attrs.get("name") or attrs.get("itemprop") or "").lower() in {
-            "article:published_time", "datepublished", "date", "pubdate", "dc.date", "dc.date.issued", "dcterms.issued", "citation_publication_date"
+            "article:published_time", "datepublished", "date", "pubdate", "dc.date", "dc.date.issued", "dcterms.issued", "citation_publication_date",
+            "govuk:first-published-at"
         }:
             self.add_date(attrs.get("content"))
         classes = attrs.get("class", "").lower().split()

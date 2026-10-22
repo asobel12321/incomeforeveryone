@@ -65,6 +65,7 @@ class DailyPostTests(unittest.TestCase):
             for i in range(3)
         ]
         bad = [dict(sources[0], published="2025-01-01"), sources[1], sources[1]]
+        sources[0] = dict(sources[0], url="https://reports.example.org/fresh-replacement")
         with tempfile.TemporaryDirectory() as folder, patch.object(daily, "POST_DIR", Path(folder)), patch.object(daily, "call_openai", side_effect=[json.dumps(bad), json.dumps(sources)]) as api:
             self.assertCountEqual(daily.research_sources("2026-10-03", [], "model"), sources)
             self.assertEqual(api.call_count, 2)
@@ -90,13 +91,36 @@ class DailyPostTests(unittest.TestCase):
             {"title": "Report", "url": f"https://reports.example.org/{i}", "published": "2026-10-02", "summary": "A new finding."}
             for i in range(3)
         ]
-        malformed = dict(sources[0], published="not-a-date")
+        malformed = dict(sources[0], url="https://reports.example.org/malformed", published="not-a-date")
         with patch.object(daily, "call_openai", side_effect=[
             json.dumps([malformed, *sources[:2]]), json.dumps([sources[1], sources[2]])
         ]) as api:
             self.assertEqual(daily.research_sources("2026-10-03", [], "model"), sources)
         self.assertEqual(api.call_count, 2)
         self.assertIn("Retain these accepted sources", api.call_args.args[0])
+
+    def test_retry_excludes_rejected_urls_even_when_dates_or_queries_change(self):
+        self.research.stop()
+        old = {"title": "Old report", "url": "https://reports.example.org/old",
+               "published": "2025-01-01", "summary": "Old finding."}
+        blocked = dict(old, url="https://blocked.example.org/report", published="2026-10-02")
+        fresh = [dict(old, title="New release", url=f"https://fresh.example.org/{i}",
+                      published="2026-10-02") for i in range(3)]
+        def verify(url, published):
+            if "blocked.example.org" in url:
+                raise ValueError("HTTP 403")
+        with patch.object(daily, "call_openai", side_effect=[
+            json.dumps([old, blocked, fresh[0]]),
+            json.dumps([dict(old, url=old['url'] + '?tracking=1', published="2026-10-02"),
+                        dict(blocked, published="2026-10-03"), *fresh[1:]])
+        ]) as api, patch.object(daily, "verify_publication_date", side_effect=verify) as verifier:
+            self.assertEqual(daily.research_sources("2026-10-03", [], "model"), fresh)
+        retry_prompt = api.call_args.args[0]
+        self.assertIn(daily.normalize_url(old['url']), retry_prompt)
+        self.assertIn(daily.normalize_url(blocked['url']), retry_prompt)
+        self.assertIn('Find 2 additional', retry_prompt)
+        self.assertIn('after:2026-09-26 before:2026-10-04', retry_prompt)
+        self.assertEqual(verifier.call_count, 4)
 
     def test_research_never_pads_insufficient_sources(self):
         self.research.stop()
