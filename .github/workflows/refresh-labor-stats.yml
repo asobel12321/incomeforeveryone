@@ -2,6 +2,11 @@ name: Refresh labor stats
 
 on:
   workflow_dispatch:
+    inputs:
+      preview:
+        description: "Refresh and validate without committing data."
+        type: boolean
+        default: false
   schedule:
     - cron: "20 14 * * 1-5"
 
@@ -20,7 +25,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.ref }}
           submodules: recursive
 
       - name: Set up Python
@@ -37,6 +42,9 @@ jobs:
       - name: Refresh labor stats
         run: python scripts/refresh_labor_stats.py
 
+      - name: Run refresher regression tests
+        run: python -m unittest discover -s scripts -p 'test_refresh_labor_stats.py'
+
       - name: Build site
         run: hugo --destination "$RUNNER_TEMP/hugo-validation"
 
@@ -44,6 +52,7 @@ jobs:
         run: python scripts/check_site_output.py --site-dir "$RUNNER_TEMP/hugo-validation"
 
       - name: Commit and push data
+        if: github.ref == 'refs/heads/main' && !inputs.preview
         run: |
           if [ -z "$(git status --porcelain -- data/labor_stats.json data/labor_stats_history.json)" ]; then
             echo "No labor stats changes to commit."

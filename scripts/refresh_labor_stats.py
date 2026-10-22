@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import http.client
 import json
 import sys
 import time
@@ -128,10 +129,16 @@ def fetch_csv(series_id: str) -> str:
     for attempt in range(1, 4):
         try:
             with urllib.request.urlopen(url, timeout=30) as response:
-                return response.read().decode("utf-8-sig")
-        except (ConnectionResetError, TimeoutError, urllib.error.URLError) as exc:
+                csv_text = response.read().decode("utf-8-sig")
+            # FRED can return an HTTP-success error page or incomplete CSV.
+            # Validate before accepting the response so those failures retry too.
+            parse_observations(series_id, csv_text)
+            return csv_text
+        except (ConnectionResetError, TimeoutError, urllib.error.URLError,
+                http.client.IncompleteRead, UnicodeDecodeError, csv.Error, RuntimeError) as exc:
             last_error = exc
             if attempt < 3:
+                print(f"FRED {series_id} attempt {attempt}/3 failed: {exc}; retrying.", file=sys.stderr)
                 time.sleep(2 * attempt)
 
     raise RuntimeError(f"Could not fetch {series_id} from FRED after 3 attempts: {last_error}")
@@ -139,6 +146,8 @@ def fetch_csv(series_id: str) -> str:
 
 def parse_observations(series_id: str, csv_text: str) -> list[tuple[date, Decimal]]:
     reader = csv.DictReader(StringIO(csv_text))
+    if not reader.fieldnames or not {"observation_date", series_id}.issubset(reader.fieldnames):
+        raise RuntimeError(f"Invalid FRED CSV columns for {series_id}; expected observation_date and {series_id}.")
     observations: list[tuple[date, Decimal]] = []
 
     for row in reader:
@@ -150,7 +159,11 @@ def parse_observations(series_id: str, csv_text: str) -> list[tuple[date, Decima
             period = datetime.strptime(raw_date, "%Y-%m-%d").date()
             value = Decimal(raw_value)
         except (ValueError, InvalidOperation):
-            continue
+            raise RuntimeError(f"Invalid FRED observation for {series_id}.") from None
+        if not value.is_finite():
+            raise RuntimeError(f"Non-finite FRED observation for {series_id}.")
+        if observations and period <= observations[-1][0]:
+            raise RuntimeError(f"FRED dates are not strictly increasing for {series_id}.")
         observations.append((period, value))
 
     if len(observations) < 2:
