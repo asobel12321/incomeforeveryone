@@ -30,6 +30,8 @@ UTC schedules do not follow New York daylight-saving changes. GitHub schedule de
 
 Pull requests run Python tests, all Netlify function syntax checks, offline x402 checks, Hugo, and generated XML/JSON parsing. Article and data-refresh jobs also parse feeds/APIs before committing. Publication health checks newsletter XML, full article content, and freshness. An HTTP 200 or successful Hugo build alone does not prove a feed is valid XML.
 
+Labor refresh validates each FRED response before accepting it, including the expected CSV columns, finite values, ordered dates, and at least two usable observations. Transport failures and invalid responses retry up to three times with 2- and 4-second waits. Exhausted retries fail the run before either data file is written. For a live repair check, dispatch `refresh-labor-stats.yml` on the repair branch with `preview=true`; branch runs and main previews validate without committing data.
+
 Research retains eligible sources across up to five topic-focused attempts and searches for additional unused sources when fewer than three have accumulated. Each of the three stories must contain its own distinct source link. Quoted headlines are supported through article, video, and X processing.
 
 X runs only from `main`, validates the edition date, and checks for the deployed article up to 20 times at 30-second intervals before rendering/posting. A missing article fails explicitly. Publication receipts are committed after failures when available and saved as workflow artifacts. If posting succeeds but the marker push fails, recover the receipt into `data/x-posted/` before rerunning; an artifact alone does not prevent another post. Netlify dispatch requests time out after 15 seconds.
