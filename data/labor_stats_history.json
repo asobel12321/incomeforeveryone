@@ -1,7 +1,7 @@
 {
   "schema_version": "2026-07-21",
   "endpoint": "/api/labor-stats/history",
-  "snapshot_as_of": "2026-10-02",
+  "snapshot_as_of": "2026-11-03",
   "history_window": {
     "frequency": "Monthly",
     "observation_count_per_indicator": 13,
@@ -366,18 +366,10 @@
       "release_url": "https://www.bls.gov/news.release/jolts.nr0.htm",
       "observations": [
         {
-          "date": "2025-08-01",
-          "period": "August 2025",
-          "value": "6,919",
-          "raw_value": "6919"
-        },
-        {
           "date": "2025-09-01",
           "period": "September 2025",
           "value": "7,169",
-          "raw_value": "7169",
-          "month_over_month_change": "250",
-          "status": "up"
+          "raw_value": "7169"
         },
         {
           "date": "2025-10-01",
@@ -462,10 +454,18 @@
         {
           "date": "2026-08-01",
           "period": "August 2026",
-          "value": "7,079",
-          "raw_value": "7079",
-          "month_over_month_change": "-256",
+          "value": "7,190",
+          "raw_value": "7190",
+          "month_over_month_change": "-145",
           "status": "down"
+        },
+        {
+          "date": "2026-09-01",
+          "period": "September 2026",
+          "value": "7,523",
+          "raw_value": "7523",
+          "month_over_month_change": "333",
+          "status": "up"
         }
       ]
     },
@@ -729,10 +729,10 @@
     {
       "id": "job-openings",
       "label": "Job openings",
-      "current_period": "August 2026",
-      "previous_period": "July 2026",
-      "change": "-256",
-      "status": "down"
+      "current_period": "September 2026",
+      "previous_period": "August 2026",
+      "change": "333",
+      "status": "up"
     },
     {
       "id": "u6-underemployment",
@@ -755,17 +755,17 @@
     {
       "name": "BLS Employment Situation",
       "url": "https://www.bls.gov/news.release/empsit.nr0.htm",
-      "last_checked": "2026-11-02"
+      "last_checked": "2026-11-03"
     },
     {
       "name": "BLS Job Openings and Labor Turnover Survey",
       "url": "https://www.bls.gov/news.release/jolts.nr0.htm",
-      "last_checked": "2026-11-02"
+      "last_checked": "2026-11-03"
     },
     {
       "name": "FRED labor-market series pages",
       "url": "https://fred.stlouisfed.org/",
-      "last_checked": "2026-11-02"
+      "last_checked": "2026-11-03"
     }
   ],
   "access": {
