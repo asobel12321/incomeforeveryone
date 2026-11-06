@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-07-21",
   "endpoint": "/api/labor-stats/history",
-  "snapshot_as_of": "2026-11-03",
+  "snapshot_as_of": "2026-11-06",
   "history_window": {
     "frequency": "Monthly",
     "observation_count_per_indicator": 13,
-    "start_date": "2025-08-01",
-    "end_date": "2026-09-01"
+    "start_date": "2025-09-01",
+    "end_date": "2026-10-01"
   },
   "indicators": [
     {
@@ -21,18 +21,10 @@
       "release_url": "https://www.bls.gov/news.release/empsit.nr0.htm",
       "observations": [
         {
-          "date": "2025-08-01",
-          "period": "August 2025",
-          "value": "4.3",
-          "raw_value": "4.3"
-        },
-        {
           "date": "2025-09-01",
           "period": "September 2025",
           "value": "4.4",
-          "raw_value": "4.4",
-          "month_over_month_change": "0.1",
-          "status": "up"
+          "raw_value": "4.4"
         },
         {
           "date": "2025-11-01",
@@ -121,6 +113,14 @@
           "raw_value": "4.2",
           "month_over_month_change": "0.1",
           "status": "up"
+        },
+        {
+          "date": "2026-10-01",
+          "period": "October 2026",
+          "value": "4.1",
+          "raw_value": "4.1",
+          "month_over_month_change": "-0.1",
+          "status": "down"
         }
       ]
     },
@@ -136,18 +136,10 @@
       "release_url": "https://www.bls.gov/news.release/empsit.nr0.htm",
       "observations": [
         {
-          "date": "2025-08-01",
-          "period": "August 2025",
-          "value": "62.3",
-          "raw_value": "62.3"
-        },
-        {
           "date": "2025-09-01",
           "period": "September 2025",
           "value": "62.5",
-          "raw_value": "62.5",
-          "month_over_month_change": "0.2",
-          "status": "up"
+          "raw_value": "62.5"
         },
         {
           "date": "2025-11-01",
@@ -236,6 +228,14 @@
           "raw_value": "61.8",
           "month_over_month_change": "0.2",
           "status": "up"
+        },
+        {
+          "date": "2026-10-01",
+          "period": "October 2026",
+          "value": "61.9",
+          "raw_value": "61.9",
+          "month_over_month_change": "0.1",
+          "status": "up"
         }
       ]
     },
@@ -251,18 +251,10 @@
       "release_url": "https://www.bls.gov/news.release/empsit.nr0.htm",
       "observations": [
         {
-          "date": "2025-09-01",
-          "period": "September 2025",
-          "value": "158,548",
-          "raw_value": "158548"
-        },
-        {
           "date": "2025-10-01",
           "period": "October 2025",
           "value": "158,408",
-          "raw_value": "158408",
-          "month_over_month_change": "-140",
-          "status": "down"
+          "raw_value": "158408"
         },
         {
           "date": "2025-11-01",
@@ -339,17 +331,25 @@
         {
           "date": "2026-08-01",
           "period": "August 2026",
-          "value": "159,015",
-          "raw_value": "159015",
-          "month_over_month_change": "133",
+          "value": "159,068",
+          "raw_value": "159068",
+          "month_over_month_change": "186",
           "status": "up"
         },
         {
           "date": "2026-09-01",
           "period": "September 2026",
-          "value": "159,044",
-          "raw_value": "159044",
-          "month_over_month_change": "29",
+          "value": "159,128",
+          "raw_value": "159128",
+          "month_over_month_change": "60",
+          "status": "up"
+        },
+        {
+          "date": "2026-10-01",
+          "period": "October 2026",
+          "value": "159,293",
+          "raw_value": "159293",
+          "month_over_month_change": "165",
           "status": "up"
         }
       ]
@@ -481,18 +481,10 @@
       "release_url": "https://www.bls.gov/news.release/empsit.nr0.htm",
       "observations": [
         {
-          "date": "2025-08-01",
-          "period": "August 2025",
-          "value": "8.1",
-          "raw_value": "8.1"
-        },
-        {
           "date": "2025-09-01",
           "period": "September 2025",
           "value": "8.1",
-          "raw_value": "8.1",
-          "month_over_month_change": "0.0",
-          "status": "steady"
+          "raw_value": "8.1"
         },
         {
           "date": "2025-11-01",
@@ -581,6 +573,14 @@
           "raw_value": "7.6",
           "month_over_month_change": "-0.1",
           "status": "down"
+        },
+        {
+          "date": "2026-10-01",
+          "period": "October 2026",
+          "value": "7.9",
+          "raw_value": "7.9",
+          "month_over_month_change": "0.3",
+          "status": "up"
         }
       ]
     },
@@ -596,18 +596,10 @@
       "release_url": "https://www.bls.gov/news.release/empsit.nr0.htm",
       "observations": [
         {
-          "date": "2025-09-01",
-          "period": "September 2025",
-          "value": "$31.56",
-          "raw_value": "31.56"
-        },
-        {
           "date": "2025-10-01",
           "period": "October 2025",
           "value": "$31.70",
-          "raw_value": "31.70",
-          "month_over_month_change": "0.14",
-          "status": "up"
+          "raw_value": "31.70"
         },
         {
           "date": "2025-11-01",
@@ -684,17 +676,25 @@
         {
           "date": "2026-08-01",
           "period": "August 2026",
-          "value": "$32.53",
-          "raw_value": "32.53",
-          "month_over_month_change": "0.11",
+          "value": "$32.55",
+          "raw_value": "32.55",
+          "month_over_month_change": "0.13",
           "status": "up"
         },
         {
           "date": "2026-09-01",
           "period": "September 2026",
-          "value": "$32.60",
-          "raw_value": "32.60",
-          "month_over_month_change": "0.07",
+          "value": "$32.63",
+          "raw_value": "32.63",
+          "month_over_month_change": "0.08",
+          "status": "up"
+        },
+        {
+          "date": "2026-10-01",
+          "period": "October 2026",
+          "value": "$32.75",
+          "raw_value": "32.75",
+          "month_over_month_change": "0.12",
           "status": "up"
         }
       ]
@@ -705,25 +705,25 @@
     {
       "id": "unemployment-rate",
       "label": "Unemployment rate",
-      "current_period": "September 2026",
-      "previous_period": "August 2026",
-      "change": "0.1",
-      "status": "up"
+      "current_period": "October 2026",
+      "previous_period": "September 2026",
+      "change": "-0.1",
+      "status": "down"
     },
     {
       "id": "labor-force-participation",
       "label": "Labor force participation",
-      "current_period": "September 2026",
-      "previous_period": "August 2026",
-      "change": "0.2",
+      "current_period": "October 2026",
+      "previous_period": "September 2026",
+      "change": "0.1",
       "status": "up"
     },
     {
       "id": "payroll-employment",
       "label": "Total nonfarm payrolls",
-      "current_period": "September 2026",
-      "previous_period": "August 2026",
-      "change": "29",
+      "current_period": "October 2026",
+      "previous_period": "September 2026",
+      "change": "165",
       "status": "up"
     },
     {
@@ -737,17 +737,17 @@
     {
       "id": "u6-underemployment",
       "label": "U-6 labor underutilization",
-      "current_period": "September 2026",
-      "previous_period": "August 2026",
-      "change": "-0.1",
-      "status": "down"
+      "current_period": "October 2026",
+      "previous_period": "September 2026",
+      "change": "0.3",
+      "status": "up"
     },
     {
       "id": "production-wages",
       "label": "Production and nonsupervisory hourly earnings",
-      "current_period": "September 2026",
-      "previous_period": "August 2026",
-      "change": "0.07",
+      "current_period": "October 2026",
+      "previous_period": "September 2026",
+      "change": "0.12",
       "status": "up"
     }
   ],
@@ -755,17 +755,17 @@
     {
       "name": "BLS Employment Situation",
       "url": "https://www.bls.gov/news.release/empsit.nr0.htm",
-      "last_checked": "2026-11-05"
+      "last_checked": "2026-11-06"
     },
     {
       "name": "BLS Job Openings and Labor Turnover Survey",
       "url": "https://www.bls.gov/news.release/jolts.nr0.htm",
-      "last_checked": "2026-11-05"
+      "last_checked": "2026-11-06"
     },
     {
       "name": "FRED labor-market series pages",
       "url": "https://fred.stlouisfed.org/",
-      "last_checked": "2026-11-05"
+      "last_checked": "2026-11-06"
     }
   ],
   "access": {
